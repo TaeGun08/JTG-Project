@@ -4,17 +4,37 @@ using UnityEngine;
 
 public class KeyManager : MonoBehaviour
 {
-    
+    public static KeyManager instance;
 
-    // Start is called before the first frame update
-    void Start()
+    [Header("플레이어 키 설정")]
+    [SerializeField] KeyCode playerLeftKey;
+    [SerializeField] KeyCode playerRightKey;
+    [SerializeField] KeyCode playerJumpKey;
+
+    private void Awake()
     {
-        
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public KeyCode PlayerLeftKey()
     {
-        
+        return playerLeftKey;
+    }
+
+    public KeyCode PlayerRightKey()
+    {
+        return playerRightKey;
+    }
+
+    public KeyCode PlayerJumpKey()
+    {
+        return playerJumpKey;
     }
 }

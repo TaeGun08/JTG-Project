@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static GameManager Instance;
+    [Header("게임 중지")]
+    [SerializeField] private bool gamePause = false;
+
+    [Header("중력")]
+    [SerializeField] private float gravity;
+
+    private void Awake()
     {
-        
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool GamePause()
     {
-        
+        return gamePause;
+    }
+
+    public float gravityScale()
+    {
+        return gravity;
     }
 }
