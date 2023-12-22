@@ -7,9 +7,11 @@ public class KeyManager : MonoBehaviour
     public static KeyManager instance;
 
     [Header("플레이어 키 설정")]
-    [SerializeField] KeyCode playerLeftKey;
-    [SerializeField] KeyCode playerRightKey;
+    [SerializeField] KeyCode playerMoveLeftKey;
+    [SerializeField] KeyCode playerMoveRightKey;
     [SerializeField] KeyCode playerJumpKey;
+    [SerializeField] KeyCode playerAttackKey;
+    [SerializeField] KeyCode playerDashKey;
 
     private void Awake()
     {
@@ -25,16 +27,26 @@ public class KeyManager : MonoBehaviour
 
     public KeyCode PlayerLeftKey()
     {
-        return playerLeftKey;
+        return playerMoveLeftKey;
     }
 
     public KeyCode PlayerRightKey()
     {
-        return playerRightKey;
+        return playerMoveRightKey;
     }
 
     public KeyCode PlayerJumpKey()
     {
         return playerJumpKey;
+    }
+
+    public KeyCode PlayerAttackKey()
+    {
+        return playerAttackKey;
+    }
+
+    public KeyCode PlayerDashKey()
+    {
+        return playerDashKey;
     }
 }

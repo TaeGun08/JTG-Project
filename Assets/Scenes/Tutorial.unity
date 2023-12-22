@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 447276141}
   - component: {fileID: 447276140}
   - component: {fileID: 447276142}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1713,6 +1713,7 @@ GameObject:
   - component: {fileID: 476493027}
   - component: {fileID: 476493026}
   - component: {fileID: 476493028}
+  - component: {fileID: 476493029}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1872,7 +1873,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 4
-  jumpPower: 15
+  jumpPower: 5
+  animJumpTime: 0.5
+--- !u!95 &476493029
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476493023}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 53435aa978e5bbc43b3cf106c8145f5c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,7 +2311,7 @@ GameObject:
   - component: {fileID: 975303212}
   - component: {fileID: 975303214}
   - component: {fileID: 975303215}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2607,6 +2630,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2a004656a163d1458061e9e683d12bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLeftKey: 97
-  playerRightKey: 100
+  playerMoveLeftKey: 97
+  playerMoveRightKey: 100
   playerJumpKey: 32
+  playerAttackKey: 323
+  playerDashKey: 304

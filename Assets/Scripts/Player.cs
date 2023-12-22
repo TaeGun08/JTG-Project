@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rigid; //플레이어의 리지드바디
     private RaycastHit2D hit2D;
-    private BoxCollider2D playerBoxColl;
+    private BoxCollider2D playerBoxColl2D; //플레이어의 박스 콜라이더
+    private Camera mainCam; //메인 카메라
+    private Animator anim;
 
     //플레이어에 가져올 매니저
     private GameManager gameManager; //게임매니저
@@ -19,22 +23,39 @@ public class Player : MonoBehaviour
     private bool rightKey; //오른쪽 키를 눌렀을 때
 
     private bool isGround = false; //플레이어가 땅에 붙어있지 않으면 false
-    private float gravityVelocity;
+    private float gravityVelocity;  //중력과 관련된 값을 받아오기 위한 변수
 
     [Header("점프")]
     [SerializeField] private float jumpPower = 1.0f; //점프를 하기 위한 힘
     private bool isJump = false; //점프를 했는지
     private bool jumpKey; //점프 키를 눌렀을 때
+    private bool animIsJump = false;
+    [SerializeField] private float animJumpTime = 1.0f;
+    private float animTimer = 0.0f;
+
+    private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
+    {
+        if (playerBoxColl2D != null)
+        {
+            Gizmos.color = Color.red;
+            Vector3 pos = playerBoxColl2D.bounds.center - new Vector3(0, 0.1f, 0);
+            Gizmos.DrawWireCube(pos, playerBoxColl2D.bounds.size);
+        }
+    }
 
     private void Awake()
     {
-        rigid = GetComponent<Rigidbody2D>(); //플레이어 자신의 리지드바디를 받아옴
+        rigid = GetComponent<Rigidbody2D>(); //플레이어 자신의 리지드바디를 가져옴
+        playerBoxColl2D = GetComponent<BoxCollider2D>(); //플레이어 자신의 박스콜라이더2D를 가져옴
+        anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
     }
 
     private void Start()
     {
         gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
+
+        mainCam = Camera.main;
     }
 
     private void Update()
@@ -43,10 +64,12 @@ public class Player : MonoBehaviour
         {
             return;
         }
+
         playerCheckGround();
+        playrAim();
         playerMove();
-        playerJump();
         playerGravity();
+        playerAni();
     }
 
     /// <summary>
@@ -59,6 +82,39 @@ public class Player : MonoBehaviour
         if (gravityVelocity > 0)
         {
             return;
+        }
+
+        hit2D = Physics2D.BoxCast(playerBoxColl2D.bounds.center, playerBoxColl2D.bounds.size,
+            0.0f, Vector2.down, 0.1f, LayerMask.GetMask("Ground"));
+
+        if (hit2D.transform != null && hit2D.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            isGround = true;
+            isJump = false;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 마우스 에임
+    /// </summary>
+    private void playrAim()
+    {
+        Vector3 mouseInputPos = Input.mousePosition;
+        mouseInputPos.z = -mainCam.transform.position.z;
+        Vector3 mouseWorldPos = mainCam.ScreenToWorldPoint(mouseInputPos);
+
+        Vector3 mouseDistance = mouseWorldPos - transform.position;
+
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+
+        if (mouseDistance.x > 0 && transform.localScale.x != 1)
+        {
+            transform.localScale = scale;
+        }
+        else if (mouseDistance.x < 0 && transform.localScale.x != -1)
+        {
+            transform.localScale = scale;
         }
     }
 
@@ -82,7 +138,6 @@ public class Player : MonoBehaviour
         {
             moveVec.x = 0;
         }
-
         moveVec.y = gravityVelocity;
         rigid.velocity = moveVec;
     }
@@ -94,10 +149,11 @@ public class Player : MonoBehaviour
     {
         jumpKey = Input.GetKeyDown(keyManager.PlayerJumpKey());
 
-        if (jumpKey == true)
+        if (jumpKey == true && isGround == true)
         {
             gravityVelocity = jumpPower;
-            isJump = true;
+            animIsJump = true;
+            //isJump = true;
         }
     }
 
@@ -106,11 +162,36 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerGravity()
     {
-        gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력
-
-        if (gravityVelocity < gameManager.gravityScale()) //떨어지는 속도가 gravityScale보다 작아지면 gravityScale로 고정
+        if (isGround == false)
         {
-            gravityVelocity = -gameManager.gravityScale();
+            gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력         
         }
+        else
+        {
+            gravityVelocity = -1;
+        }
+
+        playerJump();
+    }
+
+    /// <summary>
+    /// 플레이어의 애니메이션을 담당하는 함수
+    /// </summary>
+    private void playerAni()
+    {
+        anim.SetInteger("isWalk", (int)moveVec.x);
+        anim.SetBool("isJump", animIsJump);
+        anim.SetBool("isGround", isGround);
+
+        if (animIsJump == true)
+        {
+            animTimer += Time.deltaTime;
+        }
+
+        if (animTimer >= animJumpTime)
+        {
+            animIsJump = false;
+            animTimer = 0.0f;
+        }       
     }
 }
