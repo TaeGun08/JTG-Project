@@ -39,6 +39,17 @@ public class Player : MonoBehaviour
     private Transform playerHand; //플레이어의 손 위치
     private bool mouseAimRight = false;
 
+    [Header("대쉬")]
+    [SerializeField, Tooltip("대쉬 힘")] private float dashPower = 1.0f;
+    [SerializeField, Tooltip("대쉬 길이")] private float dashRange = 1.0f;
+    [SerializeField, Tooltip("대쉬 재사용대기 시간")] private float dashCoolTime = 1.0f;
+    private float dashCoolTimer = 0.0f;
+    private float dashRangeTimer = 0.0f;
+    private bool dashCoolOn = false;
+    private bool isDash = false;
+    private bool dashKey;
+    private TrailRenderer dashEffect;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (playerBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -55,6 +66,9 @@ public class Player : MonoBehaviour
         playerBoxColl2D = GetComponent<BoxCollider2D>(); //플레이어 자신의 박스콜라이더2D를 가져옴
         anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
         playerHand = transform.Find("PlayerHand");
+        dashEffect = GetComponent<TrailRenderer>();
+
+        dashEffect.enabled = false;
     }
 
     private void Start()
@@ -76,6 +90,7 @@ public class Player : MonoBehaviour
         playrAim();
         playerMove();
         playerGravity();
+        playerDash();
         playerAni();
     }
 
@@ -144,6 +159,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
+        if (isDash == true)
+        {
+            return;
+        }
+
         leftKey = Input.GetKey(keyManager.PlayerLeftKey()); //키 매니저에서 왼쪽 키를 받아와서 사용 
         rightKey = Input.GetKey(keyManager.PlayerRightKey()); //키 매니저에서 오른쪽 키를 받아와서 사용        
 
@@ -169,6 +189,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerJump()
     {
+        if (isDash == true)
+        {
+            return;
+        }
+
         jumpKey = Input.GetKeyDown(keyManager.PlayerJumpKey());
 
         if (noAirJump == true && isGround == false)
@@ -202,6 +227,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerGravity()
     {
+        if (isDash == true)
+        {
+            return;
+        }
+
         if (isGround == false)
         {
             gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력         
@@ -212,6 +242,66 @@ public class Player : MonoBehaviour
         }
 
         playerJump();
+    }
+
+    /// <summary>
+    /// 플레이어의 대쉬를 담당하는 함수
+    /// </summary>
+    private void playerDash()
+    {
+        dashKey = Input.GetKeyDown(keyManager.PlayerDashKey());
+
+        if (isDash == true)
+        {
+            dashRangeTimer += Time.deltaTime;
+            if (dashRangeTimer >= dashRange)
+            {
+                isDash = false;
+                dashRangeTimer = 0.0f;
+                dashEffect.Clear();
+                dashEffect.enabled = false;
+            }
+        }
+
+        if (dashCoolOn == true)
+        {
+            dashCoolTimer += Time.deltaTime;
+            if (dashCoolTimer >= dashCoolTime)
+            {
+                dashCoolOn = false;
+                dashCoolTimer = 0.0f;
+            }
+        }
+
+        if (dashKey == true && isDash == false && dashCoolOn == false)
+        {
+            isDash = true;
+
+            dashCoolOn = true;
+
+            gravityVelocity = 0.0f;
+
+            if (moveVec.x > 0)
+            {
+                moveVec.x = dashPower;
+            }        
+            else if (moveVec.x < 0)
+            {
+                moveVec.x = -dashPower;
+            }
+            else if (moveVec.x == 0)
+            {
+                moveVec.x = dashPower;
+                if (mouseAimRight == false)
+                {
+                    moveVec.x = -dashPower;
+                }
+            }
+
+            rigid.velocity = moveVec;
+
+            dashEffect.enabled = true;
+        }
     }
 
     /// <summary>
@@ -233,5 +323,13 @@ public class Player : MonoBehaviour
             animIsJump = false;
             animTimer = 0.0f;
         }       
+    }
+
+    /// <summary>
+    /// 무기 변경을 담당하는 함수
+    /// </summary>
+    private void weaponChange()
+    {
+
     }
 }

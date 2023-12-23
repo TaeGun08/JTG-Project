@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class FollowCamera : MonoBehaviour
+public class FollowReroadingUI : MonoBehaviour
 {
     private Vector3 position;
-    [Header("카메라가 따라갈 오브젝트")]
+    [Header("UI가 따라갈 오브젝트")]
     [SerializeField] private GameObject player;
 
     private void Update()
@@ -22,7 +21,7 @@ public class FollowCamera : MonoBehaviour
         }
 
         position = player.transform.position;
-        position.y = player.transform.position.y + 2f;
+        position.y = player.transform.position.y + 0.8f;
         position.z = transform.position.z;
         transform.position = position;
     }
