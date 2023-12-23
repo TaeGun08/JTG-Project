@@ -17,6 +17,7 @@ public class FollowCamera : MonoBehaviour
     private void cameraMoving()
     {
         position = player.transform.position;
+        position.y = player.transform.position.y + 3f;
         position.z = transform.position.z;
         transform.position = position;
     }
