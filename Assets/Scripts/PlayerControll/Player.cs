@@ -50,6 +50,9 @@ public class Player : MonoBehaviour
     private bool dashKey;
     private TrailRenderer dashEffect;
 
+    [Header("무기모음")]
+    [SerializeField] private GameObject weaponsObj;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (playerBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -57,6 +60,31 @@ public class Player : MonoBehaviour
             Gizmos.color = Color.red;
             Vector3 pos = playerBoxColl2D.bounds.center - new Vector3(0, 0.1f, 0);
             Gizmos.DrawWireCube(pos, playerBoxColl2D.bounds.size);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Item")
+        {
+            ItemPickUp itemPickUpSc = collision.gameObject.GetComponent<ItemPickUp>();
+            ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
+            if (itemPickUpType == ItemPickUp.ItemType.WeaponA)
+            {
+                Transform weaponA = weaponsObj.transform.GetChild(0);
+            }
+            else if (itemPickUpType == ItemPickUp.ItemType.WeaponB)
+            {
+
+            }
+            else if (itemPickUpType == ItemPickUp.ItemType.WeaponC)
+            {
+
+            }
+            else if (itemPickUpType == ItemPickUp.ItemType.WeaponD)
+            {
+
+            }
         }
     }
 

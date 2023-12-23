@@ -12,7 +12,10 @@ public class KeyManager : MonoBehaviour
     [SerializeField] KeyCode playerJumpKey;
     [SerializeField] KeyCode playerAttackKey;
     [SerializeField] KeyCode playerDashKey;
+    [SerializeField] KeyCode reroadingKey;
     [SerializeField] KeyCode weaponChangeKey;
+    [SerializeField] KeyCode pickUpItemKey;
+    [SerializeField] KeyCode dropItemKey;
 
     private void Awake()
     {
@@ -51,8 +54,23 @@ public class KeyManager : MonoBehaviour
         return playerDashKey;
     }
 
+    public KeyCode ReroadingKey()
+    {
+        return reroadingKey;
+    }
+
     public KeyCode WeaponChangeKey()
     {
         return weaponChangeKey;
+    }
+
+    public KeyCode PickUpItemKey()
+    {
+        return pickUpItemKey;
+    }
+
+    public KeyCode DropItemKey()
+    {
+        return dropItemKey;
     }
 }

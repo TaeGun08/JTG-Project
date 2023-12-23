@@ -59,6 +59,11 @@ public class Weapons : MonoBehaviour
     /// </summary>
     private void reroadingWeapon()
     {
+        if (Input.GetKeyDown(keyManager.ReroadingKey()))
+        {
+            curMagazine = 0;
+        }
+
         if (reroading == true) //재장전이 true면 타이머를 작동시고 UI를 활성화함
         {
             reroadingTimer -= Time.deltaTime;
