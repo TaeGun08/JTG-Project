@@ -385,7 +385,7 @@ public class Player : MonoBehaviour
             weaponPrefabs[0].SetActive(false);
             weaponPrefabs[1].SetActive(true);
             weaponSwap = false;
-            weaponsChangeCoolOn = false;
+            weaponsChangeCoolOn = true;
         }
     }
 
