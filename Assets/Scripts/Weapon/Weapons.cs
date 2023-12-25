@@ -5,25 +5,21 @@ using UnityEngine.UI;
 
 public class Weapons : MonoBehaviour
 {
-    public enum WeaponType
-    {
-        weaponA,
-        weaponB, 
-        weaponC, 
-        weaponD,
-    }
-
-    [SerializeField] WeaponType weaponType;
+    private BoxCollider2D weaponBoxColl2D;
 
     //무기에 가져올 매니저
     private GameManager gameManager; //게임매니저
     private KeyManager keyManager; //키매니저
 
+    private TrashPreFab trashPreFab;
+
+    private ItemPickUp itemPickUp;
     //private int weaponNum = 0;
 
     [Header("공격 설정")]
     [SerializeField, Tooltip("공격 딜레이")] private float shootDelay = 0.5f;
     private float shootTimer;
+    [SerializeField, Tooltip("조정간")] private bool shootingOn = false;
 
     [Header("총알 설정")]
     [SerializeField, Tooltip("총알 프리팹")] private GameObject bullet;
@@ -40,16 +36,29 @@ public class Weapons : MonoBehaviour
     [SerializeField, Tooltip("재장전 UI 슬라이더")] private Slider reroadingSlider;
     private float curReroadingSlider;
 
+    private void Awake()
+    {
+        itemPickUp = GetComponent<ItemPickUp>();
+        weaponBoxColl2D = GetComponent<BoxCollider2D>();
+    }
+
     private void Start()
     {
         gameManager = GameManager.Instance; //게임 매니저를 가져와 gameManager에 담아 줌
         keyManager = KeyManager.instance; //키매니저를 가져와 keyManager 담아 줌
+
+        trashPreFab = TrashPreFab.instance;
 
         curReroadingSlider = reroadingSlider.value;
     }
 
     private void Update()
     {
+        if (shootingOn == false || itemPickUp.GetItemType().ToString() != "Weapon")
+        {
+            return;
+        }
+
         reroadingWeapon();
         shootWeapon();
     }
@@ -84,7 +93,7 @@ public class Weapons : MonoBehaviour
     /// 총을 발사를 담당하는 함수
     /// </summary>
     private void shootWeapon()
-    {     
+    {
         if (curMagazine <= 0) //현재 총알이 없다면 재장전을 true로 바꾸고 발사를 못 하게 함
         {
             reroading = true;
@@ -120,6 +129,16 @@ public class Weapons : MonoBehaviour
     /// <param name="_rot"></param>
     private void shootBullet(float _rot = 0.0f)
     {
-        Instantiate(bullet, bulletPos.position, bulletPos.rotation, bulletObj);
+        Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
+    }
+
+    /// <summary>
+    /// 총의 조정간을 담당하는 함수, 공격을 할 수 있는지 없는지
+    /// </summary>
+    /// <param name="_shooting"></param>
+    /// <returns></returns>
+    public bool ShootingOn(bool _shooting)
+    {
+        return shootingOn = _shooting;
     }
 }

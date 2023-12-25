@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     private BoxCollider2D playerBoxColl2D; //플레이어의 박스 콜라이더
     private Camera mainCam; //메인 카메라
     private Animator anim;
-    
+
     //플레이어에 가져올 매니저
     private GameManager gameManager; //게임매니저
     private KeyManager keyManager; //키매니저
@@ -50,8 +50,14 @@ public class Player : MonoBehaviour
     private bool dashKey;
     private TrailRenderer dashEffect;
 
-    [Header("무기모음")]
-    [SerializeField] private GameObject weaponsObj;
+    [Header("무기 관련 설정")]
+    [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
+    private float weaponsChangeCoolTimer = 0.0f; //무기 변경을 위한 타이머
+    private bool weaponsChangeCoolOn = false; //무기가 변경이 가능하면 false
+    private List<GameObject> weaponPrefabs = new List<GameObject>(); //무기를 담을 인벤토리 역할
+    private GameObject getWeapon; //콜라이더에 닿은 오브젝트를 담아 올 변수
+    private bool weaponSwap = false; //무기 변경을 담당하는 변수
+    private int weaponCount = 0; //중복으로 만들어지지않게 제어해주는 변수
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -65,25 +71,33 @@ public class Player : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Item")
+        if (collision.gameObject.tag == "Item" || collision.gameObject.tag == "Weapon") //플레이어에 닿은 오브젝트 태그가 아이템 또는 무기인지 체크
         {
-            ItemPickUp itemPickUpSc = collision.gameObject.GetComponent<ItemPickUp>();
-            ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
-            if (itemPickUpType == ItemPickUp.ItemType.WeaponA)
-            {
-                Transform weaponA = weaponsObj.transform.GetChild(0);
-            }
-            else if (itemPickUpType == ItemPickUp.ItemType.WeaponB)
-            {
+            ItemPickUp itemPickUpSc = collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
+            ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType(); //
+            if (itemPickUpType == ItemPickUp.ItemType.Weapon) //가져온 아이템 타입과 스크립트의 아이템 타입이 일치하면 작동
+            {           
+                if (Input.GetKey(keyManager.PickUpItemKey())) //E키를 누르면 작동
+                {
+                    if (weaponPrefabs.Count > 1) //무기 카운트가 1보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
+                    {
+                        int count = weaponPrefabs.Count;
+                        for (int i = 0; i < count - 1; i++)
+                        {
+                            weaponPrefabs[i].SetActive(false);
+                        }
+                    }
 
-            }
-            else if (itemPickUpType == ItemPickUp.ItemType.WeaponC)
-            {
-
-            }
-            else if (itemPickUpType == ItemPickUp.ItemType.WeaponD)
-            {
-
+                    Weapons weaponsSc = collision.gameObject.GetComponent<Weapons>();
+                    weaponsSc.ShootingOn(true);
+                    if (weaponCount < 2) //weaponCount를 이용해서 무기가 중복으로 생성되지 않게 막아줌
+                    {
+                        getWeapon = Instantiate(collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
+                        weaponCount++;
+                    }
+                    Destroy(collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
+                    weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
+                }
             }
         }
     }
@@ -115,10 +129,11 @@ public class Player : MonoBehaviour
         }
 
         playerCheckGround();
-        playrAim();
+        playerAim();
         playerMove();
         playerGravity();
         playerDash();
+        playerWeaponChange();
         playerAni();
     }
 
@@ -137,7 +152,8 @@ public class Player : MonoBehaviour
         hit2D = Physics2D.BoxCast(playerBoxColl2D.bounds.center, playerBoxColl2D.bounds.size,
             0.0f, Vector2.down, 0.1f, LayerMask.GetMask("Ground")); //플레이어의 박스 콜라이더의 크기를 가져와서 박스캐스트를 만듦
 
-        if (hit2D.transform != null && hit2D.transform.gameObject.layer == LayerMask.NameToLayer("Ground")) //
+        if (hit2D.transform != null && 
+            hit2D.transform.gameObject.layer == LayerMask.NameToLayer("Ground")) //캐스트에 닿은 트랜스폼이 null이 아니고, 레이어가 Ground면 작동
         {
             isGround = true;
             isJump = false;
@@ -149,30 +165,30 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 플레이어의 마우스 에임
     /// </summary>
-    private void playrAim()
+    private void playerAim()
     {
         Vector3 mouseInputPos = Input.mousePosition; //입력된 마우스포지션을 받아옴
         mouseInputPos.z = -mainCam.transform.position.z; //마우스포지션 값에 메인카메라의 포지션z값을 받아옴
-        Vector3 mouseWorldPos = mainCam.ScreenToWorldPoint(mouseInputPos); 
+        Vector3 mouseWorldPos = mainCam.ScreenToWorldPoint(mouseInputPos);
 
         Vector3 mouseDistance = mouseWorldPos - transform.position;
 
         Vector3 scale = transform.localScale; //플레이어의 스프라이트 좌우변경을 위해 스케일을 받아옴
         scale.x *= -1;
 
-        if (mouseDistance.x > 0 && transform.localScale.x != 1)
+        if (mouseDistance.x > 0 && transform.localScale.x != 1) //마우스 에임이 오른쪽이면 캐릭터도 오른쪽을 바라봄
         {
             transform.localScale = scale;
             mouseAimRight = true;
         }
-        else if (mouseDistance.x < 0 && transform.localScale.x != -1)
+        else if (mouseDistance.x < 0 && transform.localScale.x != -1) //마우스 에임이 왼쪽이면 캐릭터도 왼쪽으로 바라봄
         {
             transform.localScale = scale;
             mouseAimRight = false;
         }
 
-        Vector3 mouseAim = Vector3.right;
-        if (mouseAimRight == false)
+        Vector3 mouseAim = Vector3.right; //항상 오른쪽 기준으로 설정 함
+        if (mouseAimRight == false) //왼쪽으로 바라보면 에임도 왼쪽으로 변경
         {
             mouseAim = Vector3.left;
         }
@@ -230,7 +246,7 @@ public class Player : MonoBehaviour
             noAirJump = false;
         }
 
-        if (isGround == false && isJump == true)
+        if (isGround == false && isJump == true) //isGround가 false고, isJump가 true 더블 점프를 하기 위한 시간이 작동
         {
             doubleJumpTimer += Time.deltaTime;
         }
@@ -241,7 +257,7 @@ public class Player : MonoBehaviour
             animIsJump = true;
             isJump = true;
         }
-        else if (jumpKey == true && isGround == false && isJump == true && doubleJumpTimer >= doubleJumpTime)
+        else if (jumpKey == true && isGround == false && isJump == true && doubleJumpTimer >= doubleJumpTime) //점프 사용 후 시간이 지나면 한번 더 가능
         {
             gravityVelocity = jumpPower;
             animIsJump = true;
@@ -279,7 +295,7 @@ public class Player : MonoBehaviour
     {
         dashKey = Input.GetKeyDown(keyManager.PlayerDashKey());
 
-        if (isDash == true)
+        if (isDash == true) //대쉬의 지속시간
         {
             dashRangeTimer += Time.deltaTime;
             if (dashRangeTimer >= dashRange)
@@ -291,7 +307,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (dashCoolOn == true)
+        if (dashCoolOn == true) //대쉬를 하기 위한 쿨타임
         {
             dashCoolTimer += Time.deltaTime;
             if (dashCoolTimer >= dashCoolTime)
@@ -309,15 +325,15 @@ public class Player : MonoBehaviour
 
             gravityVelocity = 0.0f;
 
-            if (moveVec.x > 0)
+            if (moveVec.x > 0) //moveVec.x 가 0보다 크면 오른쪽으로 대쉬
             {
                 moveVec.x = dashPower;
-            }        
-            else if (moveVec.x < 0)
+            }
+            else if (moveVec.x < 0) //moveVec.x 가 0보다 작으면 왼쪽으로 대쉬
             {
                 moveVec.x = -dashPower;
             }
-            else if (moveVec.x == 0)
+            else if (moveVec.x == 0) //moveVec.x 가 0이면 마우스 에임이 있는 쪽으로 대쉬
             {
                 moveVec.x = dashPower;
                 if (mouseAimRight == false)
@@ -329,6 +345,47 @@ public class Player : MonoBehaviour
             rigid.velocity = moveVec;
 
             dashEffect.enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 가지고 있는 무기중 하나로 변경을 담당하는 함수
+    /// </summary>
+    private void playerWeaponChange()
+    {
+        if (weaponPrefabs == null || weaponPrefabs.Count < 2) //무기 배열에 아무것도 없거나, 2보다 적으면 실행을 멈춤
+        {
+            return;
+        }
+
+        if (weaponPrefabs.Count > 2) //무기 배열의 길이가 2를 넘어가면 그 후에 생기는 배열은 삭제
+        {
+            weaponPrefabs.RemoveAt(2);
+        }
+
+        if (weaponsChangeCoolOn == true) //무기 변경 타이머가 true면 작동
+        {
+            weaponsChangeCoolTimer += Time.deltaTime;
+            if (weaponsChangeCoolTimer >= weaponsChangeCoolTime)
+            {
+                weaponsChangeCoolOn = false;
+                weaponsChangeCoolTimer = 0.0f;
+            }
+        }
+
+        if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == false && weaponsChangeCoolOn == false) 
+        {
+            weaponPrefabs[0].SetActive(true);
+            weaponPrefabs[1].SetActive(false);
+            weaponSwap = true;
+            weaponsChangeCoolOn = true;
+        }
+        else if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == true && weaponsChangeCoolOn == false)
+        {
+            weaponPrefabs[0].SetActive(false);
+            weaponPrefabs[1].SetActive(true);
+            weaponSwap = false;
+            weaponsChangeCoolOn = false;
         }
     }
 
@@ -350,14 +407,6 @@ public class Player : MonoBehaviour
         {
             animIsJump = false;
             animTimer = 0.0f;
-        }       
-    }
-
-    /// <summary>
-    /// 무기 변경을 담당하는 함수
-    /// </summary>
-    private void weaponChange()
-    {
-
+        }
     }
 }

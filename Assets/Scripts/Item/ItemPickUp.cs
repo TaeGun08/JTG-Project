@@ -6,15 +6,13 @@ public class ItemPickUp : MonoBehaviour
 {
     public enum ItemType
     {
-        WeaponA,
-        WeaponB,
-        WeaponC,
-        WeaponD,
+        Weapon,
+        Buff
     }
 
     [SerializeField] ItemType itemType;
 
-    public ItemType GetItemType()
+    public ItemType GetItemType() //아이템 타입을 반환하기 위한 함수
     {
         return itemType;
     }
