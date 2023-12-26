@@ -54,7 +54,7 @@ public class KeyManager : MonoBehaviour
         return playerDashKey;
     }
 
-    public KeyCode ReroadingKey()
+    public KeyCode ReloadingKey()
     {
         return reroadingKey;
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,15 +28,47 @@ public class Weapons : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("최대 탄창")] private int maxMagazine; //탄창에 들어가는 최대 총알 수
     [SerializeField, Tooltip("현재 탄창")] private int curMagazine; //현재 탕창에 보유중인 총알 수
-    [SerializeField, Tooltip("재장전 시간")] private float reroadingTime; //재장전을 위한 시간
-    private float reroadingTimer;
-    private bool reroading = false;
-    private float curReroadingSlider;
+    [SerializeField, Tooltip("재장전 시간")] private float reloadingTime; //재장전을 위한 시간
+    private float reloadingTimer;
+    private bool reloading = false;
+    private float curReloadingSlider;
+
+    [Header("줍기 키 이미지")]
+    [SerializeField] private GameObject pickUpKeyImage;
+    private bool imageOff = false;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (imageOff == true)
+        {
+            return;
+        }
+
+        if (collision.gameObject.tag == "Player")
+        {
+            pickUpKeyImage.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (imageOff == true)
+        {
+            return;
+        }
+
+        if (collision.gameObject.tag == "Player")
+        {
+            pickUpKeyImage.SetActive(false);
+        }
+    }
 
     private void Awake()
     {
         itemPickUp = GetComponent<ItemPickUp>();
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
+
+        pickUpKeyImage.SetActive(false);
     }
 
     private void Start()
@@ -45,7 +78,7 @@ public class Weapons : MonoBehaviour
 
         trashPreFab = TrashPreFab.instance;
 
-        curReroadingSlider = gameManager.ReloadingUI().value;
+        curReloadingSlider = gameManager.ReloadingUI().value;
     }
 
     private void Update()
@@ -55,32 +88,37 @@ public class Weapons : MonoBehaviour
             return;
         }
 
-        reroadingWeapon();
+        if (imageOff == true)
+        {
+            pickUpKeyImage.SetActive(false);
+        }
+
+        reloadingWeapon();
         shootWeapon();
     }
 
     /// <summary>
     /// 총의 재장전을 담당하는 함수
     /// </summary>
-    private void reroadingWeapon()
+    private void reloadingWeapon()
     {
-        if (Input.GetKeyDown(keyManager.ReroadingKey()))
+        if (Input.GetKeyDown(keyManager.ReloadingKey()))
         {
             curMagazine = 0;
         }
 
-        if (reroading == true) //재장전이 true면 타이머를 작동시고 UI를 활성화함
+        if (reloading == true) //재장전이 true면 타이머를 작동시고 UI를 활성화함
         {
-            reroadingTimer -= Time.deltaTime;
-            gameManager.ReloadingUI().value = reroadingTimer;
+            reloadingTimer -= Time.deltaTime;
+            gameManager.ReloadingUI().value = reloadingTimer;
             gameManager.ReloadingObj().SetActive(true);
-            if (reroadingTimer < 0)
+            if (reloadingTimer < 0)
             {
                 gameManager.ReloadingObj().SetActive(false);
                 gameManager.ReloadingUI().value = 1.0f;
-                reroadingTimer = reroadingTime;
+                reloadingTimer = reloadingTime;
                 curMagazine = maxMagazine;
-                reroading = false;
+                reloading = false;
             }
         }
     }
@@ -92,7 +130,7 @@ public class Weapons : MonoBehaviour
     {
         if (curMagazine <= 0) //현재 총알이 없다면 재장전을 true로 바꾸고 발사를 못 하게 함
         {
-            reroading = true;
+            reloading = true;
             return;
         }
 
@@ -105,13 +143,13 @@ public class Weapons : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reroading == false) //마우스를 누를 때 마다 발사
+        if (Input.GetKeyDown(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누를 때 마다 발사
         {
             shootBullet();
             curMagazine--;
             shootTimer = shootDelay;
         }
-        else if (Input.GetKey(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reroading == false) //마우스를 누르고 있으면 발사
+        else if (Input.GetKey(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누르고 있으면 발사
         {
             shootBullet();
             curMagazine--;
@@ -136,5 +174,10 @@ public class Weapons : MonoBehaviour
     public bool ShootingOn(bool _shooting)
     {
         return shootingOn = _shooting;
+    }
+
+    public bool PickUpImageOff(bool _ImageOff)
+    {
+        return imageOff = _ImageOff;
     }
 }

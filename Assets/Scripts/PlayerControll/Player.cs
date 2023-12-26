@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
@@ -51,6 +52,9 @@ public class Player : MonoBehaviour
     private bool dashKey;
     private TrailRenderer dashEffect;
 
+    [Header("벽 타기 및 벽 슬라이딩")]
+    [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f;
+
     [Header("무기 관련 설정")]
     [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
     private float weaponsChangeCoolTimer = 0.0f; //무기 변경을 위한 타이머
@@ -69,26 +73,27 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void pickUpItem(Collider2D collision)
+    private void pickUpItem(Collider2D _collision) //아이템을 줍기 위한 함수
     {
-        if (collision.gameObject.tag == "Item" || collision.gameObject.tag == "Weapon") //플레이어에 닿은 오브젝트 태그가 아이템 또는 무기인지 체크
+        if (_collision.gameObject.tag == "Item" || _collision.gameObject.tag == "Weapon") //플레이어에 닿은 오브젝트 태그가 아이템 또는 무기인지 체크
         {
-            ItemPickUp itemPickUpSc = collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
+            ItemPickUp itemPickUpSc = _collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
             ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
 
             if (itemPickUpType == ItemPickUp.ItemType.Weapon) //가져온 아이템 타입과 스크립트의 아이템 타입이 일치하면 작동
             {
-                Weapons weaponsSc = collision.gameObject.GetComponent<Weapons>();
+                Weapons weaponsSc = _collision.gameObject.GetComponent<Weapons>();
                 weaponsSc.ShootingOn(true);
+                weaponsSc.PickUpImageOff(true);
 
                 //collision.gameObject.transform.SetParent(playerHand); //자식 오브젝트로 넣는 코드
                 //collision.gameObject.transform.position = playerHand.transform.position;
                 //collision.gameObject.transform.rotation = playerHand.transform.rotation;
 
-                getWeapon = Instantiate(collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
+                getWeapon = Instantiate(_collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
                 getWeapon.GetComponent<BoxCollider2D>().enabled = false;
 
-                Destroy(collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
+                Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
                 weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
             }
             else if (itemPickUpType == ItemPickUp.ItemType.Buff)
@@ -124,6 +129,7 @@ public class Player : MonoBehaviour
             return;
         }
 
+        itmeColliderCheck();
         playerCheckGround();
         playerAim();
         playerMove();
@@ -131,10 +137,9 @@ public class Player : MonoBehaviour
         playerDash();
         playerWeaponChange();
         playerAni();
-        testc();
     }
 
-    private void testc()
+    private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
     {
         if (weaponPrefabs.Count > 1)
         {
@@ -143,7 +148,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (weaponPrefabs.Count > 0) //무기 카운트가 1보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
+            if (weaponPrefabs.Count > 0) //무기 카운트가 0보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
             {
                 int count = weaponPrefabs.Count;
                 for (int i = 0; i < count; i++)
@@ -151,6 +156,10 @@ public class Player : MonoBehaviour
                     weaponPrefabs[i].SetActive(false);
                 }
             }
+
+            Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
+                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
+            pickUpItem(itemColl);
 
             //Collider2D[] colls = Physics2D.OverlapBoxAll(playerBoxColl2D.bounds.center, 
             //    playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon"));
@@ -161,10 +170,6 @@ public class Player : MonoBehaviour
             //    pickUpItem(coll);
             //    colls[iNum] = null;
             //}
-
-            Collider2D colls = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
-                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon"));
-            pickUpItem(colls);
         }
     }
 
