@@ -54,6 +54,7 @@ public class Player : MonoBehaviour
 
     [Header("벽 타기 및 벽 슬라이딩")]
     [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f;
+    private bool useWallJump = false;
 
     [Header("무기 관련 설정")]
     [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
@@ -443,6 +444,21 @@ public class Player : MonoBehaviour
         {
             animIsJump = false;
             animTimer = 0.0f;
+        }
+    }
+
+    /// <summary>
+    ///  플레이어가 벽 점프를 할 수 있는 상황인지 아닌지 체크를 하기 위한 함수
+    /// </summary>
+    public void playerWallCheck(bool _wallHit ,Collider2D _collision)
+    {
+        if (_wallHit == true && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            useWallJump = true;
+        }
+        else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            useWallJump = false;
         }
     }
 }

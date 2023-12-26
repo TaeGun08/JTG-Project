@@ -67,8 +67,6 @@ public class Weapons : MonoBehaviour
     {
         itemPickUp = GetComponent<ItemPickUp>();
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
-
-        pickUpKeyImage.SetActive(false);
     }
 
     private void Start()
@@ -79,6 +77,8 @@ public class Weapons : MonoBehaviour
         trashPreFab = TrashPreFab.instance;
 
         curReloadingSlider = gameManager.ReloadingUI().value;
+
+        pickUpKeyImage.SetActive(false);
     }
 
     private void Update()

@@ -151,7 +151,7 @@ MonoBehaviour:
   bulletPos: {fileID: 4190219247002062191}
   maxMagazine: 3
   curMagazine: 0
-  reloadingTime: 1.2
+  reloadingTime: 1.3
   pickUpKeyImage: {fileID: 8589323643918000500}
 --- !u!61 &4468013001890711877
 BoxCollider2D:
