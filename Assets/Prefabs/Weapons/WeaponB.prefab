@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5888274581272019843}
   - component: {fileID: 2003586754922223991}
   - component: {fileID: 6332423034278031531}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WeaponB
   m_TagString: Weapon
   m_Icon: {fileID: 0}
@@ -117,12 +117,9 @@ MonoBehaviour:
   shootingOn: 0
   bullet: {fileID: 4339266261644054476, guid: 87a55bc6fe717c741ac348f20be6cad7, type: 3}
   bulletPos: {fileID: 5362955516895528445}
-  bulletObj: {fileID: 5362955516895528445}
   maxMagazine: 5
   curMagazine: 0
   reroadingTime: 1.5
-  reroadingUI: {fileID: 0}
-  reroadingSlider: {fileID: 0}
 --- !u!61 &6332423034278031531
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -177,7 +174,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5362955516895528445}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ShootPosB
   m_TagString: Untagged
   m_Icon: {fileID: 0}

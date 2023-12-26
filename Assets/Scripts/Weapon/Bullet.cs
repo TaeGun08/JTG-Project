@@ -16,10 +16,11 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if (collision.gameObject.tag != "Player" || collision.gameObject.tag != "Weapon")
-        //{
-        //    Destroy(gameObject);
-        //}
+        if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "Weapon" 
+            && collision.gameObject.tag != "Bullet")
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Update()

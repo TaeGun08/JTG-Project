@@ -421,6 +421,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gamePause: 0
   gravity: 9.81
+  reloadingObj: {fileID: 1949731336}
+  reloadingUI: {fileID: 1949731338}
 --- !u!1 &326889612
 GameObject:
   m_ObjectHideFlags: 0
@@ -10983,6 +10985,7 @@ MonoBehaviour:
   dashPower: 20
   dashRange: 0.15
   dashCoolTime: 2
+  weaponsChangeCoolTime: 1
   weaponPrefabs: []
 --- !u!95 &476493029
 Animator:
@@ -11202,6 +11205,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2530653521331199156, guid: 2278f20939340784a8743e75b21071d7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3504126023060485536, guid: 2278f20939340784a8743e75b21071d7, type: 3}
       propertyPath: bulletObj
       value: 
