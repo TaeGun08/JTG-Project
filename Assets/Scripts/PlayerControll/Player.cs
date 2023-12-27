@@ -5,6 +5,7 @@ using System.Threading;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Player : MonoBehaviour
     //플레이어에 가져올 매니저
     private GameManager gameManager; //게임매니저
     private KeyManager keyManager; //키매니저
+
+    [SerializeField] private float gravity; //게임매니저에서 가져올 중력값을 저장할 변수
 
     [Header("이동")]
     [SerializeField, Tooltip("플레이어의 이동속도")] private float speed = 1.0f; //플레이어의 이동속도
@@ -57,7 +60,6 @@ public class Player : MonoBehaviour
     [SerializeField, Tooltip("벽 점프 후 공중에 있는 시간")] private float wallJumpSky = 0.3f;
     [SerializeField, Tooltip("벽 슬라이딩 속도")] private float wallSlidingSpeed = 5.0f;
     private bool isWall = false; //벽에 닿았는지 확인해 줌
-    private bool useWallJump = false; //벽 점프가 가능한지
     private bool wallJumpTimerOn = false;
     private float wallJumpTimer = 0.0f; //벽 점프
 
@@ -126,6 +128,8 @@ public class Player : MonoBehaviour
         keyManager = KeyManager.instance; //키매니저를 가져와 keyManager 담아 줌
 
         mainCam = Camera.main; //메인 카메라를 가져와 mainCam에 담아 줌
+
+        gravity = gameManager.gravityScale();
     }
 
     private void Update()
@@ -354,7 +358,7 @@ public class Player : MonoBehaviour
 
         if (isGround == false)
         {
-            gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력 
+            gravityVelocity -= gravity * Time.deltaTime; //지속적으로 받는 중력 
         }
         else
         {
@@ -437,11 +441,16 @@ public class Player : MonoBehaviour
             moveVec.x *= -1f;
             rigid.velocity = moveVec;
             wallJumpTimerOn = true;
+            gravity = gameManager.gravityScale();
         }
-        //else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
-        //{
-        //    gravityVelocity = -wallSlidingSpeed;
-        //}
+        else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
+        {
+            gravity = wallSlidingSpeed;
+        }
+        else if (moveVec.x == 0 || isWall == false)
+        {
+            gravity = gameManager.gravityScale();
+        }
     }
 
     /// <summary>
