@@ -10986,7 +10986,9 @@ MonoBehaviour:
   dashPower: 20
   dashRange: 0.15
   dashCoolTime: 2
-  wallJumpPower: 0.5
+  wallJumpPower: 5
+  wallJumpSky: 0.3
+  wallSlidingSpeed: 1
   weaponsChangeCoolTime: 1
   weaponPrefabs: []
 --- !u!95 &476493029

@@ -53,8 +53,13 @@ public class Player : MonoBehaviour
     private TrailRenderer dashEffect;
 
     [Header("벽 타기 및 벽 슬라이딩")]
-    [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f;
-    private bool useWallJump = false;
+    [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f; //벽 점프를 위한 힘
+    [SerializeField, Tooltip("벽 점프 후 공중에 있는 시간")] private float wallJumpSky = 0.3f;
+    [SerializeField, Tooltip("벽 슬라이딩 속도")] private float wallSlidingSpeed = 5.0f;
+    private bool isWall = false; //벽에 닿았는지 확인해 줌
+    private bool useWallJump = false; //벽 점프가 가능한지
+    private bool wallJumpTimerOn = false;
+    private float wallJumpTimer = 0.0f; //벽 점프
 
     [Header("무기 관련 설정")]
     [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
@@ -130,14 +135,52 @@ public class Player : MonoBehaviour
             return;
         }
 
+        timers();
         itmeColliderCheck();
         playerCheckGround();
         playerAim();
         playerMove();
         playerGravity();
         playerDash();
+        playerWallSkill();
         playerWeaponChange();
         playerAni();
+    }
+
+    /// <summary>
+    /// 함수에서 사용할 타이머 모음
+    /// </summary>
+    private void timers()
+    {
+        if (isGround == false && isJump == true) //isGround가 false고, isJump가 true 더블 점프를 하기 위한 시간이 작동
+        {
+            doubleJumpTimer += Time.deltaTime;
+        }
+
+        if (isDash == true) //대쉬의 지속시간
+        {
+            dashRangeTimer += Time.deltaTime;
+        }
+
+        if (dashCoolOn == true) //대쉬를 하기 위한 쿨타임
+        {
+            dashCoolTimer += Time.deltaTime;
+        }
+
+        if (wallJumpTimerOn == true) //벽 점프가 실행이되면 다시 중력을 받기 위한 타이머
+        {
+            wallJumpTimer += Time.deltaTime;
+        }
+
+        if (weaponsChangeCoolOn == true) //무기 변경 타이머가 true면 작동
+        {
+            weaponsChangeCoolTimer += Time.deltaTime;
+        }
+
+        if (animIsJump == true) //점프 애니메이션이 동작되는 시간
+        {
+            animTimer += Time.deltaTime;
+        }
     }
 
     private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
@@ -240,7 +283,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
-        if (isDash == true)
+        if (isDash == true || wallJumpTimerOn == true)
         {
             return;
         }
@@ -250,18 +293,19 @@ public class Player : MonoBehaviour
 
         if (leftKey == true) //왼쪽 키를 눌렀을 경우 왼쪽으로
         {
-            moveVec.x = -1 * speed;
+            moveVec.x = -1;
         }
         else if (rightKey == true) //오른쪽 키를 눌렀을 경우 오른쪽으로
         {
-            moveVec.x = 1 * speed;
+            moveVec.x = 1;
         }
         else
         {
             moveVec.x = 0;
         }
 
-        moveVec.y = gravityVelocity; //moveVec에 중력을 넣음
+        moveVec.x *= speed; 
+        moveVec.y = rigid.velocity.y; //moveVec에 중력을 넣음
         rigid.velocity = moveVec;
     }
 
@@ -281,11 +325,6 @@ public class Player : MonoBehaviour
         {
             isJump = true;
             noAirJump = false;
-        }
-
-        if (isGround == false && isJump == true) //isGround가 false고, isJump가 true 더블 점프를 하기 위한 시간이 작동
-        {
-            doubleJumpTimer += Time.deltaTime;
         }
 
         if (jumpKey == true && isGround == true && isJump == false)
@@ -315,12 +354,16 @@ public class Player : MonoBehaviour
 
         if (isGround == false)
         {
-            gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력         
+            gravityVelocity -= gameManager.gravityScale() * Time.deltaTime; //지속적으로 받는 중력 
         }
         else
         {
             gravityVelocity = -1; //isGround가 true일 경우 중력을 -1로 만들어 땅에 붙게 만듦
         }
+
+        moveVec.y = gravityVelocity; //moveVec에 중력을 넣음
+        rigid.velocity = moveVec;
+
 
         playerJump();
     }
@@ -332,26 +375,18 @@ public class Player : MonoBehaviour
     {
         dashKey = Input.GetKeyDown(keyManager.PlayerDashKey());
 
-        if (isDash == true) //대쉬의 지속시간
+        if (dashRangeTimer >= dashRange)
         {
-            dashRangeTimer += Time.deltaTime;
-            if (dashRangeTimer >= dashRange)
-            {
-                isDash = false;
-                dashRangeTimer = 0.0f;
-                dashEffect.Clear();
-                dashEffect.enabled = false;
-            }
+            isDash = false;
+            dashRangeTimer = 0.0f;
+            dashEffect.Clear();
+            dashEffect.enabled = false;
         }
 
-        if (dashCoolOn == true) //대쉬를 하기 위한 쿨타임
+        if (dashCoolTimer >= dashCoolTime)
         {
-            dashCoolTimer += Time.deltaTime;
-            if (dashCoolTimer >= dashCoolTime)
-            {
-                dashCoolOn = false;
-                dashCoolTimer = 0.0f;
-            }
+            dashCoolOn = false;
+            dashCoolTimer = 0.0f;
         }
 
         if (dashKey == true && isDash == false && dashCoolOn == false)
@@ -386,6 +421,30 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 벽에 관련된 상호작용 및 기능을 하기 위한 함수
+    /// </summary>
+    private void playerWallSkill()
+    {
+        if (wallJumpTimer >= wallJumpSky)
+        {
+            wallJumpTimerOn = false;
+            wallJumpTimer = 0.0f;
+        }
+
+        if (jumpKey == true && isWall == true && isGround == false && moveVec.x != 0)
+        {
+            gravityVelocity = wallJumpPower;
+            moveVec.x *= -1f;
+            rigid.velocity = moveVec;
+            wallJumpTimerOn = true;
+        }
+        //else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
+        //{
+        //    gravityVelocity = -wallSlidingSpeed;
+        //}
+    }
+
+    /// <summary>
     /// 플레이어가 가지고 있는 무기중 하나로 변경을 담당하는 함수
     /// </summary>
     private void playerWeaponChange()
@@ -400,14 +459,10 @@ public class Player : MonoBehaviour
             weaponPrefabs.RemoveAt(2);
         }
 
-        if (weaponsChangeCoolOn == true) //무기 변경 타이머가 true면 작동
+        if (weaponsChangeCoolTimer >= weaponsChangeCoolTime)
         {
-            weaponsChangeCoolTimer += Time.deltaTime;
-            if (weaponsChangeCoolTimer >= weaponsChangeCoolTime)
-            {
-                weaponsChangeCoolOn = false;
-                weaponsChangeCoolTimer = 0.0f;
-            }
+            weaponsChangeCoolOn = false;
+            weaponsChangeCoolTimer = 0.0f;
         }
 
         if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == false && weaponsChangeCoolOn == false)
@@ -416,6 +471,7 @@ public class Player : MonoBehaviour
             weaponPrefabs[1].SetActive(false);
             weaponSwap = true;
             weaponsChangeCoolOn = true;
+            gameManager.ReloadingObj().SetActive(false);
         }
         else if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == true && weaponsChangeCoolOn == false)
         {
@@ -423,6 +479,7 @@ public class Player : MonoBehaviour
             weaponPrefabs[1].SetActive(true);
             weaponSwap = false;
             weaponsChangeCoolOn = true;
+            gameManager.ReloadingObj().SetActive(false);
         }
     }
 
@@ -435,11 +492,6 @@ public class Player : MonoBehaviour
         anim.SetBool("isJump", animIsJump);
         anim.SetBool("isGround", isGround);
 
-        if (animIsJump == true)
-        {
-            animTimer += Time.deltaTime;
-        }
-
         if (animTimer >= animJumpTime)
         {
             animIsJump = false;
@@ -450,15 +502,15 @@ public class Player : MonoBehaviour
     /// <summary>
     ///  플레이어가 벽 점프를 할 수 있는 상황인지 아닌지 체크를 하기 위한 함수
     /// </summary>
-    public void playerWallCheck(bool _wallHit ,Collider2D _collision)
+    public void playerWallCheck(bool _wallHit, Collider2D _collision)
     {
         if (_wallHit == true && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            useWallJump = true;
+            isWall = true;
         }
         else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            useWallJump = false;
+            isWall = false;
         }
     }
 }
