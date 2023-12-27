@@ -62,6 +62,9 @@ public class Player : MonoBehaviour
     private bool isWall = false; //벽에 닿았는지 확인해 줌
     private bool wallJumpTimerOn = false;
     private float wallJumpTimer = 0.0f; //벽 점프
+    private bool wallSlidingTimerOn = false;
+    private float wallSlidingUseTimer = 0.0f; 
+
 
     [Header("무기 관련 설정")]
     [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
@@ -174,6 +177,11 @@ public class Player : MonoBehaviour
         if (wallJumpTimerOn == true) //벽 점프가 실행이되면 다시 중력을 받기 위한 타이머
         {
             wallJumpTimer += Time.deltaTime;
+        }
+
+        if (wallSlidingTimerOn == true)
+        {
+            wallSlidingUseTimer += Time.deltaTime;
         }
 
         if (weaponsChangeCoolOn == true) //무기 변경 타이머가 true면 작동
@@ -308,7 +316,7 @@ public class Player : MonoBehaviour
             moveVec.x = 0;
         }
 
-        moveVec.x *= speed; 
+        moveVec.x *= speed;
         moveVec.y = rigid.velocity.y; //moveVec에 중력을 넣음
         rigid.velocity = moveVec;
     }
@@ -445,11 +453,17 @@ public class Player : MonoBehaviour
         }
         else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
         {
-            gravity = wallSlidingSpeed;
+            wallSlidingTimerOn = true;
+            if (wallSlidingUseTimer >= 0.5f)
+            {
+                gravity = wallSlidingSpeed;
+            }
         }
         else if (moveVec.x == 0 || isWall == false)
         {
             gravity = gameManager.gravityScale();
+            wallSlidingTimerOn = false;
+            wallSlidingUseTimer = 0.0f;
         }
     }
 

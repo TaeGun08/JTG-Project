@@ -10814,11 +10814,11 @@ GameObject:
   m_Component:
   - component: {fileID: 476493025}
   - component: {fileID: 476493024}
+  - component: {fileID: 476493029}
+  - component: {fileID: 476493030}
   - component: {fileID: 476493027}
   - component: {fileID: 476493026}
   - component: {fileID: 476493028}
-  - component: {fileID: 476493029}
-  - component: {fileID: 476493030}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -10979,6 +10979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78cfedfd9c44faa46b9edd37070d12ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gravity: 0
   speed: 4
   jumpPower: 5
   doubleJumpTime: 0.5
