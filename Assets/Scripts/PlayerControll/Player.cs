@@ -454,12 +454,12 @@ public class Player : MonoBehaviour
         else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
         {
             wallSlidingTimerOn = true;
-            if (wallSlidingUseTimer >= 0.5f)
+            if (wallSlidingUseTimer >= 0.4f)
             {
                 gravity = wallSlidingSpeed;
             }
         }
-        else if (moveVec.x == 0 || isWall == false)
+        else if (moveVec.x == 0 || isWall == false || isGround == true)
         {
             gravity = gameManager.gravityScale();
             wallSlidingTimerOn = false;
