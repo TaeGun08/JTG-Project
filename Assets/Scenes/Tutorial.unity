@@ -10819,6 +10819,7 @@ GameObject:
   - component: {fileID: 476493027}
   - component: {fileID: 476493026}
   - component: {fileID: 476493028}
+  - component: {fileID: 476493031}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -10979,6 +10980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78cfedfd9c44faa46b9edd37070d12ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillType: 0
   gravity: 0
   speed: 4
   jumpPower: 5
@@ -11126,6 +11128,22 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &476493031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476493023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12b5a28fb0d4da744bb5169e36f1b58d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillPrefabs:
+  - {fileID: 8240504392270299575, guid: 71cf685284c1bc24e8721f91e54c711d, type: 3}
+  skillPos: {fileID: 1286711256}
+  skillRot: {fileID: 1286711256}
 --- !u!1 &526979877
 GameObject:
   m_ObjectHideFlags: 0
@@ -13033,9 +13051,11 @@ MonoBehaviour:
   playerMoveRightKey: 100
   playerJumpKey: 32
   playerAttackKey: 323
+  playerSpecialAttackKey: 324
   playerDashKey: 304
   reroadingKey: 114
   weaponChangeKey: 113
+  weaponSkiilKey: 257
   pickUpItemKey: 101
   dropItemKey: 103
 --- !u!1 &1949731336

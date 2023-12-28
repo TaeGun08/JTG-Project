@@ -11,9 +11,11 @@ public class KeyManager : MonoBehaviour
     [SerializeField] KeyCode playerMoveRightKey;
     [SerializeField] KeyCode playerJumpKey;
     [SerializeField] KeyCode playerAttackKey;
+    [SerializeField] KeyCode playerSpecialAttackKey;
     [SerializeField] KeyCode playerDashKey;
     [SerializeField] KeyCode reroadingKey;
     [SerializeField] KeyCode weaponChangeKey;
+    [SerializeField] KeyCode weaponSkiilKey;
     [SerializeField] KeyCode pickUpItemKey;
     [SerializeField] KeyCode dropItemKey;
 
@@ -49,6 +51,11 @@ public class KeyManager : MonoBehaviour
         return playerAttackKey;
     }
 
+    public KeyCode PlayerSpecialAttackKey()
+    {
+        return playerSpecialAttackKey;
+    }
+
     public KeyCode PlayerDashKey()
     {
         return playerDashKey;
@@ -62,6 +69,11 @@ public class KeyManager : MonoBehaviour
     public KeyCode WeaponChangeKey()
     {
         return weaponChangeKey;
+    }
+
+    public KeyCode WeaponSkiilKey()
+    {
+        return weaponSkiilKey;
     }
 
     public KeyCode PickUpItemKey()

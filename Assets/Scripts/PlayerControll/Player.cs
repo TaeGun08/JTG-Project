@@ -9,6 +9,16 @@ using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
+    public enum PlayerSkillType
+    {
+        skillTypeA,
+        skillTypeB,
+        skillTypeC,
+        skillTypeD,
+    }
+
+    [SerializeField] private PlayerSkillType skillType;
+
     private Rigidbody2D rigid; //플레이어의 리지드바디
     private RaycastHit2D hit2D;
     private BoxCollider2D playerBoxColl2D; //플레이어의 박스 콜라이더
@@ -311,7 +321,6 @@ public class Player : MonoBehaviour
         }
 
         moveVec.x *= speed;
-        moveVec.y = rigid.velocity.y; //moveVec에 중력을 넣음
         rigid.velocity = moveVec;
     }
 
@@ -530,5 +539,23 @@ public class Player : MonoBehaviour
         {
             isWall = false;
         }
+    }
+
+    /// <summary>
+    /// 플레이어스킬 스크립트에서 받아올 스킬 타입
+    /// </summary>
+    /// <returns></returns>
+    public PlayerSkillType SkillType()
+    {
+        return skillType;
+    }
+
+    /// <summary>
+    /// 스킬 방향을 확인하기 위해 마우스 에임을 방향을 반환
+    /// </summary>
+    /// <returns></returns>
+    public bool playerMouseAimRight()
+    {
+        return mouseAimRight;
     }
 }

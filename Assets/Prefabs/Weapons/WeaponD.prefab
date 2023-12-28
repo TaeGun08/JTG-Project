@@ -114,6 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec2f60101f6f0f341b5b639b2f2539af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillType: 3
   shootDelay: 2
   shootingOn: 0
   bullet: {fileID: 1012400287050802899, guid: d0e639d6870e6fc41a1f1947f417d94a, type: 3}

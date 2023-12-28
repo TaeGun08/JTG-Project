@@ -9,6 +9,7 @@ public class Bullet : MonoBehaviour
         playerBullet,
         enemyBullet
     }
+
     [SerializeField] BulletType bulletType;
 
     [Header("ÃÑ¾Ë ¼Óµµ")]

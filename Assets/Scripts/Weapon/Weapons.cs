@@ -6,6 +6,16 @@ using UnityEngine.UI;
 
 public class Weapons : MonoBehaviour
 {
+    public enum weaponSkillType
+    {
+        skillTypeA,
+        skillTypeB,
+        skillTypeC,
+        skillTypeD,
+    }
+
+    [SerializeField] private weaponSkillType skillType;
+
     private BoxCollider2D weaponBoxColl2D;
 
     //무기에 가져올 매니저
