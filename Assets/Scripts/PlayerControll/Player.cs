@@ -62,8 +62,7 @@ public class Player : MonoBehaviour
     private bool isWall = false; //벽에 닿았는지 확인해 줌
     private bool wallJumpTimerOn = false;
     private float wallJumpTimer = 0.0f; //벽 점프
-    private bool wallSlidingTimerOn = false;
-    private float wallSlidingUseTimer = 0.0f; 
+    private bool useWallSliding = false; //벽 슬라이딩을 하기 위한 조건식
 
 
     [Header("무기 관련 설정")]
@@ -177,11 +176,6 @@ public class Player : MonoBehaviour
         if (wallJumpTimerOn == true) //벽 점프가 실행이되면 다시 중력을 받기 위한 타이머
         {
             wallJumpTimer += Time.deltaTime;
-        }
-
-        if (wallSlidingTimerOn == true)
-        {
-            wallSlidingUseTimer += Time.deltaTime;
         }
 
         if (weaponsChangeCoolOn == true) //무기 변경 타이머가 true면 작동
@@ -344,6 +338,7 @@ public class Player : MonoBehaviour
             gravityVelocity = jumpPower;
             animIsJump = true;
             isJump = true;
+            useWallSliding = true;
         }
         else if (jumpKey == true && isGround == false && isJump == true && doubleJumpTimer >= doubleJumpTime) //점프 사용 후 시간이 지나면 한번 더 가능
         {
@@ -443,27 +438,27 @@ public class Player : MonoBehaviour
             wallJumpTimer = 0.0f;
         }
 
-        if (jumpKey == true && isWall == true && isGround == false && moveVec.x != 0)
+        if (jumpKey == true && isWall == true && isGround == false && moveVec.x != 0) //벽 점프를 하기 위한 조건식
         {
             gravityVelocity = wallJumpPower;
-            moveVec.x *= -1f;
+            moveVec.x *= -0.8f;
             rigid.velocity = moveVec;
             wallJumpTimerOn = true;
-            gravity = gameManager.gravityScale();
+            useWallSliding = true;
+            animIsJump = true;
         }
-        else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0)
+        else if (jumpKey == false && isWall == true && isGround == false && moveVec.x != 0 && useWallSliding == false)  //벽 슬라이딩을 하기 위한 조건식
         {
-            wallSlidingTimerOn = true;
-            if (wallSlidingUseTimer >= 0.4f)
+            gravityVelocity = -wallSlidingSpeed;
+        }
+        else if ((moveVec.x == 0 && isWall == false) || isWall == false  || isGround == true)
+        {
+            if (moveVec.x != 0 && isGround == true)
             {
-                gravity = wallSlidingSpeed;
+                return;
             }
-        }
-        else if (moveVec.x == 0 || isWall == false || isGround == true)
-        {
-            gravity = gameManager.gravityScale();
-            wallSlidingTimerOn = false;
-            wallSlidingUseTimer = 0.0f;
+
+            useWallSliding = false;
         }
     }
 
