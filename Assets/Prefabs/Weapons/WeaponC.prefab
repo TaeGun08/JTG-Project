@@ -217,7 +217,8 @@ MonoBehaviour:
   skillPrefabs: []
   skillPos: {fileID: 4190219247002062191}
   skillRot: {fileID: 4190219247002062191}
-  skillCoolTime: 1
+  skillCoolTime: 5
+  weaponRen: {fileID: 0}
 --- !u!1 &8589323643918000500
 GameObject:
   m_ObjectHideFlags: 0

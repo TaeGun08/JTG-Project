@@ -110,13 +110,16 @@ public class Player : MonoBehaviour
                     }
 
                     if (weaponPrefabs.Count > 0) //무기 카운트가 0보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
-                    {
+                    {                        
                         int count = weaponPrefabs.Count;
                         for (int i = 0; i < count; i++)
                         {
-                            weaponPrefabs[i].SetActive(false);
+                            SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
+                            weaponRen.enabled = false;
                             Weapons weaponScA = weaponPrefabs[i].GetComponent<Weapons>();
                             weaponScA.WeaponSkillOn(false);
+                            gameManager.WeaponSkillCoolTime(false);
+                            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
                         }
                     }
 
@@ -507,8 +510,15 @@ public class Player : MonoBehaviour
             Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
             weapnScB.WeaponSkillOn(false);
 
-            weaponPrefabs[0].SetActive(true);
-            weaponPrefabs[1].SetActive(false);
+            gameManager.WeaponSkillCoolTime(false);
+            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
+
+            SpriteRenderer weaponRenA = weaponPrefabs[0].GetComponent<SpriteRenderer>();
+            weaponRenA.enabled = true;
+
+            SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
+            weaponRenB.enabled = false;
+
             weaponSwap = true;
             weaponsChangeCoolOn = true;
             gameManager.ReloadingObj().SetActive(false);
@@ -521,8 +531,15 @@ public class Player : MonoBehaviour
             Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
             weapnScB.WeaponSkillOn(true);
 
-            weaponPrefabs[0].SetActive(false);
-            weaponPrefabs[1].SetActive(true);
+            gameManager.WeaponSkillCoolTime(false);
+            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
+
+            SpriteRenderer weaponRenA = weaponPrefabs[0].GetComponent<SpriteRenderer>();
+            weaponRenA.enabled = false;
+
+            SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
+            weaponRenB.enabled = true;
+
             weaponSwap = false;
             weaponsChangeCoolOn = true;
             gameManager.ReloadingObj().SetActive(false);

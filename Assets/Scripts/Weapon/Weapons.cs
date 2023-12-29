@@ -51,6 +51,7 @@ public class Weapons : MonoBehaviour
     [SerializeField] private bool skillOn = false;
     [SerializeField] private Sprite weaponSkilImage;
     private bool skillChange = false;
+    private SpriteRenderer weaponRenderer;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -82,6 +83,7 @@ public class Weapons : MonoBehaviour
     {
         itemPickUp = GetComponent<ItemPickUp>();
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
+        weaponRenderer = GetComponent<SpriteRenderer>();
 
         skillOn = false;
         skillChange = false;
@@ -125,14 +127,15 @@ public class Weapons : MonoBehaviour
     {
         if (skillOn == true)
         {
-            gameManager.WeaponSkillOn().SetActive(true);
-            gameManager.WeaponSkillImage().sprite = weaponSkilImage;
-            skillChange = true;
+            if (weaponRenderer.enabled == true)
+            {
+                gameManager.WeaponSkillOn().SetActive(true);
+                gameManager.WeaponSkillImage().sprite = weaponSkilImage;
+            }
         }
         else if (skillOn == false)
         {
             gameManager.WeaponSkillOn().SetActive(false);
-            skillChange = false;
         }
     }
 
@@ -210,14 +213,19 @@ public class Weapons : MonoBehaviour
     /// </summary>
     /// <param name="_shooting"></param>
     /// <returns></returns>
-    public bool ShootingOn(bool _shooting)
+    public void ShootingOn(bool _shooting)
     {
-        return shootingOn = _shooting;
+        shootingOn = _shooting;
     }
 
-    public bool PickUpImageOff(bool _ImageOff)
+    public bool ShootingOnCheck()
     {
-        return imageOff = _ImageOff;
+        return shootingOn;
+    }
+
+    public void PickUpImageOff(bool _ImageOff)
+    {
+        imageOff = _ImageOff;
     }
 
     public void WeaponSkillOn(bool _skillOn)

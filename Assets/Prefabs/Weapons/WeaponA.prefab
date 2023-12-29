@@ -303,3 +303,4 @@ MonoBehaviour:
   skillPos: {fileID: 7945014910387493576}
   skillRot: {fileID: 7945014910387493576}
   skillCoolTime: 15
+  weaponRen: {fileID: 0}

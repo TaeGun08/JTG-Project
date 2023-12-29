@@ -24,10 +24,12 @@ public class WeaponSkill : MonoBehaviour
     private float skillCoolTimer = 0.0f;
     private bool skillCoolOn = false;
     private float coolTime;
+    [SerializeField] private SpriteRenderer weaponRen;
 
     private void Awake()
     {
         weapons = GetComponent<Weapons>();
+        weaponRen = GetComponent<SpriteRenderer>();
     }
 
     private void Start()
@@ -55,7 +57,10 @@ public class WeaponSkill : MonoBehaviour
     {
         if (skillCoolOn == true)
         {
-            gameManager.WeaponSkillCoolTime(true);
+            if (weaponRen.enabled == true)
+            {
+                gameManager.WeaponSkillCoolTime(true);
+            }
 
             if (skillCoolTimer > 1.0f)
             {
@@ -85,7 +90,8 @@ public class WeaponSkill : MonoBehaviour
     /// </summary>
     private void weaponSpecialAttack()
     {
-        if (Input.GetKeyDown(keyManager.WeaponSkiilKey()) && skillCoolOn == false)
+        if (Input.GetKeyDown(keyManager.WeaponSkiilKey()) && skillCoolOn == false 
+            && gameObject.activeSelf == true && weapons.ShootingOnCheck() == true && weaponRen.enabled == true)
         {
             skillCoolOn = true;
 
