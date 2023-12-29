@@ -12,7 +12,6 @@ public class PlayerSkill : MonoBehaviour
     private KeyManager keyManager; //키매니저
 
     private TrashPreFab trashPreFab;
-
     private Player player;
 
     [Header("스킬 프리팹")]

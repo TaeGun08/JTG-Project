@@ -116,10 +116,8 @@ public class Player : MonoBehaviour
                         {
                             SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
                             weaponRen.enabled = false;
-                            Weapons weaponScA = weaponPrefabs[i].GetComponent<Weapons>();
-                            weaponScA.WeaponSkillOn(false);
-                            gameManager.WeaponSkillCoolTime(false);
-                            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
+                            Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
+                            weaponSc.ShootingOn(false);
                         }
                     }
 
@@ -133,7 +131,6 @@ public class Player : MonoBehaviour
                     Weapons getWeaponSc = getWeapon.GetComponent<Weapons>();
                     getWeaponSc.ShootingOn(true);
                     getWeaponSc.PickUpImageOff(true);
-                    getWeaponSc.WeaponSkillOn(true);
 
                     Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
@@ -502,47 +499,56 @@ public class Player : MonoBehaviour
             weaponsChangeCoolTimer = 0.0f;
         }
 
-        if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == false && weaponsChangeCoolOn == false)
+        if (Input.GetKeyDown(keyManager.WeaponChangeKey()))
         {
-            Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
-            weaponScA.WeaponSkillOn(true);
+            if (weaponSwap == false && weaponsChangeCoolOn == false)
+            {
+                int count = weaponPrefabs.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
+                    Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
 
-            Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
-            weapnScB.WeaponSkillOn(false);
+                    if (i == 0)
+                    {
+                        weaponRen.enabled = true;
+                        weaponSc.ShootingOn(true);
+                    }
+                    else if (i == 1)
+                    {
+                        weaponRen.enabled = false;
+                        weaponSc.ShootingOn(false);
+                    }
+                }
 
-            gameManager.WeaponSkillCoolTime(false);
-            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
+                weaponSwap = true;
+                weaponsChangeCoolOn = true;
+                gameManager.ReloadingObj().SetActive(false);
+            }
+            else if (weaponSwap == true && weaponsChangeCoolOn == false)
+            {
+                int count = weaponPrefabs.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
+                    Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
 
-            SpriteRenderer weaponRenA = weaponPrefabs[0].GetComponent<SpriteRenderer>();
-            weaponRenA.enabled = true;
+                    if (i == 0)
+                    {
+                        weaponRen.enabled = false;
+                        weaponSc.ShootingOn(false);
+                    }
+                    else if (i == 1)
+                    {
+                        weaponRen.enabled = true;
+                        weaponSc.ShootingOn(true);
+                    }
+                }
 
-            SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
-            weaponRenB.enabled = false;
-
-            weaponSwap = true;
-            weaponsChangeCoolOn = true;
-            gameManager.ReloadingObj().SetActive(false);
-        }
-        else if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == true && weaponsChangeCoolOn == false)
-        {
-            Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
-            weaponScA.WeaponSkillOn(false);
-
-            Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
-            weapnScB.WeaponSkillOn(true);
-
-            gameManager.WeaponSkillCoolTime(false);
-            gameManager.WeaponCoolTimePanelImage().fillAmount = 0;
-
-            SpriteRenderer weaponRenA = weaponPrefabs[0].GetComponent<SpriteRenderer>();
-            weaponRenA.enabled = false;
-
-            SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
-            weaponRenB.enabled = true;
-
-            weaponSwap = false;
-            weaponsChangeCoolOn = true;
-            gameManager.ReloadingObj().SetActive(false);
+                weaponSwap = false;
+                weaponsChangeCoolOn = true;
+                gameManager.ReloadingObj().SetActive(false);
+            }
         }
     }
 

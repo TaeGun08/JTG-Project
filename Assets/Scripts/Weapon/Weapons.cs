@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static System.Net.Mime.MediaTypeNames;
 
 public class Weapons : MonoBehaviour
 {
-    public enum weaponSkillType
+    public enum WeaponType
     {
-        skillTypeA,
-        skillTypeB,
-        skillTypeC,
-        skillTypeD,
+        weaponTypeA,
+        weaponTypeB,
+        weaponTypeC,
+        weaponTypeD,
     }
 
-    [SerializeField] private weaponSkillType skillType;
+    [SerializeField] private WeaponType weaponType;
 
     private BoxCollider2D weaponBoxColl2D;
 
@@ -23,9 +25,9 @@ public class Weapons : MonoBehaviour
     private KeyManager keyManager; //키매니저
 
     private TrashPreFab trashPreFab;
-
     private ItemPickUp itemPickUp;
-    //private int weaponNum = 0;
+    private WeaponSkill weaponSkill;
+    private SpriteRenderer weaponRen;
 
     [Header("공격 설정")]
     [SerializeField, Tooltip("공격 딜레이")] private float shootDelay = 0.5f;
@@ -39,19 +41,17 @@ public class Weapons : MonoBehaviour
     [SerializeField, Tooltip("최대 탄창")] private int maxMagazine; //탄창에 들어가는 최대 총알 수
     [SerializeField, Tooltip("현재 탄창")] private int curMagazine; //현재 탕창에 보유중인 총알 수
     [SerializeField, Tooltip("재장전 시간")] private float reloadingTime; //재장전을 위한 시간
-    private float reloadingTimer;
+    [SerializeField] private float reloadingTimer;
     private bool reloading = false;
     private float curReloadingSlider;
+    [SerializeField] private float autoReloadingTimer;
 
     [Header("줍기 키 이미지")]
     [SerializeField] private GameObject pickUpKeyImage;
     private bool imageOff = false;
 
-    [Header("스킬 관련 설정")]
-    [SerializeField] private bool skillOn = false;
-    [SerializeField] private Sprite weaponSkilImage;
-    private bool skillChange = false;
-    private SpriteRenderer weaponRenderer;
+    [Header("탄창 UI")]
+    [SerializeField] TMP_Text magazineText;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -83,10 +83,10 @@ public class Weapons : MonoBehaviour
     {
         itemPickUp = GetComponent<ItemPickUp>();
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
-        weaponRenderer = GetComponent<SpriteRenderer>();
+        weaponSkill = GetComponent<WeaponSkill>();
+        weaponRen = GetComponent<SpriteRenderer>();
 
-        skillOn = false;
-        skillChange = false;
+        autoReloadingTimer = 3.0f;
     }
 
     private void Start()
@@ -99,15 +99,14 @@ public class Weapons : MonoBehaviour
         curReloadingSlider = gameManager.ReloadingUI().value;
 
         pickUpKeyImage.SetActive(false);
-
-        if (gameManager.WeaponSkillOn().activeSelf == true)
-        {
-            gameManager.WeaponSkillOn().SetActive(false);
-        }
     }
 
     private void Update()
     {
+        autoReloading();
+
+        magazineText.text = $"{curMagazine} / {maxMagazine}";
+
         if (shootingOn == false || itemPickUp.GetItemType().ToString() != "Weapon")
         {
             return;
@@ -118,44 +117,21 @@ public class Weapons : MonoBehaviour
             pickUpKeyImage.SetActive(false);
         }
 
-        weaponSkillOn();
         reloadingWeapon();
         shootWeapon();
     }
 
-    private void weaponSkillOn()
-    {
-        if (skillOn == true)
-        {
-            if (weaponRenderer.enabled == true)
-            {
-                gameManager.WeaponSkillOn().SetActive(true);
-                gameManager.WeaponSkillImage().sprite = weaponSkilImage;
-            }
-        }
-        else if (skillOn == false)
-        {
-            gameManager.WeaponSkillOn().SetActive(false);
-        }
-    }
-
     /// <summary>
-    /// 총의 재장전을 담당하는 함수
+    /// 무기를 3초 이상 손에 들고 있지 않으면 자동으로 재장전을 해 총알을 전부 채워줌
     /// </summary>
-    private void reloadingWeapon()
+    private void autoReloading()
     {
-        if (Input.GetKeyDown(keyManager.ReloadingKey()))
+        if (weaponRen.enabled == false && curMagazine != maxMagazine)
         {
-            curMagazine = 0;
-        }
-
-        if (reloading == true) //재장전이 true면 타이머를 작동시고 UI를 활성화함
-        {
-            reloadingTimer -= Time.deltaTime;
-            gameManager.ReloadingUI().value = reloadingTimer;
-            gameManager.ReloadingObj().SetActive(true);
-            if (reloadingTimer < 0)
+            autoReloadingTimer -= Time.deltaTime;
+            if (autoReloadingTimer < 0.0f)
             {
+                autoReloadingTimer = 3.0f;
                 gameManager.ReloadingObj().SetActive(false);
                 gameManager.ReloadingUI().value = 1.0f;
                 reloadingTimer = reloadingTime;
@@ -164,6 +140,41 @@ public class Weapons : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// 총의 재장전을 담당하는 함수
+    /// </summary>
+    private void reloadingWeapon()
+    {
+        if (weaponSkill.SkillAOn() == true)
+        {
+            gameManager.ReloadingObj().SetActive(false);
+            gameManager.ReloadingUI().value = 1.0f;
+            reloadingTimer = reloadingTime;
+            curMagazine = maxMagazine;
+            reloading = false;
+            return;
+        }
+
+        if (Input.GetKeyDown(keyManager.ReloadingKey()) && curMagazine != maxMagazine && reloading == false)
+        {
+            curMagazine = 0;
+        }
+
+        if (reloading == true) //재장전이 true면 타이머를 작동시고 UI를 활성화함
+        {
+            reloadingTimer -= Time.deltaTime;
+            gameManager.ReloadingUI().value = reloadingTimer / reloadingTime;
+            gameManager.ReloadingObj().SetActive(true);
+            if (reloadingTimer < 0)
+            {
+                gameManager.ReloadingObj().SetActive(false);
+                reloadingTimer = reloadingTime;
+                curMagazine = maxMagazine;
+                reloading = false;
+            }
+        }
+    }   
 
     /// <summary>
     /// 총을 발사를 담당하는 함수
@@ -185,17 +196,18 @@ public class Weapons : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누를 때 마다 발사
+        if ((Input.GetKeyDown(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누를 때 마다 발사
+            || (Input.GetKey(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false)) //마우스를 누르고 있으면 발사
         {
             shootBullet();
-            curMagazine--;
             shootTimer = shootDelay;
-        }
-        else if (Input.GetKey(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누르고 있으면 발사
-        {
-            shootBullet();
+
+            if (weaponSkill.SkillAOn() == true)
+            {
+                return;
+            }
+
             curMagazine--;
-            shootTimer = shootDelay;
         }
     }
 
@@ -206,6 +218,11 @@ public class Weapons : MonoBehaviour
     private void shootBullet(float _rot = 0.0f)
     {
         Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
+        if (weaponType.ToString() == "weaponTypeB")
+        {
+            Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 5)), trashPreFab.transform);
+            Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -5)), trashPreFab.transform);
+        }
     }
 
     /// <summary>
@@ -228,8 +245,21 @@ public class Weapons : MonoBehaviour
         imageOff = _ImageOff;
     }
 
-    public void WeaponSkillOn(bool _skillOn)
+    /// <summary>
+    /// 불렛 프리팹의 원본 데이터를 받아오기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public GameObject CurBullet()
     {
-        skillOn = _skillOn;
+        return bullet;
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 총알 변경을 하기 위해 사용하는 함수
+    /// </summary>
+    /// <param name="_bullet"></param>
+    public void BulletChange(GameObject _bullet)
+    {
+        bullet = _bullet;
     }
 }

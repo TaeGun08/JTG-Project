@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
     [Header("게임 중지")]
     [SerializeField] private bool gamePause = false;
 
@@ -24,13 +25,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image playerCoolTimePanelImage;
     [SerializeField] private GameObject playerSkillCollTimeText;
     [SerializeField] private TMP_Text playerCoolTimeText;
-    [Space]
-    [SerializeField] private GameObject weaponSkill;
-    [SerializeField] private Image weaponSkillImage;
-    [SerializeField] private GameObject weaponSkillCoolTimePanel;
-    [SerializeField] private Image weaponCoolTimePanelImage;
-    [SerializeField] private GameObject weaponSkillCollTimeText;
-    [SerializeField] private TMP_Text weaponCoolTimeText;
 
     private void Awake()
     {
@@ -95,38 +89,5 @@ public class GameManager : MonoBehaviour
     public TMP_Text PlayerCoolTimeText()
     {
         return playerCoolTimeText;
-    }
-
-    /// <summary>
-    /// 무기의 스킬 이미지를 화면에 보이게 함
-    /// </summary>
-    public GameObject WeaponSkillOn()
-    {
-        return weaponSkill;
-    }
-
-    public Image WeaponSkillImage()
-    {
-        return weaponSkillImage;
-    }
-
-    /// <summary>
-    /// 무기 스킬을 사용 후 쿨타임이 실행될 때 활성화 됨
-    /// </summary>
-    /// <param name="_objOn"></param>
-    public void WeaponSkillCoolTime(bool _objOn)
-    {
-        weaponSkillCoolTimePanel.SetActive(_objOn);
-        weaponSkillCollTimeText.SetActive(_objOn);
-    }
-
-    public Image WeaponCoolTimePanelImage()
-    {
-        return weaponCoolTimePanelImage;
-    }
-
-    public TMP_Text WeaponCoolTimeText()
-    {
-        return weaponCoolTimeText;
     }
 }
