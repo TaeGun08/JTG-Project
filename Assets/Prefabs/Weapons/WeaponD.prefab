@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1913634105840582879}
   - component: {fileID: 5549750618384114535}
+  - component: {fileID: 6963046757074761498}
   - component: {fileID: 227189432601076590}
   - component: {fileID: 8495155540706052061}
-  - component: {fileID: 6963046757074761498}
+  - component: {fileID: 258345597962153995}
   m_Layer: 7
   m_Name: WeaponD
   m_TagString: Weapon
@@ -89,40 +90,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &227189432601076590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3606348456267636563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64b62c25318f784468db832f541722a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemType: 0
---- !u!114 &8495155540706052061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3606348456267636563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec2f60101f6f0f341b5b639b2f2539af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillType: 3
-  shootDelay: 2
-  shootingOn: 0
-  bullet: {fileID: 1012400287050802899, guid: d0e639d6870e6fc41a1f1947f417d94a, type: 3}
-  bulletPos: {fileID: 6683807388122307724}
-  maxMagazine: 0
-  curMagazine: 0
-  reloadingTime: 2
-  pickUpKeyImage: {fileID: 5174792852865897647}
 --- !u!61 &6963046757074761498
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -168,6 +135,58 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.5, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &227189432601076590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606348456267636563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64b62c25318f784468db832f541722a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemType: 0
+--- !u!114 &8495155540706052061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606348456267636563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2f60101f6f0f341b5b639b2f2539af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillType: 3
+  shootDelay: 2
+  shootingOn: 0
+  bullet: {fileID: 1012400287050802899, guid: d0e639d6870e6fc41a1f1947f417d94a, type: 3}
+  bulletPos: {fileID: 6683807388122307724}
+  maxMagazine: 0
+  curMagazine: 0
+  reloadingTime: 2
+  pickUpKeyImage: {fileID: 5174792852865897647}
+  skillOn: 0
+  weaponSkilImage: {fileID: 21300000, guid: 0f481441a9c9d4ac791aa3786c80514b, type: 3}
+--- !u!114 &258345597962153995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3606348456267636563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae01d7afa680ca640a1bf3764af40977, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillPrefabs: []
+  skillPos: {fileID: 6683807388122307724}
+  skillRot: {fileID: 6683807388122307724}
+  skillCoolTime: 1
 --- !u!1 &5174792852865897647
 GameObject:
   m_ObjectHideFlags: 0

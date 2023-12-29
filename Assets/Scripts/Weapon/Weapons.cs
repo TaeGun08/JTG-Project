@@ -47,6 +47,11 @@ public class Weapons : MonoBehaviour
     [SerializeField] private GameObject pickUpKeyImage;
     private bool imageOff = false;
 
+    [Header("스킬 관련 설정")]
+    [SerializeField] private bool skillOn = false;
+    [SerializeField] private Sprite weaponSkilImage;
+    private bool skillChange = false;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (imageOff == true)
@@ -77,6 +82,9 @@ public class Weapons : MonoBehaviour
     {
         itemPickUp = GetComponent<ItemPickUp>();
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
+
+        skillOn = false;
+        skillChange = false;
     }
 
     private void Start()
@@ -89,6 +97,11 @@ public class Weapons : MonoBehaviour
         curReloadingSlider = gameManager.ReloadingUI().value;
 
         pickUpKeyImage.SetActive(false);
+
+        if (gameManager.WeaponSkillOn().activeSelf == true)
+        {
+            gameManager.WeaponSkillOn().SetActive(false);
+        }
     }
 
     private void Update()
@@ -103,8 +116,24 @@ public class Weapons : MonoBehaviour
             pickUpKeyImage.SetActive(false);
         }
 
+        weaponSkillOn();
         reloadingWeapon();
         shootWeapon();
+    }
+
+    private void weaponSkillOn()
+    {
+        if (skillOn == true)
+        {
+            gameManager.WeaponSkillOn().SetActive(true);
+            gameManager.WeaponSkillImage().sprite = weaponSkilImage;
+            skillChange = true;
+        }
+        else if (skillOn == false)
+        {
+            gameManager.WeaponSkillOn().SetActive(false);
+            skillChange = false;
+        }
     }
 
     /// <summary>
@@ -189,5 +218,10 @@ public class Weapons : MonoBehaviour
     public bool PickUpImageOff(bool _ImageOff)
     {
         return imageOff = _ImageOff;
+    }
+
+    public void WeaponSkillOn(bool _skillOn)
+    {
+        skillOn = _skillOn;
     }
 }

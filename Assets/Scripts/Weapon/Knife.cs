@@ -34,7 +34,7 @@ public class Knife : MonoBehaviour
 
         transform.Rotate(trsRotate * Time.deltaTime * 2);
 
-        Destroy(gameObject, 1.0f);
+        Destroy(gameObject, 0.5f);
     }
 
     public void KnifeForce(Vector2 _moveForce, bool _isRight)

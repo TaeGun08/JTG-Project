@@ -97,28 +97,48 @@ public class Player : MonoBehaviour
     {
         if (_collision.gameObject.tag == "Item" || _collision.gameObject.tag == "Weapon") //플레이어에 닿은 오브젝트 태그가 아이템 또는 무기인지 체크
         {
-            ItemPickUp itemPickUpSc = _collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
-            ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
-
-            if (itemPickUpType == ItemPickUp.ItemType.Weapon) //가져온 아이템 타입과 스크립트의 아이템 타입이 일치하면 작동
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                Weapons weaponsSc = _collision.gameObject.GetComponent<Weapons>();
-                weaponsSc.ShootingOn(true);
-                weaponsSc.PickUpImageOff(true);
+                ItemPickUp itemPickUpSc = _collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
+                ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
 
-                //collision.gameObject.transform.SetParent(playerHand); //자식 오브젝트로 넣는 코드
-                //collision.gameObject.transform.position = playerHand.transform.position;
-                //collision.gameObject.transform.rotation = playerHand.transform.rotation;
+                if (itemPickUpType == ItemPickUp.ItemType.Weapon) //가져온 아이템 타입과 스크립트의 아이템 타입이 일치하면 작동
+                {
+                    if (weaponPrefabs.Count > 1)
+                    {
+                        return;
+                    }
 
-                getWeapon = Instantiate(_collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
-                getWeapon.GetComponent<BoxCollider2D>().enabled = false;
+                    if (weaponPrefabs.Count > 0) //무기 카운트가 0보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
+                    {
+                        int count = weaponPrefabs.Count;
+                        for (int i = 0; i < count; i++)
+                        {
+                            weaponPrefabs[i].SetActive(false);
+                            Weapons weaponScA = weaponPrefabs[i].GetComponent<Weapons>();
+                            weaponScA.WeaponSkillOn(false);
+                        }
+                    }
 
-                Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
-                weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
-            }
-            else if (itemPickUpType == ItemPickUp.ItemType.Buff)
-            {
+                    //collision.gameObject.transform.SetParent(playerHand); //자식 오브젝트로 넣는 코드
+                    //collision.gameObject.transform.position = playerHand.transform.position;
+                    //collision.gameObject.transform.rotation = playerHand.transform.rotation;
 
+                    getWeapon = Instantiate(_collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
+                    getWeapon.GetComponent<BoxCollider2D>().enabled = false;
+
+                    Weapons getWeaponSc = getWeapon.GetComponent<Weapons>();
+                    getWeaponSc.ShootingOn(true);
+                    getWeaponSc.PickUpImageOff(true);
+                    getWeaponSc.WeaponSkillOn(true);
+
+                    Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
+                    weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
+                }
+                else if (itemPickUpType == ItemPickUp.ItemType.Buff)
+                {
+
+                }
             }
         }
     }
@@ -200,37 +220,24 @@ public class Player : MonoBehaviour
     }
 
     private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
-    {
-        if (weaponPrefabs.Count > 1)
-        {
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (weaponPrefabs.Count > 0) //무기 카운트가 0보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
-            {
-                int count = weaponPrefabs.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    weaponPrefabs[i].SetActive(false);
-                }
-            }
-
-            Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
+    {      
+        Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
                 playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
-            pickUpItem(itemColl);
 
-            //Collider2D[] colls = Physics2D.OverlapBoxAll(playerBoxColl2D.bounds.center, 
-            //    playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon"));
-            //int count = colls.Length;
-            //for (int iNum = 0; iNum < count; ++iNum)
-            //{
-            //    Collider2D coll = colls[iNum];
-            //    pickUpItem(coll);
-            //    colls[iNum] = null;
-            //}
+        if (itemColl != null)
+        {
+            pickUpItem(itemColl);
         }
+
+        //Collider2D[] colls = Physics2D.OverlapBoxAll(playerBoxColl2D.bounds.center, 
+        //    playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon"));
+        //int count = colls.Length;
+        //for (int iNum = 0; iNum < count; ++iNum)
+        //{
+        //    Collider2D coll = colls[iNum];
+        //    pickUpItem(coll);
+        //    colls[iNum] = null;
+        //}     
     }
 
     /// <summary>
@@ -413,15 +420,15 @@ public class Player : MonoBehaviour
 
             gravityVelocity = 0.0f;
 
-            if (moveVec.x > 0) //moveVec.x 가 0보다 크면 오른쪽으로 대쉬
+            if (moveVec.x > 0 && isWall == false) //moveVec.x 가 0보다 크면 오른쪽으로 대쉬
             {
                 moveVec.x = dashPower;
             }
-            else if (moveVec.x < 0) //moveVec.x 가 0보다 작으면 왼쪽으로 대쉬
+            else if (moveVec.x < 0 && isWall == false) //moveVec.x 가 0보다 작으면 왼쪽으로 대쉬
             {
                 moveVec.x = -dashPower;
             }
-            else if (moveVec.x == 0) //moveVec.x 가 0이면 마우스 에임이 있는 쪽으로 대쉬
+            else if (moveVec.x == 0 && isWall == false) //moveVec.x 가 0이면 마우스 에임이 있는 쪽으로 대쉬
             {
                 moveVec.x = dashPower;
                 if (mouseAimRight == false)
@@ -460,7 +467,7 @@ public class Player : MonoBehaviour
         {
             gravityVelocity = -wallSlidingSpeed;
         }
-        else if ((moveVec.x == 0 && isWall == false) || isWall == false  || isGround == true)
+        else if ((moveVec.x == 0 && isWall == false) || isWall == false || isGround == true)
         {
             if (moveVec.x != 0 && isGround == true)
             {
@@ -494,6 +501,12 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == false && weaponsChangeCoolOn == false)
         {
+            Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
+            weaponScA.WeaponSkillOn(true);
+
+            Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
+            weapnScB.WeaponSkillOn(false);
+
             weaponPrefabs[0].SetActive(true);
             weaponPrefabs[1].SetActive(false);
             weaponSwap = true;
@@ -502,6 +515,12 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetKeyDown(keyManager.WeaponChangeKey()) && weaponSwap == true && weaponsChangeCoolOn == false)
         {
+            Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
+            weaponScA.WeaponSkillOn(false);
+
+            Weapons weapnScB = weaponPrefabs[1].GetComponent<Weapons>();
+            weapnScB.WeaponSkillOn(true);
+
             weaponPrefabs[0].SetActive(false);
             weaponPrefabs[1].SetActive(true);
             weaponSwap = false;
