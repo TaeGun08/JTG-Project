@@ -15,14 +15,6 @@ public class PlayerSkill : MonoBehaviour
 
     private Player player;
 
-    [Header("스킬 UI관련 데이터")]
-    [SerializeField] private GameObject playerSkill;
-    [SerializeField] private GameObject skillCoolTimePanel;
-    [SerializeField] private Image coolTimePanelImage;
-    [SerializeField] private GameObject skillCollTimeText;
-    [SerializeField] private TMP_Text coolTimeText;
-    private float coolTime;
-
     [Header("스킬 프리팹")]
     [SerializeField] private List<GameObject> skillPrefabs = new List<GameObject>();
 
@@ -34,6 +26,7 @@ public class PlayerSkill : MonoBehaviour
     [SerializeField] private float skillCoolTime = 1.0f;
     private float skillCoolTimer = 0.0f;
     private bool skillCoolOn = false;
+    private float coolTime;
 
 
     private void Start()
@@ -47,11 +40,10 @@ public class PlayerSkill : MonoBehaviour
 
         skillCoolTimer = skillCoolTime;
 
-        playerSkill.SetActive(true);
-        skillCollTimeText.SetActive(false);
-        skillCoolTimePanel.SetActive(false);
+        gameManager.PlayerSkillOn(true);
+        gameManager.PlayerSkillCoolTimePanel(false);
 
-        coolTime = coolTimePanelImage.fillAmount;
+        coolTime = gameManager.PlayerCoolTimePanelImage().fillAmount;
     }
 
     private void Update()
@@ -68,15 +60,15 @@ public class PlayerSkill : MonoBehaviour
         if (skillCoolOn == true)
         {
             string timerText = $"{(int)skillCoolTimer + 1}";
-            coolTimeText.text = timerText;
+            gameManager.PlayerCoolTimeText().text = timerText;
+            gameManager.PlayerSkillCoolTimePanel(true);
             skillCoolTimer -= Time.deltaTime;
-            coolTimePanelImage.fillAmount = skillCoolTimer;
+            gameManager.PlayerCoolTimePanelImage().fillAmount = skillCoolTimer;
             if (skillCoolTimer < 0.0f)
             {
                 skillCoolOn = false;
-                skillCollTimeText.SetActive(false);
-                skillCoolTimePanel.SetActive(false);
-                coolTimePanelImage.fillAmount = coolTime;
+                gameManager.PlayerSkillCoolTimePanel(false);
+                gameManager.PlayerCoolTimePanelImage().fillAmount = coolTime;
                 skillCoolTimer = skillCoolTime;
             }
         }
@@ -89,9 +81,7 @@ public class PlayerSkill : MonoBehaviour
     {
         if (Input.GetKeyDown(keyManager.PlayerSpecialAttackKey()) && skillCoolOn == false)
         {
-            skillCoolOn = true;
-            skillCollTimeText.SetActive(true);
-            skillCoolTimePanel.SetActive(true);
+            skillCoolOn = true;          
 
             Player.PlayerSkillType skillType = player.SkillType();
             if (skillType.ToString() == "skillTypeA")
