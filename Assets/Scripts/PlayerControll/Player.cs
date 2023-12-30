@@ -82,6 +82,9 @@ public class Player : MonoBehaviour
     [SerializeField] private List<GameObject> weaponPrefabs = new List<GameObject>(); //무기를 담을 인벤토리 역할
     private GameObject getWeapon; //콜라이더에 닿은 오브젝트를 담아 올 변수
     private bool weaponSwap = false; //무기 변경을 담당하는 변수
+    private bool weaponDrop = false;
+    private float weaponDropTime = 0.0f;
+    private Vector3 weaponLocalScale;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -109,9 +112,10 @@ public class Player : MonoBehaviour
                         return;
                     }
 
+                    int count = weaponPrefabs.Count;
+
                     if (weaponPrefabs.Count > 0) //무기 카운트가 0보다 크면 자신을 제외한 나머지 오브젝트를 비활성화 시켜 줌
-                    {                        
-                        int count = weaponPrefabs.Count;
+                    {
                         for (int i = 0; i < count; i++)
                         {
                             SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
@@ -121,11 +125,17 @@ public class Player : MonoBehaviour
                         }
                     }
 
-                    //collision.gameObject.transform.SetParent(playerHand); //자식 오브젝트로 넣는 코드
-                    //collision.gameObject.transform.position = playerHand.transform.position;
-                    //collision.gameObject.transform.rotation = playerHand.transform.rotation;
+                    getWeapon = _collision.gameObject;
+                    getWeapon.transform.SetParent(playerHand); //자식 오브젝트로 넣는 코드
+                    getWeapon.transform.position = playerHand.transform.position;
+                    getWeapon.transform.rotation = playerHand.transform.rotation;
+                    weaponLocalScale = getWeapon.transform.localScale;
+                    if (getWeapon.transform.localScale.x < 0)
+                    {
+                        weaponLocalScale.x *= -1;
+                        getWeapon.transform.localScale = weaponLocalScale;
+                    }
 
-                    getWeapon = Instantiate(_collision.gameObject, playerHand.position, playerHand.rotation, playerHand);
                     getWeapon.GetComponent<BoxCollider2D>().enabled = false;
 
                     Weapons getWeaponSc = getWeapon.GetComponent<Weapons>();
@@ -135,7 +145,6 @@ public class Player : MonoBehaviour
                     SpriteRenderer getWeaponRen = getWeapon.GetComponent<SpriteRenderer>();
                     getWeaponRen.sortingOrder = 2;
 
-                    Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
                 }
                 else if (itemPickUpType == ItemPickUp.ItemType.Buff)
@@ -155,6 +164,8 @@ public class Player : MonoBehaviour
         dashEffect = GetComponent<TrailRenderer>();
 
         dashEffect.enabled = false;
+
+        weaponDropTime = 0.5f;
     }
 
     private void Start()
@@ -183,6 +194,7 @@ public class Player : MonoBehaviour
         playerDash();
         playerWallSkill();
         playerWeaponChange();
+        playerWeaponDrop();
         playerAni();
     }
 
@@ -220,10 +232,15 @@ public class Player : MonoBehaviour
         {
             animTimer += Time.deltaTime;
         }
+
+        if (weaponDrop == true) //무기를 버렸을 때 다시 버릴 수 있는 대기 시간
+        {
+            weaponDropTime -= Time.deltaTime;
+        }
     }
 
     private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
-    {      
+    {
         Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
                 playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
 
@@ -486,7 +503,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerWeaponChange()
     {
-        if (weaponPrefabs == null || weaponPrefabs.Count < 2) //무기 배열에 아무것도 없거나, 2보다 적으면 실행을 멈춤
+        if (weaponPrefabs.Count < 2) //무기 배열에 아무것도 없거나, 2보다 적으면 실행을 멈춤
         {
             return;
         }
@@ -504,9 +521,10 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(keyManager.WeaponChangeKey()))
         {
+            int count = weaponPrefabs.Count;
+
             if (weaponSwap == false && weaponsChangeCoolOn == false)
             {
-                int count = weaponPrefabs.Count;
                 for (int i = 0; i < count; i++)
                 {
                     SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
@@ -530,7 +548,6 @@ public class Player : MonoBehaviour
             }
             else if (weaponSwap == true && weaponsChangeCoolOn == false)
             {
-                int count = weaponPrefabs.Count;
                 for (int i = 0; i < count; i++)
                 {
                     SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
@@ -551,6 +568,96 @@ public class Player : MonoBehaviour
                 weaponSwap = false;
                 weaponsChangeCoolOn = true;
                 gameManager.ReloadingObj().SetActive(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 무기를 버릴 수 있게 담당하는 함수
+    /// </summary>
+    private void playerWeaponDrop()
+    {
+        if (weaponPrefabs.Count < 1 || weaponPrefabs == null) //무기 배열에 아무것도 없거나, 1보다 적으면 실행을 멈춤
+        {
+            return;
+        }
+
+        if (weaponDropTime < 0.0f)
+        {
+            weaponDrop = false;
+            weaponDropTime = 0.5f;
+        }
+
+        if (Input.GetKeyDown(keyManager.DropItemKey()) && weaponDrop == false)
+        {
+            SpriteRenderer weaponRen = weaponPrefabs[0].GetComponent<SpriteRenderer>();
+            BoxCollider2D weaponBoxColl = weaponPrefabs[0].GetComponent<BoxCollider2D>();
+            Weapons weaponSc = weaponPrefabs[0].GetComponent<Weapons>();
+            WeaponSkill weaponSkillSc = weaponPrefabs[0].GetComponent<WeaponSkill>();
+
+            if (weaponPrefabs.Count == 1)
+            {
+                weaponDrop = true; //떨어뜨렸다는 것을 확인
+                weaponSc.ShootingOn(false); //조정간 안전
+                weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
+                weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
+                weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
+                weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
+                weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
+                weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
+                weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
+                weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
+            }
+            else if (weaponPrefabs.Count == 2)
+            {
+                SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
+                BoxCollider2D weaponBoxCollB = weaponPrefabs[1].GetComponent<BoxCollider2D>();
+                Weapons weaponScB = weaponPrefabs[1].GetComponent<Weapons>();
+                WeaponSkill weaponSkillScB = weaponPrefabs[1].GetComponent<WeaponSkill>();
+
+                if (weaponRen.enabled == true)
+                {
+                    weaponDrop = true; //떨어뜨렸다는 것을 확인
+                    weaponSc.ShootingOn(false); //조정간 안전
+                    weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
+                    weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                    weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
+                    weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
+                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
+                    weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
+                    weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                    weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
+                    weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
+                    weaponSc.ShootingOn(false);
+                    weaponSwap = true;
+                    weaponRenB.enabled = true;
+                    weaponScB.ShootingOn(true);
+                    weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
+                }
+                else if (weaponRenB.enabled == true)
+                {
+                    weaponDrop = true; //떨어뜨렸다는 것을 확인
+                    weaponScB.ShootingOn(false); //조정간 안전
+                    weaponScB.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
+                    weaponScB.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                    weaponSkillScB.WeaponSkillOff(false); //스킬 이미지 비활성화
+                    weaponBoxCollB.enabled = true; //무기의 박스콜라이더를 활성화
+                    weaponRenB.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
+                    weaponPrefabs[1].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
+                    weaponPrefabs[1].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                    weaponPrefabs[1].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
+                    weaponPrefabs[1].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
+                    weaponRen.enabled = true;
+                    weaponSc.ShootingOn(true);
+                    weaponScB.ShootingOn(false);
+                    weaponSwap = false;
+                    weaponPrefabs.RemoveAt(1);  //1번째 배열을 삭제
+                }
             }
         }
     }

@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerSkillCollTimeText;
     [SerializeField] private TMP_Text playerCoolTimeText;
 
+    [Header("아이템 드랍 오브젝트 위치")]
+    [SerializeField] private Transform itemDropTrs;
+
     private void Awake()
     {
         if (Instance == null)
@@ -89,5 +92,10 @@ public class GameManager : MonoBehaviour
     public TMP_Text PlayerCoolTimeText()
     {
         return playerCoolTimeText;
+    }
+
+    public Transform ItemDropTrs()
+    {
+        return itemDropTrs;
     }
 }

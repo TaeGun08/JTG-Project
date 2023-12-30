@@ -35,6 +35,7 @@ public class WeaponSkill : MonoBehaviour
     private float skillCoolTimer = 0.0f; //스킬 쿨타이머
     private bool skillCoolOn = false; //스킬을 썼을 때 쿨타임을 작동시키기 위한 변수
     private SpriteRenderer weaponRen; //무기의 스프라이트 렌더러
+    private bool useSkill = false;
 
     [Header("스킬 UI")]
     [SerializeField, Tooltip("활성화 시킬 스킬 오브젝트")] private GameObject weaponSkill;
@@ -81,6 +82,15 @@ public class WeaponSkill : MonoBehaviour
     private void Update()
     {
         weaponSkillOn();
+
+        if (weaponSkill.activeSelf == false)
+        {
+            skillATimer = 0;
+            chargingTimer = 0;
+            chargingImage.fillAmount = 0;
+            return;
+        }
+
         skillCool();
         weaponSpecialAttack();
         skillAControll();
@@ -145,16 +155,20 @@ public class WeaponSkill : MonoBehaviour
         {
             skillCoolOn = true;
 
+            useSkill = true;
+
             if (skillType.ToString() == "skillA")
             {
                 curBullet = weapons.CurBullet();
                 weapons.BulletChange(skillPrefabs[0]);
                 skillATimer = skillATime;
                 skillAOn = true;
+                useSkill = false;
             }
             else if (skillType.ToString() == "skillB")
             {
                 Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
+                useSkill = false;
             }
             else if (skillType.ToString() == "skillD")
             {
@@ -167,6 +181,7 @@ public class WeaponSkill : MonoBehaviour
         if (Input.GetKey(keyManager.WeaponSkiilKey()) && skillCoolOn == false
             && weapons.ShootingOnCheck() == true && weaponRen.enabled == true && skillType.ToString() == "skillC")
         {
+            useSkill = true;
             chargingObj.SetActive(true);
             chargingTimer += Time.deltaTime;
             chargingImage.fillAmount = chargingTimer / lastChargingTime;
@@ -175,7 +190,7 @@ public class WeaponSkill : MonoBehaviour
             && weapons.ShootingOnCheck() == true && weaponRen.enabled == true && skillType.ToString() == "skillC")
         {
             skillCoolOn = true;
-
+            useSkill = false;
             if (chargingTimer <= chargingLevel1Time)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
@@ -223,5 +238,15 @@ public class WeaponSkill : MonoBehaviour
     public bool SkillAOn()
     {
         return skillAOn;
+    }
+
+    public bool UseSkill()
+    {
+        return useSkill;
+    }
+
+    public void WeaponSkillOff(bool _skillOff)
+    {
+        weaponSkill.SetActive(_skillOff);
     }
 }

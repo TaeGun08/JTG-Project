@@ -69,8 +69,8 @@ public class Weapons : MonoBehaviour
         {
             pickUpKeyImage.SetActive(true);
             weaponGravityOn = false;
-        }    
-    }  
+        }
+    }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -125,7 +125,7 @@ public class Weapons : MonoBehaviour
 
         magazineText.text = $"{curMagazine} / {maxMagazine}";
 
-        if (shootingOn == false || itemPickUp.GetItemType().ToString() != "Weapon")
+        if (shootingOn == false || itemPickUp.GetItemType().ToString() != "Weapon" || weaponSkill.UseSkill() == true)
         {
             return;
         }
@@ -240,7 +240,7 @@ public class Weapons : MonoBehaviour
                 reloading = false;
             }
         }
-    }   
+    }
 
     /// <summary>
     /// 총을 발사를 담당하는 함수
