@@ -597,19 +597,22 @@ public class Player : MonoBehaviour
 
             if (weaponPrefabs.Count == 1)
             {
-                weaponDrop = true; //떨어뜨렸다는 것을 확인
-                weaponSc.ShootingOn(false); //조정간 안전
-                weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
-                weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
-                weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
-                weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
-                weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
-                gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
-                weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
-                weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
-                weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
-                weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
-                weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
+                if (weaponRen.enabled == true)
+                {
+                    weaponDrop = true; //떨어뜨렸다는 것을 확인
+                    weaponSc.ShootingOn(false); //조정간 안전
+                    weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
+                    weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                    weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
+                    weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
+                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
+                    weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
+                    weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                    weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
+                    weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
+                    weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
+                }
             }
             else if (weaponPrefabs.Count == 2)
             {
