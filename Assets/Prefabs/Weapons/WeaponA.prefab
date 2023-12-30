@@ -877,7 +877,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 0
   m_Sprite: {fileID: 5601323976189978565, guid: 2edfd0eb34e1fa349824f67025b135d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -993,7 +993,7 @@ MonoBehaviour:
   weaponSkilImage: {fileID: 2609706757650077946}
   weaponSkillCoolTimePanel: {fileID: 5446760636081479518}
   weaponSkillCollTimeText: {fileID: 568693023655096422}
-  skillATime: 8
+  skillATime: 6
   chargingLevel1Time: 0
   chargingLevel2Time: 0
   lastChargingTime: 0

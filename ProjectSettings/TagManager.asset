@@ -7,11 +7,12 @@ TagManager:
   - Bullet
   - Item
   - Weapon
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Ground

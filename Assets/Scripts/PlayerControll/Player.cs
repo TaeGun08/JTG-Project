@@ -131,6 +131,9 @@ public class Player : MonoBehaviour
                     Weapons getWeaponSc = getWeapon.GetComponent<Weapons>();
                     getWeaponSc.ShootingOn(true);
                     getWeaponSc.PickUpImageOff(true);
+                    getWeaponSc.WeaponGravityOff(true);
+                    SpriteRenderer getWeaponRen = getWeapon.GetComponent<SpriteRenderer>();
+                    getWeaponRen.sortingOrder = 2;
 
                     Destroy(_collision.gameObject); //무기가 복제가 된 후 화면에 남아있는 무기를 지움
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함

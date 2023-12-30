@@ -29,6 +29,11 @@ public class Weapons : MonoBehaviour
     private WeaponSkill weaponSkill;
     private SpriteRenderer weaponRen;
 
+    private Vector3 moveVec;
+    private float moveSpeed;
+    private bool weaponGravityOn = false;
+    private bool gravityOff = false;
+
     [Header("공격 설정")]
     [SerializeField, Tooltip("공격 딜레이")] private float shootDelay = 0.5f;
     private float shootTimer;
@@ -63,8 +68,9 @@ public class Weapons : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             pickUpKeyImage.SetActive(true);
-        }
-    }
+            weaponGravityOn = false;
+        }    
+    }  
 
     private void OnTriggerExit2D(Collider2D collision)
     {
@@ -79,6 +85,14 @@ public class Weapons : MonoBehaviour
         }
     }
 
+    private void triggerCheck(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            weaponGravityOn = false;
+        }
+    }
+
     private void Awake()
     {
         itemPickUp = GetComponent<ItemPickUp>();
@@ -87,6 +101,8 @@ public class Weapons : MonoBehaviour
         weaponRen = GetComponent<SpriteRenderer>();
 
         autoReloadingTimer = 3.0f;
+
+        weaponGravityOn = true;
     }
 
     private void Start()
@@ -103,6 +119,8 @@ public class Weapons : MonoBehaviour
 
     private void Update()
     {
+        colliderCheck();
+        weaponMove();
         autoReloading();
 
         magazineText.text = $"{curMagazine} / {maxMagazine}";
@@ -119,6 +137,54 @@ public class Weapons : MonoBehaviour
 
         reloadingWeapon();
         shootWeapon();
+    }
+
+    /// <summary>
+    /// 박스 콜라이더를 만들어 닿은 콜라이더 오브젝트를 확인
+    /// </summary>
+    private void colliderCheck()
+    {
+        Collider2D groundColl = Physics2D.OverlapBox(weaponBoxColl2D.bounds.center,
+                weaponBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Ground"));
+
+        if (groundColl != null)
+        {
+            triggerCheck(groundColl);
+        }
+        else if (groundColl == null)
+        {
+            weaponGravityOn = true;
+        }
+    }
+
+    /// <summary>
+    /// 무기가 중력을 받기위해 작동하는 함수
+    /// </summary>
+    private void weaponMove()
+    {
+        if (gravityOff == true)
+        {
+            return;
+        }
+
+        if (weaponGravityOn == true)
+        {
+            if (moveSpeed > 5)
+            {
+                moveSpeed = 5;
+            }
+
+            moveVec.y = 7;
+            transform.position += moveVec * Time.deltaTime;
+            moveVec.y = gameManager.gravityScale();
+            moveSpeed += 0.01f;
+            transform.position -= moveVec * moveSpeed * Time.deltaTime;
+        }
+        else if (weaponGravityOn == false)
+        {
+            moveVec.y = 0;
+            moveSpeed = 0;
+        }
     }
 
     /// <summary>
@@ -261,5 +327,10 @@ public class Weapons : MonoBehaviour
     public void BulletChange(GameObject _bullet)
     {
         bullet = _bullet;
+    }
+
+    public void WeaponGravityOff(bool _gravityOff)
+    {
+        gravityOff = _gravityOff;
     }
 }
