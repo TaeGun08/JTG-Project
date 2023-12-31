@@ -167,13 +167,14 @@ public class WeaponSkill : MonoBehaviour
             }
             else if (skillType.ToString() == "skillB")
             {
-                Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
+                GameObject bulletObj = Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
+                Bullet bulletSc = bulletObj.GetComponent<Bullet>();
+                bulletSc.BulletDamage(6, 0, false);
                 useSkill = false;
             }
             else if (skillType.ToString() == "skillD")
             {
-                GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
-                    skillRot.rotation, trashPreFab.transform);
+                Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
             }
         }
 
@@ -195,18 +196,24 @@ public class WeaponSkill : MonoBehaviour
             {
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
+                Bullet bulletSc = skillObj.GetComponent<Bullet>();
+                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 1.2f, true);
                 skillObj.transform.localScale = new Vector2(1.0f, 1.0f);
             }
             else if (chargingTimer > chargingLevel1Time && chargingTimer <= chargingLevel2Time)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[1], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
+                Bullet bulletSc = skillObj.GetComponent<Bullet>();
+                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 2f, true);
                 skillObj.transform.localScale = new Vector2(2.0f, 2.0f);
             }
             else if (chargingTimer >= lastChargingTime)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[2], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
+                Bullet bulletSc = skillObj.GetComponent<Bullet>();
+                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 3f, true);
                 skillObj.transform.localScale = new Vector2(3.0f, 3.0f);
             }
 

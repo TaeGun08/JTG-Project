@@ -32,7 +32,9 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravity; //게임매니저에서 가져올 중력값을 저장할 변수
 
     [Header("캐릭터의 기본 설정")]
-    [SerializeField] private float playerDamage = 1;
+    [SerializeField] private float playerBuffDamageUp = 1;
+    private bool buffDamageUp = false;
+    private float buffDuration = 0.0f;
     [SerializeField] private int playerMaxHealth = 100;
     [SerializeField] private int playerCurHealth = 0;
     [SerializeField] private int playerArmor = 0;
@@ -153,25 +155,27 @@ public class Player : MonoBehaviour
 
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
                 }
-                else if (itemPickUpType == ItemPickUp.ItemType.Buff)
+            }
+            else if (itemPickUpType == ItemPickUp.ItemType.Buff)
+            {
+                GameObject buffObj = _collision.gameObject;
+                Buff buffSc = buffObj.GetComponent<Buff>();
+                Buff.BuffType buffType = buffSc.GetBuffType();
+                if (buffType == Buff.BuffType.damage)
                 {
-                    GameObject buffObj = _collision.gameObject;
-                    Buff buffSc = buffObj.GetComponent<Buff>();
-                    Buff.BuffType buffType = buffSc.GetBuffType();
-                    if (buffType == Buff.BuffType.damage)
-                    {
-                        playerDamage = buffSc.BuffTypeValue();
-                    }
-                    else if (buffType == Buff.BuffType.armor)
-                    {
-                        playerArmor = (int)buffSc.BuffTypeValue();
-                    }
-                    else if (buffType == Buff.BuffType.heal)
-                    {
-                        playerCurHealth += (int)buffSc.BuffTypeValue();
-                    }
-                    DestroyImmediate(_collision.gameObject);
+                    playerBuffDamageUp = buffSc.BuffTypeValue();
+                    buffDuration = 10;
+                    buffDamageUp = true;
                 }
+                else if (buffType == Buff.BuffType.armor)
+                {
+                    playerArmor = (int)buffSc.BuffTypeValue();
+                }
+                else if (buffType == Buff.BuffType.heal)
+                {
+                    playerCurHealth += (int)buffSc.BuffTypeValue();
+                }
+                DestroyImmediate(_collision.gameObject);
             }
         }
     }
@@ -223,6 +227,7 @@ public class Player : MonoBehaviour
         playerWallSkill();
         playerWeaponChange();
         playerWeaponDrop();
+        playerBuffDamage();
         playerAni();
     }
 
@@ -265,9 +270,22 @@ public class Player : MonoBehaviour
         {
             weaponDropTime -= Time.deltaTime;
         }
+
+        if (buffDamageUp == true)
+        {
+            buffDuration -= Time.deltaTime;
+            if (buffDuration < 0)
+            {
+                buffDamageUp = false;
+                playerBuffDamageUp = 0;
+            }
+        }
     }
 
-    private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
+    /// <summary>
+    /// 아이템 콜라이더 체크를 담당하는 함수
+    /// </summary>
+    private void itmeColliderCheck()
     {
         Collider2D weaponColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
                 playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
@@ -682,6 +700,27 @@ public class Player : MonoBehaviour
                 }
             }
             weaponPrefabs.RemoveAt(removeIndex);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 받은 버프 공격력을 무기에 적용시키기 위한 함수
+    /// </summary>
+    private void playerBuffDamage()
+    {
+        if (weaponPrefabs.Count == 1)
+        {
+            Weapons weaponSc = weaponPrefabs[0].GetComponent<Weapons>();
+            weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
+        }
+        else if (weaponPrefabs.Count == 2)
+        {
+            int count = weaponPrefabs.Count;
+            for(int i = 0; i < count; i++)
+            {
+                Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
+                weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
+            }
         }
     }
 

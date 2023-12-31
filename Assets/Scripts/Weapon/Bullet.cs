@@ -12,8 +12,11 @@ public class Bullet : MonoBehaviour
 
     [SerializeField] BulletType bulletType;
 
-    [Header("총알 속도")]
+    [Header("총알 설정")]
     [SerializeField, Tooltip("총알이 날아가는 속도")] private float bulletSpeed = 1.0f;
+    [SerializeField, Tooltip("총알의 공격력")] private float bulletDamage = 1.0f;
+
+    private bool damageUpOn = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -33,5 +36,19 @@ public class Bullet : MonoBehaviour
     {
         Vector3 bulletMove = transform.up * bulletSpeed * Time.deltaTime;
         transform.position += bulletMove;
+    }
+
+    public void BulletDamage(float _bulletDamage, float _bulletUpDamage, bool _damageUpOn)
+    {
+        damageUpOn = _damageUpOn;
+
+        if (damageUpOn == false)
+        {
+            bulletDamage = _bulletDamage;
+        }
+        else if (damageUpOn == true)
+        {
+            bulletDamage = _bulletDamage * _bulletUpDamage;
+        }
     }
 }

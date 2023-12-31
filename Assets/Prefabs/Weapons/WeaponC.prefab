@@ -330,6 +330,7 @@ MonoBehaviour:
   weaponType: 2
   shootDelay: 1.2
   shootingOn: 0
+  weaponDamage: 7
   bullet: {fileID: 1012400287050802899, guid: d0e639d6870e6fc41a1f1947f417d94a, type: 3}
   bulletPos: {fileID: 4190219247002062191}
   maxMagazine: 3

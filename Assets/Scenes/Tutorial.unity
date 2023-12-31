@@ -13858,6 +13858,10 @@ PrefabInstance:
       propertyPath: playerArmor
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
+      propertyPath: playerBuffDamageUp
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5810805184542133350, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
       propertyPath: m_Name
       value: Player

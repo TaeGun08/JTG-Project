@@ -23,40 +23,8 @@ public class Buff : MonoBehaviour
     private Vector3 moveRot;
     private float changeTimer;
 
-    [Header("줍기 키 이미지")]
-    [SerializeField] private GameObject pickUpKeyImage;
-    private bool imageOff = false;
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (imageOff == true)
-        {
-            return;
-        }
-
-        if (collision.gameObject.tag == "Player")
-        {
-            pickUpKeyImage.SetActive(true);
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (imageOff == true)
-        {
-            return;
-        }
-
-        if (collision.gameObject.tag == "Player")
-        {
-            pickUpKeyImage.SetActive(false);
-        }
-    }
-
     private void Awake()
     {
-        pickUpKeyImage.SetActive(false);
-
         moveVec.y = 1f;
         moveRot.y = 360;
     }

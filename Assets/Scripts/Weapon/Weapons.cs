@@ -38,6 +38,8 @@ public class Weapons : MonoBehaviour
     [SerializeField, Tooltip("공격 딜레이")] private float shootDelay = 0.5f;
     private float shootTimer;
     [SerializeField, Tooltip("조정간")] private bool shootingOn = false;
+    [SerializeField, Tooltip("총의 공격력")] private float weaponDamage;
+    [SerializeField, Tooltip("총의 현재 공격력")] private float weaponCurDamage;
 
     [Header("총알 설정")]
     [SerializeField, Tooltip("총알 프리팹")] private GameObject bullet;
@@ -46,10 +48,10 @@ public class Weapons : MonoBehaviour
     [SerializeField, Tooltip("최대 탄창")] private int maxMagazine; //탄창에 들어가는 최대 총알 수
     [SerializeField, Tooltip("현재 탄창")] private int curMagazine; //현재 탕창에 보유중인 총알 수
     [SerializeField, Tooltip("재장전 시간")] private float reloadingTime; //재장전을 위한 시간
-    [SerializeField] private float reloadingTimer;
+    private float reloadingTimer;
     private bool reloading = false;
     private float curReloadingSlider;
-    [SerializeField] private float autoReloadingTimer;
+    private float autoReloadingTimer;
 
     [Header("줍기 키 이미지")]
     [SerializeField] private GameObject pickUpKeyImage;
@@ -98,6 +100,8 @@ public class Weapons : MonoBehaviour
         weaponBoxColl2D = GetComponent<BoxCollider2D>();
         weaponSkill = GetComponent<WeaponSkill>();
         weaponRen = GetComponent<SpriteRenderer>();
+
+        weaponCurDamage = weaponDamage;
 
         autoReloadingTimer = 3.0f;
 
@@ -282,11 +286,30 @@ public class Weapons : MonoBehaviour
     /// <param name="_rot"></param>
     private void shootBullet(float _rot = 0.0f)
     {
-        Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
-        if (weaponType.ToString() == "weaponTypeB")
+        if (weaponType.ToString() == "weaponTypeA")
         {
-            Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 5)), trashPreFab.transform);
-            Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -5)), trashPreFab.transform);
+            GameObject bulletObjA = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
+            Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
+            if (weaponSkill.SkillAOn() == false)
+            {
+                bulletScA.BulletDamage(weaponCurDamage, 0, false);
+            }
+            else if (weaponSkill.SkillAOn() == true)
+            {
+                bulletScA.BulletDamage(weaponCurDamage, 1.2f, true);
+            }
+        }
+        else if (weaponType.ToString() == "weaponTypeB")
+        {
+            GameObject bulletObjA = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
+            GameObject bulletObjB = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 5)), trashPreFab.transform);
+            GameObject bulletObjC = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -5)), trashPreFab.transform);
+            Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
+            Bullet bulletScB = bulletObjB.GetComponent<Bullet>();
+            Bullet bulletScC = bulletObjC.GetComponent<Bullet>();
+            bulletScA.BulletDamage(weaponCurDamage, 0, false);
+            bulletScB.BulletDamage(weaponCurDamage, 0, false);
+            bulletScC.BulletDamage(weaponCurDamage, 0, false);
         }
     }
 
@@ -331,5 +354,27 @@ public class Weapons : MonoBehaviour
     public void WeaponGravityOff(bool _gravityOff)
     {
         gravityOff = _gravityOff;
+    }
+
+    public float WeaponCurDamage()
+    {
+        return weaponCurDamage;
+    }
+
+    /// <summary>
+    /// 버프로 인한 공격력 상승을 시켜주는 함수
+    /// </summary>
+    /// <param name="_buffDamage"></param>
+    /// <param name="_damageUp"></param>
+    public void BuffDamage(float _buffDamage, bool _damageUp)
+    {
+        if (_buffDamage >= weaponCurDamage && _damageUp == true)
+        {
+            weaponCurDamage += _buffDamage;
+        }
+        else if (weaponDamage <= weaponCurDamage && _damageUp == false)
+        {
+            weaponCurDamage = weaponDamage;
+        }
     }
 }
