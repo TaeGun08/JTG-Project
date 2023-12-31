@@ -31,6 +31,12 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float gravity; //게임매니저에서 가져올 중력값을 저장할 변수
 
+    [Header("캐릭터의 기본 설정")]
+    [SerializeField] private float playerDamage = 1;
+    [SerializeField] private int playerMaxHealth = 100;
+    [SerializeField] private int playerCurHealth = 0;
+    [SerializeField] private int playerArmor = 0;
+
     [Header("이동")]
     [SerializeField, Tooltip("플레이어의 이동속도")] private float speed = 1.0f; //플레이어의 이동속도
     private Vector2 moveVec; //플레이어의 움직임을 위한 벡터
@@ -100,11 +106,11 @@ public class Player : MonoBehaviour
     {
         if (_collision.gameObject.tag == "Item" || _collision.gameObject.tag == "Weapon") //플레이어에 닿은 오브젝트 태그가 아이템 또는 무기인지 체크
         {
+            ItemPickUp itemPickUpSc = _collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
+            ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
+
             if (Input.GetKeyDown(KeyCode.E))
             {
-                ItemPickUp itemPickUpSc = _collision.gameObject.GetComponent<ItemPickUp>();  //플레이어에 닿은 오브젝트의 아이템 스크립트를 가져옴
-                ItemPickUp.ItemType itemPickUpType = itemPickUpSc.GetItemType();
-
                 if (itemPickUpType == ItemPickUp.ItemType.Weapon) //가져온 아이템 타입과 스크립트의 아이템 타입이 일치하면 작동
                 {
                     if (weaponPrefabs.Count > 1)
@@ -149,7 +155,22 @@ public class Player : MonoBehaviour
                 }
                 else if (itemPickUpType == ItemPickUp.ItemType.Buff)
                 {
-
+                    GameObject buffObj = _collision.gameObject;
+                    Buff buffSc = buffObj.GetComponent<Buff>();
+                    Buff.BuffType buffType = buffSc.GetBuffType();
+                    if (buffType == Buff.BuffType.damage)
+                    {
+                        playerDamage = buffSc.BuffTypeValue();
+                    }
+                    else if (buffType == Buff.BuffType.armor)
+                    {
+                        playerArmor = (int)buffSc.BuffTypeValue();
+                    }
+                    else if (buffType == Buff.BuffType.heal)
+                    {
+                        playerCurHealth += (int)buffSc.BuffTypeValue();
+                    }
+                    DestroyImmediate(_collision.gameObject);
                 }
             }
         }
@@ -162,6 +183,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
         playerHand = transform.Find("PlayerHand");
         dashEffect = GetComponent<TrailRenderer>();
+
+        playerCurHealth = playerMaxHealth;
 
         dashEffect.enabled = false;
 
@@ -183,6 +206,11 @@ public class Player : MonoBehaviour
         if (gameManager.GamePause() == true) //게임매니저에서 gamePause가 true라면 플레이어 동작을 멈춤
         {
             return;
+        }
+
+        if (playerCurHealth > playerMaxHealth)
+        {
+            playerCurHealth = playerMaxHealth;
         }
 
         timers();
@@ -241,8 +269,16 @@ public class Player : MonoBehaviour
 
     private void itmeColliderCheck() //아이템 콜라이더를 체크하고 
     {
-        Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
+        Collider2D weaponColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
                 playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
+
+        Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
+                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Item")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
+
+        if (weaponColl != null)
+        {
+            pickUpItem(weaponColl);
+        }
 
         if (itemColl != null)
         {
@@ -590,78 +626,62 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(keyManager.DropItemKey()) && weaponDrop == false)
         {
-            SpriteRenderer weaponRen = weaponPrefabs[0].GetComponent<SpriteRenderer>();
-            BoxCollider2D weaponBoxColl = weaponPrefabs[0].GetComponent<BoxCollider2D>();
-            Weapons weaponSc = weaponPrefabs[0].GetComponent<Weapons>();
-            WeaponSkill weaponSkillSc = weaponPrefabs[0].GetComponent<WeaponSkill>();
+            int count = weaponPrefabs.Count;
+            int removeIndex = 0;
+            for (int i = 0; i < count; i++)
+            {
+                SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
+                BoxCollider2D weaponBoxColl = weaponPrefabs[i].GetComponent<BoxCollider2D>();
+                Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
+                WeaponSkill weaponSkillSc = weaponPrefabs[i].GetComponent<WeaponSkill>();
+
+                if (weaponRen.enabled == true)
+                {
+                    weaponDrop = true; //떨어뜨렸다는 것을 확인
+                    weaponSc.ShootingOn(false); //조정간 안전
+                    weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
+                    weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                    weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
+                    weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
+                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
+                    weaponPrefabs[i].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
+                    weaponPrefabs[i].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                    weaponPrefabs[i].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
+                    weaponPrefabs[i].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
+                    removeIndex = i;
+                }
+            }
 
             if (weaponPrefabs.Count == 1)
             {
-                if (weaponRen.enabled == true)
-                {
-                    weaponDrop = true; //떨어뜨렸다는 것을 확인
-                    weaponSc.ShootingOn(false); //조정간 안전
-                    weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
-                    weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
-                    weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
-                    weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
-                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
-                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
-                    weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
-                    weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
-                    weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
-                    weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
-                    weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
-                }
+                Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
+
+                weaponScA.ShootingOn(false);
             }
             else if (weaponPrefabs.Count == 2)
             {
+                SpriteRenderer weaponRenA = weaponPrefabs[0].GetComponent<SpriteRenderer>();
+                Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
                 SpriteRenderer weaponRenB = weaponPrefabs[1].GetComponent<SpriteRenderer>();
-                BoxCollider2D weaponBoxCollB = weaponPrefabs[1].GetComponent<BoxCollider2D>();
                 Weapons weaponScB = weaponPrefabs[1].GetComponent<Weapons>();
-                WeaponSkill weaponSkillScB = weaponPrefabs[1].GetComponent<WeaponSkill>();
 
-                if (weaponRen.enabled == true)
+                if (weaponRenA.enabled == true)
                 {
-                    weaponDrop = true; //떨어뜨렸다는 것을 확인
-                    weaponSc.ShootingOn(false); //조정간 안전
-                    weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
-                    weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
-                    weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
-                    weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
-                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
-                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
-                    weaponPrefabs[0].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
-                    weaponPrefabs[0].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
-                    weaponPrefabs[0].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
-                    weaponPrefabs[0].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
-                    weaponSc.ShootingOn(false);
-                    weaponSwap = true;
                     weaponRenB.enabled = true;
+                    weaponScA.ShootingOn(false);
                     weaponScB.ShootingOn(true);
-                    weaponPrefabs.RemoveAt(0);  //0번째 배열을 삭제
+                    weaponSwap = true;
                 }
                 else if (weaponRenB.enabled == true)
                 {
-                    weaponDrop = true; //떨어뜨렸다는 것을 확인
-                    weaponScB.ShootingOn(false); //조정간 안전
-                    weaponScB.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
-                    weaponScB.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
-                    weaponSkillScB.WeaponSkillOff(false); //스킬 이미지 비활성화
-                    weaponBoxCollB.enabled = true; //무기의 박스콜라이더를 활성화
-                    weaponRenB.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
-                    gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
-                    weaponPrefabs[1].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
-                    weaponPrefabs[1].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
-                    weaponPrefabs[1].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
-                    weaponPrefabs[1].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
-                    weaponRen.enabled = true;
-                    weaponSc.ShootingOn(true);
+                    weaponRenA.enabled = true;
+                    weaponScA.ShootingOn(true);
                     weaponScB.ShootingOn(false);
                     weaponSwap = false;
-                    weaponPrefabs.RemoveAt(1);  //1번째 배열을 삭제
                 }
             }
+            weaponPrefabs.RemoveAt(removeIndex);
         }
     }
 

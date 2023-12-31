@@ -68,7 +68,6 @@ public class Weapons : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             pickUpKeyImage.SetActive(true);
-            weaponGravityOn = false;
         }
     }
 
