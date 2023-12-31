@@ -676,6 +676,7 @@ public class Player : MonoBehaviour
                 Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
 
                 weaponScA.ShootingOn(false);
+                weaponScA.BuffDamage(10000, false);
             }
             else if (weaponPrefabs.Count == 2)
             {
@@ -690,6 +691,7 @@ public class Player : MonoBehaviour
                     weaponScA.ShootingOn(false);
                     weaponScB.ShootingOn(true);
                     weaponSwap = true;
+                    weaponScA.BuffDamage(10000, false);
                 }
                 else if (weaponRenB.enabled == true)
                 {
@@ -697,6 +699,7 @@ public class Player : MonoBehaviour
                     weaponScA.ShootingOn(true);
                     weaponScB.ShootingOn(false);
                     weaponSwap = false;
+                    weaponScB.BuffDamage(10000, false);
                 }
             }
             weaponPrefabs.RemoveAt(removeIndex);
