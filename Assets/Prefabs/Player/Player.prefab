@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3771673804365366641}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: PlayerHand
   m_TagString: Untagged
   m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
@@ -343,6 +343,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillType: 0
   gravity: 0
+  playerBuffDamageUp: 0
+  playerMaxHealth: 100
+  playerCurHealth: 0
+  playerArmor: 0
   speed: 4
   jumpPower: 5
   doubleJumpTime: 0.5
@@ -383,7 +387,7 @@ GameObject:
   - component: {fileID: 2073291929947131138}
   - component: {fileID: 553887342790392878}
   - component: {fileID: 8259091103761851674}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: WallHitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}

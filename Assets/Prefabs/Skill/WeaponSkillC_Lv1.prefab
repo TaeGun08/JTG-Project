@@ -115,9 +115,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7175101539907878504}
-  - component: {fileID: 7085690478381262430}
   - component: {fileID: 6801522026236544034}
   - component: {fileID: 1678039789746783002}
+  - component: {fileID: 7085690478381262430}
   m_Layer: 0
   m_Name: WeaponSkillC_Lv1
   m_TagString: Bullet
@@ -141,20 +141,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7085690478381262430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5208933652027247999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e2614a3d0ca8b744b1d0da77e7faa5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletType: 0
-  bulletSpeed: 15
 --- !u!50 &6801522026236544034
 Rigidbody2D:
   serializedVersion: 4
@@ -225,5 +211,20 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6857143, y: 0.9}
+  m_Size: {x: 0.44, y: 0.9}
   m_EdgeRadius: 0
+--- !u!114 &7085690478381262430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5208933652027247999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e2614a3d0ca8b744b1d0da77e7faa5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletType: 1
+  bulletSpeed: 15
+  bulletDamage: 1

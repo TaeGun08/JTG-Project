@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using TMPro;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour
     private BoxCollider2D playerBoxColl2D; //플레이어의 박스 콜라이더
     private Camera mainCam; //메인 카메라
     private Animator anim;
+    private SpriteRenderer playerRen;
 
     //플레이어에 가져올 매니저
     private GameManager gameManager; //게임매니저
@@ -38,6 +40,8 @@ public class Player : MonoBehaviour
     [SerializeField] private int playerMaxHealth = 100;
     [SerializeField] private int playerCurHealth = 0;
     [SerializeField] private int playerArmor = 0;
+    private bool playerHitDamage = false;
+    private float hitDamageTimer;
 
     [Header("이동")]
     [SerializeField, Tooltip("플레이어의 이동속도")] private float speed = 1.0f; //플레이어의 이동속도
@@ -72,6 +76,7 @@ public class Player : MonoBehaviour
     private bool isDash = false;
     private bool dashKey;
     private TrailRenderer dashEffect;
+    private bool dashInvincibleOn = false;
 
     [Header("벽 타기 및 벽 슬라이딩")]
     [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f; //벽 점프를 위한 힘
@@ -187,12 +192,17 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
         playerHand = transform.Find("PlayerHand");
         dashEffect = GetComponent<TrailRenderer>();
+        playerRen = GetComponent<SpriteRenderer>();
 
         playerCurHealth = playerMaxHealth;
+
+        dashCoolTimer = dashCoolTime;
 
         dashEffect.enabled = false;
 
         weaponDropTime = 0.5f;
+
+        hitDamageTimer = 0.1f;
     }
 
     private void Start()
@@ -228,6 +238,8 @@ public class Player : MonoBehaviour
         playerWeaponChange();
         playerWeaponDrop();
         playerBuffDamage();
+        playerDamageHit();
+        playerDead();
         playerAni();
     }
 
@@ -248,7 +260,18 @@ public class Player : MonoBehaviour
 
         if (dashCoolOn == true) //대쉬를 하기 위한 쿨타임
         {
-            dashCoolTimer += Time.deltaTime;
+            dashCoolTimer -= Time.deltaTime;
+            gameManager.PlayerDashCoolPanelImage().fillAmount = dashCoolTimer / dashCoolTime;
+            if (dashCoolTimer >= 1)
+            {
+                string timerTextInt = $"{(int)dashCoolTimer}";
+                gameManager.PlayerDashCoolTimeText().text = timerTextInt;
+            }
+            else if (dashCoolTimer < 1)
+            {
+                string timerTextInt = $"{dashCoolTimer.ToString("F1")}";
+                gameManager.PlayerDashCoolTimeText().text = timerTextInt;
+            }
         }
 
         if (wallJumpTimerOn == true) //벽 점프가 실행이되면 다시 중력을 받기 위한 타이머
@@ -278,6 +301,17 @@ public class Player : MonoBehaviour
             {
                 buffDamageUp = false;
                 playerBuffDamageUp = 0;
+            }
+        }
+
+        if (playerHitDamage == true)
+        {
+            hitDamageTimer -= Time.deltaTime;
+            if (hitDamageTimer < 0)
+            {
+                hitDamageTimer = 0.1f;
+                playerHitDamage = false;
+                playerRen.color = Color.white;
             }
         }
     }
@@ -475,15 +509,19 @@ public class Player : MonoBehaviour
         if (dashRangeTimer >= dashRange)
         {
             isDash = false;
+            dashInvincibleOn = false;
             dashRangeTimer = 0.0f;
             dashEffect.Clear();
             dashEffect.enabled = false;
+            playerRen.color = Color.white;
         }
 
-        if (dashCoolTimer >= dashCoolTime)
+        if (dashCoolTimer < 0)
         {
             dashCoolOn = false;
-            dashCoolTimer = 0.0f;
+            dashCoolTimer = dashCoolTime;
+            gameManager.PlayerDashPanel().SetActive(false);
+            gameManager.PlayerDashText().SetActive(false);
         }
 
         if (dashKey == true && isDash == false && dashCoolOn == false)
@@ -492,7 +530,14 @@ public class Player : MonoBehaviour
 
             dashCoolOn = true;
 
+            dashInvincibleOn = true;
+
+            gameManager.PlayerDashPanel().SetActive(true);
+            gameManager.PlayerDashText().SetActive(true);
+
             gravityVelocity = 0.0f;
+
+            playerRen.color = Color.black;
 
             if (moveVec.x > 0 && isWall == false) //moveVec.x 가 0보다 크면 오른쪽으로 대쉬
             {
@@ -661,7 +706,7 @@ public class Player : MonoBehaviour
                     weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
                     weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
                     weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
-                    weaponRen.sortingOrder = 0;  //스프라이트의 오더 인 레이어를 0으로 변경
+                    weaponRen.sortingOrder = -2;  //스프라이트의 오더 인 레이어를 -2로 변경
                     gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
                     weaponPrefabs[i].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
                     weaponPrefabs[i].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
@@ -728,6 +773,29 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 플레이어가 피격을 입었을 때 타격감을 주는 함수
+    /// </summary>
+    private void playerDamageHit()
+    {
+        if (playerHitDamage == true)
+        {
+            playerRen.color = Color.red;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 피가 0이되면 작동하는 함수
+    /// </summary>
+    private void playerDead()
+    {
+        if (playerCurHealth <= 0)
+        {
+            dashEffect.Clear();
+            Destroy(gameObject);
+        }
+    }
+
+    /// <summary>
     /// 플레이어의 애니메이션을 담당하는 함수
     /// </summary>
     private void playerAni()
@@ -774,5 +842,17 @@ public class Player : MonoBehaviour
     public bool playerMouseAimRight()
     {
         return mouseAimRight;
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 플레이어 Hp에 넣어진 값을 받아오기 위한 함수
+    /// </summary>
+    public void PlayerCurHp(int _damage, bool _hit)
+    {
+        if (dashInvincibleOn == false)
+        {
+            playerCurHealth -= _damage;
+            playerHitDamage = _hit;
+        }
     }
 }

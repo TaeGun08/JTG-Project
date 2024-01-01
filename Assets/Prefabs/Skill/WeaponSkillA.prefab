@@ -115,9 +115,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5993769047900856688}
-  - component: {fileID: 6745164986748566327}
   - component: {fileID: 8184542312012618162}
   - component: {fileID: 2320838970329805731}
+  - component: {fileID: 6745164986748566327}
   m_Layer: 0
   m_Name: WeaponSkillA
   m_TagString: Bullet
@@ -141,20 +141,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6745164986748566327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6256000064686517436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e2614a3d0ca8b744b1d0da77e7faa5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletType: 0
-  bulletSpeed: 18
 --- !u!50 &8184542312012618162
 Rigidbody2D:
   serializedVersion: 4
@@ -227,3 +213,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.64, y: 1.26}
   m_EdgeRadius: 0
+--- !u!114 &6745164986748566327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6256000064686517436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e2614a3d0ca8b744b1d0da77e7faa5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletType: 1
+  bulletSpeed: 18
+  bulletDamage: 1

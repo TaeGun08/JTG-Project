@@ -7,7 +7,8 @@ public class Bullet : MonoBehaviour
     public enum BulletType
     {
         playerBullet,
-        enemyBullet
+        playerSkillBullet,
+        enemyBullet,
     }
 
     [SerializeField] BulletType bulletType;
@@ -20,16 +21,46 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Enemy")
+        if (bulletType.ToString() == "playerBullet")
         {
-            Destroy(gameObject);
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
+                enemySc.EnemyHp((int)bulletDamage, true);
+                Destroy(gameObject);
+            }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                Destroy(gameObject);
+            }
+        }
+        else if (bulletType.ToString() == "playerSkillBullet")
+        {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
+                enemySc.EnemyHp((int)bulletDamage, true);
+            }
+        }
+        else if (bulletType.ToString() == "enemyBullet")
+        {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+            {
+                Player playerSc = collision.gameObject.GetComponent<Player>();
+                playerSc.PlayerCurHp((int)bulletDamage, true);
+                Destroy(gameObject);
+            }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
     private void Update()
     {
         shootBullet();
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 1);
     }
 
     private void shootBullet()

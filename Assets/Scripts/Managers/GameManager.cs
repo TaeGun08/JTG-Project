@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image playerCoolTimePanelImage;
     [SerializeField] private GameObject playerSkillCollTimeText;
     [SerializeField] private TMP_Text playerCoolTimeText;
+    [SerializeField] private GameObject playerDashCoolPanel;
+    [SerializeField] private Image playerDashCoolPanelImage;
+    [SerializeField] private GameObject playerDashCoolText;
+    [SerializeField] private TMP_Text playerDashCoolTimeText;
 
     [Header("아이템 드랍 오브젝트 위치")]
     [SerializeField] private Transform itemDropTrs;
@@ -92,6 +96,26 @@ public class GameManager : MonoBehaviour
     public TMP_Text PlayerCoolTimeText()
     {
         return playerCoolTimeText;
+    }
+
+    public GameObject PlayerDashPanel()
+    {
+        return playerDashCoolPanel;
+    }
+
+    public GameObject PlayerDashText()
+    {
+        return playerDashCoolText;
+    }
+
+    public Image PlayerDashCoolPanelImage()
+    {
+        return playerDashCoolPanelImage;
+    }
+
+    public TMP_Text PlayerDashCoolTimeText()
+    {
+        return playerDashCoolTimeText;
     }
 
     public Transform ItemDropTrs()

@@ -182,7 +182,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: -8951780388439148649, guid: 2edfd0eb34e1fa349824f67025b135d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -268,13 +268,12 @@ MonoBehaviour:
   shootDelay: 2
   shootingOn: 0
   weaponDamage: 20
+  weaponCurDamage: 0
   bullet: {fileID: 1012400287050802899, guid: d0e639d6870e6fc41a1f1947f417d94a, type: 3}
   bulletPos: {fileID: 6683807388122307724}
   maxMagazine: 0
   curMagazine: 0
   reloadingTime: 2.5
-  reloadingTimer: 0
-  autoReloadingTimer: 0
   pickUpKeyImage: {fileID: 5174792852865897647}
   magazineText: {fileID: 617710702285323798}
 --- !u!114 &258345597962153995
@@ -739,7 +738,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: 223a1f0ca70723a42805d409a541357c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

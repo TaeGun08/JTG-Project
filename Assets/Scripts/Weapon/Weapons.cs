@@ -284,19 +284,19 @@ public class Weapons : MonoBehaviour
     /// 총알 생성을 담당하는 함수
     /// </summary>
     /// <param name="_rot"></param>
-    private void shootBullet(float _rot = 0.0f)
+    private void shootBullet()
     {
-        if (weaponType.ToString() == "weaponTypeA")
+        if (weaponType.ToString() == "weaponTypeA" || weaponType.ToString() == "weaponTypeC")
         {
-            GameObject bulletObjA = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
-            Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
+            GameObject bulletObj = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
+            Bullet bulletSc = bulletObj.GetComponent<Bullet>();
             if (weaponSkill.SkillAOn() == false)
             {
-                bulletScA.BulletDamage(weaponCurDamage, 0, false);
+                bulletSc.BulletDamage(weaponCurDamage, 0, false);
             }
             else if (weaponSkill.SkillAOn() == true)
             {
-                bulletScA.BulletDamage(weaponCurDamage, 1.2f, true);
+                bulletSc.BulletDamage(weaponCurDamage, 1.2f, true);
             }
         }
         else if (weaponType.ToString() == "weaponTypeB")
