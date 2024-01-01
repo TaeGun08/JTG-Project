@@ -299,7 +299,7 @@ Transform:
   - {fileID: 6822450419774058307}
   - {fileID: 6628296441209417642}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7470506412883351496
 SpriteRenderer:
@@ -463,7 +463,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   gravity: 0
-  enemyHealth: 8
+  enemyHealth: 6
   enemyDamage: 5
   enemyArmor: 0
   speed: 2

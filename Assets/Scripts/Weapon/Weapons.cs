@@ -302,8 +302,8 @@ public class Weapons : MonoBehaviour
         else if (weaponType.ToString() == "weaponTypeB")
         {
             GameObject bulletObjA = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
-            GameObject bulletObjB = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 5)), trashPreFab.transform);
-            GameObject bulletObjC = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -5)), trashPreFab.transform);
+            GameObject bulletObjB = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 15)), trashPreFab.transform);
+            GameObject bulletObjC = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -15)), trashPreFab.transform);
             Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
             Bullet bulletScB = bulletObjB.GetComponent<Bullet>();
             Bullet bulletScC = bulletObjC.GetComponent<Bullet>();

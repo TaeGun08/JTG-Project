@@ -11,6 +11,16 @@ public class GameManager : MonoBehaviour
     [Header("게임 중지")]
     [SerializeField] private bool gamePause = false;
 
+    [Header("플레이어 관련 설정")]
+    [SerializeField] private GameObject playerPrefab;
+    private GameObject playerObj;
+    [SerializeField] private Transform playerStartPos;
+    private bool playerCreateOn = false;
+
+    [Header("적 관련 설정")]
+    [SerializeField] private List<GameObject> enemyPrefab = new List<GameObject>();
+    [SerializeField] private List<Transform> enemyCreatePos = new List<Transform>();
+
     [Header("중력")]
     [SerializeField] private float gravity;
 
@@ -18,7 +28,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject reloadingObj;
     [SerializeField] private Slider reloadingUI;
 
-    [Header("스킬 UI")]
+    [Header("플레이어 UI")]
+    [SerializeField] private GameObject playerUI;
     [SerializeField] private GameObject playerSkill;
     [SerializeField] private Image playerSkillImage;
     [SerializeField] private GameObject playerSkillCoolTimePanel;
@@ -29,6 +40,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image playerDashCoolPanelImage;
     [SerializeField] private GameObject playerDashCoolText;
     [SerializeField] private TMP_Text playerDashCoolTimeText;
+    [SerializeField] private Slider playerHpSlider;
+    [SerializeField] private TMP_Text playerHpText;
 
     [Header("아이템 드랍 오브젝트 위치")]
     [SerializeField] private Transform itemDropTrs;
@@ -45,9 +58,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        playerCreate();
+    }
+
+    private void LateUpdate()
+    {
+        if (playerPrefab == null)
+        {
+            playerUI.SetActive(false);
+        }
+        else if (playerPrefab != null)
+        {
+            playerUI.SetActive(true);
+        }
+    }
+
+    private void playerCreate()
+    {
+        if (playerCreateOn == false)
+        {
+            playerObj = Instantiate(playerPrefab, playerStartPos.position, Quaternion.identity, playerStartPos);
+        }
+    }
+
     public bool GamePause()
     {
         return gamePause;
+    }
+
+    public GameObject PlayerPrefab()
+    {
+        return playerObj;
     }
 
     public float gravityScale()
@@ -118,8 +161,28 @@ public class GameManager : MonoBehaviour
         return playerDashCoolTimeText;
     }
 
+    public Slider PlayerHpSlider()
+    {
+        return playerHpSlider;
+    }
+
+    public TMP_Text PlayerHpText()
+    {
+        return playerHpText;
+    }
+
     public Transform ItemDropTrs()
     {
         return itemDropTrs;
+    }
+
+    public List<GameObject> EnemyPrefab()
+    {
+        return enemyPrefab;
+    }
+
+    public List<Transform> EnemyCreatePos()
+    {
+        return enemyCreatePos;
     }
 }

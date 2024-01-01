@@ -5,8 +5,18 @@ using UnityEngine;
 public class FollowReroadingUI : MonoBehaviour
 {
     private Vector3 position;
+
+    private GameManager gameManager; //게임매니저
+
     [Header("UI가 따라갈 오브젝트")]
     [SerializeField] private GameObject player;
+
+    private void Start()
+    {
+        gameManager = GameManager.Instance;
+
+        player = gameManager.PlayerPrefab();
+    }
 
     private void Update()
     {

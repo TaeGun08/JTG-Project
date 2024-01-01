@@ -75,7 +75,6 @@ public class Player : MonoBehaviour
     private bool dashCoolOn = false;
     private bool isDash = false;
     private bool dashKey;
-    private TrailRenderer dashEffect;
     private bool dashInvincibleOn = false;
 
     [Header("벽 타기 및 벽 슬라이딩")]
@@ -191,18 +190,17 @@ public class Player : MonoBehaviour
         playerBoxColl2D = GetComponent<BoxCollider2D>(); //플레이어 자신의 박스콜라이더2D를 가져옴
         anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
         playerHand = transform.Find("PlayerHand");
-        dashEffect = GetComponent<TrailRenderer>();
         playerRen = GetComponent<SpriteRenderer>();
 
         playerCurHealth = playerMaxHealth;
 
         dashCoolTimer = dashCoolTime;
 
-        dashEffect.enabled = false;
-
         weaponDropTime = 0.5f;
 
         hitDamageTimer = 0.1f;
+
+        mouseAimRight = true;
     }
 
     private void Start()
@@ -213,11 +211,14 @@ public class Player : MonoBehaviour
         mainCam = Camera.main; //메인 카메라를 가져와 mainCam에 담아 줌
 
         gravity = gameManager.gravityScale();
+
+        gameManager.PlayerHpSlider().maxValue = playerCurHealth;
+        gameManager.PlayerHpSlider().value = playerCurHealth;
     }
 
     private void Update()
     {
-        if (gameManager.GamePause() == true) //게임매니저에서 gamePause가 true라면 플레이어 동작을 멈춤
+        if (gameManager.GamePause() == true || transform.gameObject == null) //게임매니저에서 gamePause가 true라면 플레이어 동작을 멈춤
         {
             return;
         }
@@ -511,8 +512,6 @@ public class Player : MonoBehaviour
             isDash = false;
             dashInvincibleOn = false;
             dashRangeTimer = 0.0f;
-            dashEffect.Clear();
-            dashEffect.enabled = false;
             playerRen.color = Color.white;
         }
 
@@ -557,8 +556,6 @@ public class Player : MonoBehaviour
             }
 
             rigid.velocity = moveVec;
-
-            dashEffect.enabled = true;
         }
     }
 
@@ -790,8 +787,16 @@ public class Player : MonoBehaviour
     {
         if (playerCurHealth <= 0)
         {
-            dashEffect.Clear();
             Destroy(gameObject);
+            gameManager.PlayerHpSlider().value = 0;
+            string hpText = $"0 / {(int)playerMaxHealth}";
+            gameManager.PlayerHpText().text = hpText;
+        }
+        else if (playerCurHealth > 0 && transform.gameObject != null)
+        {
+            gameManager.PlayerHpSlider().value = playerCurHealth;
+            string hpText = $"{(int)playerCurHealth} / {(int)playerMaxHealth}";
+            gameManager.PlayerHpText().text = hpText;
         }
     }
 
