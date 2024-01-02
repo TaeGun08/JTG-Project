@@ -61,11 +61,11 @@ public class GameManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (playerPrefab == null)
+        if (playerObj == null)
         {
             playerUI.SetActive(false);
         }
-        else if (playerPrefab != null)
+        else if (playerObj != null)
         {
             playerUI.SetActive(true);
         }

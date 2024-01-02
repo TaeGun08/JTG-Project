@@ -67,7 +67,7 @@ public class Enemy : MonoBehaviour
     [SerializeField, Tooltip("점프 체크를 위한 콜라이더")] private Collider2D jumpCheckColl;
     [SerializeField, Tooltip("벽 체크를 위한 콜라이더")] private Collider2D wallCheckColl;
     [SerializeField, Tooltip("땅 체크를 위한 콜라이더")] private Collider2D groundCheckColl;
-    [SerializeField, Tooltip("공격을 위한 콜라이더")] private Collider2D attackCheckColl;
+    [SerializeField, Tooltip("공격을 위한 콜라이더")] private CircleCollider2D attackCheckColl;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -92,6 +92,7 @@ public class Enemy : MonoBehaviour
                 bulletSc.BulletDamage(enemyDamage, 0, false);
                 isAttack = true;
             }
+
             moveStop = true;
             useMove = 1;
 
@@ -207,7 +208,7 @@ public class Enemy : MonoBehaviour
     private void enemyAttackCollCheck()
     {
         Collider2D attackColl = Physics2D.OverlapCircle(attackCheckColl.bounds.center,
-            5, LayerMask.GetMask("Player"));
+            attackCheckColl.radius, LayerMask.GetMask("Player"));
 
         if (attackColl != null)
         {

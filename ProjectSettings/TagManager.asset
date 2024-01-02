@@ -10,6 +10,7 @@ TagManager:
   - Ground
   - PlayerHand
   - Enemy
+  - JumpWall
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Weapon
   - Item
   - Enemy
-  - 
+  - Trap
   - 
   - 
   - 

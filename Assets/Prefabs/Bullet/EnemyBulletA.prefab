@@ -172,5 +172,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletType: 2
-  bulletSpeed: 18
+  bulletSpeed: 7
   bulletDamage: 1

@@ -821,11 +821,13 @@ public class Player : MonoBehaviour
     /// </summary>
     public void playerWallCheck(bool _wallHit, Collider2D _collision)
     {
-        if (_wallHit == true && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (_wallHit == true && _collision.gameObject.layer == LayerMask.NameToLayer("Ground")
+            && _collision.gameObject.tag == "JumpWall")
         {
             isWall = true;
         }
-        else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground")
+            && _collision.gameObject.tag == "JumpWall")
         {
             isWall = false;
         }
@@ -859,5 +861,10 @@ public class Player : MonoBehaviour
             playerCurHealth -= _damage;
             playerHitDamage = _hit;
         }
+    }
+
+    public void GravityVelocityValue(float _gravityVelocity)
+    {
+        gravityVelocity = _gravityVelocity;
     }
 }

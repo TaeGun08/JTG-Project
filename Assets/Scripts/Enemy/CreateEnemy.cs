@@ -6,7 +6,10 @@ public class CreateEnemy : MonoBehaviour
 {
     [Header("利 积己 包访 汲沥")]
     [SerializeField] private List<GameObject> enemyPrefab = new List<GameObject>();
-    [SerializeField] private List<Transform> enemyCreatePos = new List<Transform>();
+    [SerializeField] private Transform enemyCreatePos;
+
+    [Header("积己且 利 橇府普")]
+    [SerializeField] private int enemyPrefabNember;
 
     private TrashPreFab trashPreFab;
 
@@ -24,9 +27,9 @@ public class CreateEnemy : MonoBehaviour
 
     private void enemyCreate()
     {
-        if (isCreate == false)
+        if (isCreate == false && (enemyPrefabNember <= enemyPrefab.Count - 1))
         {
-            Instantiate(enemyPrefab[0], enemyCreatePos[0].position, Quaternion.identity, trashPreFab.transform);
+            Instantiate(enemyPrefab[enemyPrefabNember], enemyCreatePos.position, Quaternion.identity, trashPreFab.transform);
             isCreate = true;
         }
     }
