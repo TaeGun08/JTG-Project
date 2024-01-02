@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class CreateEnemy : MonoBehaviour
 {
-    private GameManager gameManager;
+    [Header("利 积己 包访 汲沥")]
+    [SerializeField] private List<GameObject> enemyPrefab = new List<GameObject>();
+    [SerializeField] private List<Transform> enemyCreatePos = new List<Transform>();
+
+    private TrashPreFab trashPreFab;
 
     private bool isCreate = false;
 
     private void Start()
     {
-        gameManager = GameManager.Instance;
+        trashPreFab = TrashPreFab.instance;
     }
 
     private void Update()
@@ -22,7 +26,7 @@ public class CreateEnemy : MonoBehaviour
     {
         if (isCreate == false)
         {
-            Instantiate(gameManager.EnemyPrefab()[0], gameManager.EnemyCreatePos()[0]);
+            Instantiate(enemyPrefab[0], enemyCreatePos[0].position, Quaternion.identity, trashPreFab.transform);
             isCreate = true;
         }
     }

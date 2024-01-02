@@ -17,10 +17,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform playerStartPos;
     private bool playerCreateOn = false;
 
-    [Header("적 관련 설정")]
-    [SerializeField] private List<GameObject> enemyPrefab = new List<GameObject>();
-    [SerializeField] private List<Transform> enemyCreatePos = new List<Transform>();
-
     [Header("중력")]
     [SerializeField] private float gravity;
 
@@ -174,15 +170,5 @@ public class GameManager : MonoBehaviour
     public Transform ItemDropTrs()
     {
         return itemDropTrs;
-    }
-
-    public List<GameObject> EnemyPrefab()
-    {
-        return enemyPrefab;
-    }
-
-    public List<Transform> EnemyCreatePos()
-    {
-        return enemyCreatePos;
     }
 }
