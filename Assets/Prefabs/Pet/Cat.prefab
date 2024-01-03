@@ -66,7 +66,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 2
+  m_Radius: 5
 --- !u!1 &2302528266668580234
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,7 +171,7 @@ Transform:
   - {fileID: 5079734317282601781}
   - {fileID: 6035928099442660681}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1226319723944058255
 SpriteRenderer:
@@ -346,5 +346,9 @@ MonoBehaviour:
   petType: 0
   playerCheck: {fileID: 3582557485103431319}
   enemyCheck: {fileID: 5734221419951892405}
-  speed: 0
+  speed: 2
   getPet: 0
+  moveOff: 0
+  moveOnTimer: 0
+  petDamageA: 0
+  petEffect: {fileID: 3821167043253325625, guid: f643120824c2aa14eab31230fd2f1c0c, type: 3}

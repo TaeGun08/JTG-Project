@@ -99,7 +99,7 @@ public class PlayerSkill : MonoBehaviour
                     skillRot.rotation, trashPreFab.transform);
                 Knife knifeSc = skillObj.GetComponent<Knife>();
                 knifeSc.KnifeDamage(skillADamage + player.PlayerBuffDamage());
-                knifeSc.KnifeForce(skillRot.rotation * (new Vector2(15.0f, 0f)), player.playerMouseAimRight());
+                knifeSc.KnifeForce(skillRot.rotation * (new Vector2(15.0f, 0f)), player.PlayerMouseAimRight());
             }
             else if (skillType.ToString() == "skillTypeB")
             {

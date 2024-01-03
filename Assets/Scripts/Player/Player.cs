@@ -101,7 +101,6 @@ public class Player : MonoBehaviour
 
     [Header("펫 관련 설정")]
     [SerializeField, Tooltip("펫을 저장할 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
-    private Pet petSc;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -171,10 +170,10 @@ public class Player : MonoBehaviour
                         return;
                     }
                    
-                    petSc = _collision.gameObject.GetComponent<Pet>();
+                    Pet petSc = _collision.gameObject.GetComponent<Pet>();
                     petSc.GetPetCheck(true);
                     Vector3 myPos = transform.position;
-                    myPos.x = -0.5f;
+                    myPos.x = -1f;
                     _collision.gameObject.transform.position = myPos;
                 }
             }
@@ -259,7 +258,6 @@ public class Player : MonoBehaviour
         playerBuffDamage();
         playerDamageHit();
         playerDead();
-        petControll();
         playerAni();
     }
 
@@ -491,10 +489,6 @@ public class Player : MonoBehaviour
             animIsJump = true;
             isJump = true;
             useWallSliding = true;
-            if (petSc != null)
-            {
-                petSc.PetRunCheck(true);
-            }
         }
         else if (jumpKey == true && isGround == false && isJump == true && doubleJumpTimer >= doubleJumpTime) //점프 사용 후 시간이 지나면 한번 더 가능
         {
@@ -502,10 +496,6 @@ public class Player : MonoBehaviour
             animIsJump = true;
             isJump = false;
             doubleJumpTimer = 0.0f;
-            if (petSc != null)
-            {
-                petSc.PetRunCheck(true);
-            }
         }
     }
 
@@ -569,11 +559,6 @@ public class Player : MonoBehaviour
             dashCoolOn = true;
 
             dashInvincibleOn = true;
-
-            if (petSc != null)
-            {
-                petSc.PetRunCheck(true);
-            }
 
             gameManager.PlayerDashPanel().SetActive(true);
             gameManager.PlayerDashText().SetActive(true);
@@ -845,18 +830,6 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// 펫을 얻었을 때 펫이 플레이어와 행동할 수 있게 해주는 함수
-    /// </summary>
-    private void petControll()
-    {
-        if (petSc != null)
-        {
-            petSc.PetWalkValue(speed);
-            petSc.PetWalkAniValue((int)moveVec.x);
-        }
-    }
-
-    /// <summary>
     /// 플레이어의 애니메이션을 담당하는 함수
     /// </summary>
     private void playerAni()
@@ -902,7 +875,7 @@ public class Player : MonoBehaviour
     /// 스킬 방향을 확인하기 위해 마우스 에임을 방향을 반환
     /// </summary>
     /// <returns></returns>
-    public bool playerMouseAimRight()
+    public bool PlayerMouseAimRight()
     {
         return mouseAimRight;
     }
@@ -924,20 +897,19 @@ public class Player : MonoBehaviour
         gravityVelocity = _gravityVelocity;
     }
 
-    public float GetGravityVelocity()
-    {
-        return gravityVelocity;
-    }
-
     public float PlayerBuffDamage()
     {
         return playerBuffDamageUp;
+    }
+
+    public Vector3 PlayerMoveVec()
+    {
+        return moveVec;
     }
 
     public void PlayerStatus(float _damageUp, float _armorUp, float _hpUp)
     {
         playerDamage = _damageUp;
         playerArmor =(int) _armorUp;
-
     }
 }

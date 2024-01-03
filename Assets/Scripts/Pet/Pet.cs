@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 
@@ -27,26 +28,31 @@ public class Pet : MonoBehaviour
     private Animator anim;
 
     private GameManager gameManager; //게임매니저
-    private KeyManager keyManager; //키매니저
 
     private TrashPreFab trashPreFab;
 
-    private float gravity;
-    private bool isGround = false;
-    private float gravityVelocity;
+    private float gravity; //펫의 중력
+    private bool isGround = false; //땅인이 아닌지 확인을 위한 변수
+    private float gravityVelocity; //리지드바디의 Y값을 제어하기 위한 변수
 
-    private Player playerSc;
-    private Transform playerTrs;
+    private Player playerSc; //플레이어 스크립트
+    private Transform playerTrs; //플레이어의 트랜스폼
+    private Vector3 playerPos; //플레이어의 포지션
+    private float followPosX; //펫이 따라갈 x포지션
+    private float followPosY; //펫이 확인할 Y포지션
 
     [Header("펫의 기본 설정")]
     [SerializeField, Tooltip("펫의 이동속도")] private float speed;
     [SerializeField, Tooltip("플레이어가 펫을 얻었는지 체크해주는 변수")] private bool getPet = false;
-    private bool playerIn = false;
-    private int walkValue;
-    private bool petRun = false;
-    private bool isIdle = false;
-    private float motionTimer;
-    private bool motionOn = false;
+    private bool playerIn = false; //플레이어가 자신의 영역안에 있는지 체크
+    private bool petRun = false; //펫이 달리는지 안 달리는지를 체크
+    private bool isIdle = false; //펫이 가만히 있는지를 체크
+    private float motionTimer; //모션을 재생하기 위한 타이머
+    private bool motionOn = false; //모션이 재생되었는지를 확인할 변수
+    private bool moveOff = false; //모션이 재생되었을 때 움직임을 멈춰줄 변수
+    private float moveOnTimer; //다시 움직이게 만들어주는 타이머
+    private bool runStop = false; //달리는 애니메이션을 제어해줄 변수
+    private float runStopTimer; //달리는 모션을 멈추게 하는 타이머
 
     [Header("펫의 능력과 효과")]
     [SerializeField] private float petDamageA;
@@ -69,17 +75,18 @@ public class Pet : MonoBehaviour
             playerIn = true;
             playerSc = _collision.gameObject.GetComponent<Player>();
             playerTrs = _collision.gameObject.transform;
-
-            
+            playerPos = _collision.gameObject.transform.position;
+            followPosX = playerPos.x - transform.position.x;
+            followPosY = playerPos.y - transform.position.y;
 
             Vector3 scale = transform.localScale;
             scale.x *= -1;
 
-            if (transform.localScale.x != 1 && playerSc.playerMouseAimRight() == true && motionOn == false)
+            if (transform.localScale.x != 1 && followPosX > 0 && moveOff == false && motionOn == false)
             {
                 transform.localScale = scale;
             }
-            else if (transform.localScale.x != -1 && playerSc.playerMouseAimRight() == false && motionOn == false)
+            else if (transform.localScale.x != -1 && followPosX < 0 && moveOff == false && motionOn == false)
             {
                 transform.localScale = scale;
             }
@@ -103,7 +110,6 @@ public class Pet : MonoBehaviour
     private void Start()
     {
         gameManager = GameManager.Instance;
-        keyManager = KeyManager.instance;
 
         trashPreFab = TrashPreFab.instance;
 
@@ -129,6 +135,31 @@ public class Pet : MonoBehaviour
             if (motionTimer >= 6)
             {
                 motionOn = true;
+                moveVec.x = 0;
+            }
+        }
+        else if (isIdle == false && motionOn == true)
+        {
+            motionOn = false;
+            moveOff = true;
+        }
+
+        if (moveOff == true)
+        {
+            moveOnTimer += Time.deltaTime;
+            if (moveOnTimer > 1)
+            {
+                moveOff = false;
+                moveOnTimer = 0;
+            }
+        }
+
+        if (runStop == true)
+        {
+            runStopTimer += Time.deltaTime;
+            if (runStopTimer > 0.3f)
+            {
+                petRun = false;
             }
         }
     }
@@ -185,9 +216,9 @@ public class Pet : MonoBehaviour
 
         if (playerIn == false)
         {
-            Vector3 playerPos = playerTrs.position;
-            playerPos.x = playerTrs.position.x - 0.5f;
-            transform.position = playerPos;
+            Vector3 telposPos = playerTrs.position;
+            telposPos.x = playerTrs.position.x - 1f;
+            transform.position = telposPos;
             gravityVelocity = 0;
         }
     }
@@ -199,28 +230,56 @@ public class Pet : MonoBehaviour
             return;
         }
 
-        if (Input.GetKey(keyManager.PlayerLeftKey()) == true) //왼쪽 키를 눌렀을 경우 왼쪽으로
-        {
-            moveVec.x = -1;
-            isIdle = false;
-            motionTimer = 0;
-            motionOn = false;
-        }
-        else if (Input.GetKey(keyManager.PlayerRightKey()) == true) //오른쪽 키를 눌렀을 경우 오른쪽으로
-        {
-            moveVec.x = 1;
-            isIdle = false;
-            motionTimer = 0;
-            motionOn = false;
-        }
-        else
+        if (moveOff == true)
         {
             moveVec.x = 0;
-            isIdle = true;
+            return;
         }
 
-        moveVec.x *= speed;
-        rigid.velocity = moveVec;
+        if (playerSc != null)
+        {
+            if (followPosX > 1)
+            {
+                isIdle = false;
+                motionTimer = 0;
+                moveVec.x = 1;
+            }
+            else if (followPosX < -1)
+            {
+                isIdle = false;
+                motionTimer = 0;
+                moveVec.x = -1;
+            }
+            else if (followPosX <= 1 || followPosX >= -1)
+            {
+                isIdle = true;
+                moveVec.x = 0;
+                moveOnTimer = 0;
+            }
+
+            if (followPosX > 3)
+            {
+                speed = 8;
+                petRun = true;
+                runStop = false;
+                runStopTimer = 0;
+            }
+            else if (followPosX < -3)
+            {
+                speed = 8;
+                petRun = true;
+                runStop = false;
+                runStopTimer = 0;
+            }
+            else if (followPosX <= 3 || followPosX >= -3)
+            {
+                speed = 2;
+                runStop = true;
+            }
+
+            moveVec.x *= speed;
+            rigid.velocity = moveVec;
+        }
     }
 
     private void petGravity()
@@ -236,43 +295,28 @@ public class Pet : MonoBehaviour
 
         moveVec.y = gravityVelocity;
         rigid.velocity = moveVec;
-
-        if (playerSc != null)
-        {
-            moveVec.y = playerSc.GetGravityVelocity() - 1;
-            rigid.velocity = moveVec;
-        }
     }
 
     private void petAni()
     {
-        anim.SetInteger("isWalk", walkValue);
-        anim.SetBool("isSleep", motionOn);
-
-        if (petRun == true)
+        if (followPosY > 1)
         {
-            anim.SetTrigger("isRun");
-            petRun = false;
+            isIdle = false;
+            motionTimer = 0;
         }
-    }
+        else if (followPosY < -1)
+        {
+            isIdle = false;
+            motionTimer = 0;
+        }
 
-    public void PetWalkValue(float _speed)
-    {
-        speed = _speed;
-    }
-
-    public void PetWalkAniValue(int _value)
-    {
-        walkValue = _value;
+        anim.SetInteger("isWalk", (int)moveVec.x);
+        anim.SetBool("isSleep", motionOn);
+        anim.SetBool("isRun", petRun);
     }
 
     public void GetPetCheck(bool _get)
     {
         getPet = _get;
-    }
-
-    public void PetRunCheck(bool _run)
-    {
-        petRun = _run;
     }
 }
