@@ -179,7 +179,7 @@ public class Weapons : MonoBehaviour
 
             moveVec.y = 7;
             transform.position += moveVec * Time.deltaTime;
-            moveVec.y = gameManager.gravityScale();
+            moveVec.y = gameManager.GravityScale();
             moveSpeed += 0.01f;
             transform.position -= moveVec * moveSpeed * Time.deltaTime;
         }

@@ -34,7 +34,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravity; //게임매니저에서 가져올 중력값을 저장할 변수
 
     [Header("캐릭터의 기본 설정")]
-    [SerializeField] private float playerBuffDamageUp = 1;
+    [SerializeField] private float playerDamage;
+    [SerializeField] private float playerBuffDamageUp;
     private bool buffDamageUp = false;
     private float buffDuration = 0.0f;
     [SerializeField] private int playerMaxHealth = 100;
@@ -98,6 +99,10 @@ public class Player : MonoBehaviour
     private float weaponDropTime = 0.0f;
     private Vector3 weaponLocalScale;
 
+    [Header("펫 관련 설정")]
+    [SerializeField, Tooltip("펫을 저장할 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
+    private Pet petSc;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (playerBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -159,6 +164,19 @@ public class Player : MonoBehaviour
 
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
                 }
+                else if (itemPickUpType == ItemPickUp.ItemType.Pet)
+                {
+                    if (petPrefabs.Count > 0)
+                    {
+                        return;
+                    }
+                   
+                    petSc = _collision.gameObject.GetComponent<Pet>();
+                    petSc.GetPetCheck(true);
+                    Vector3 myPos = transform.position;
+                    myPos.x = -0.5f;
+                    _collision.gameObject.transform.position = myPos;
+                }
             }
             else if (itemPickUpType == ItemPickUp.ItemType.Buff)
             {
@@ -210,7 +228,7 @@ public class Player : MonoBehaviour
 
         mainCam = Camera.main; //메인 카메라를 가져와 mainCam에 담아 줌
 
-        gravity = gameManager.gravityScale();
+        gravity = gameManager.GravityScale();
 
         gameManager.PlayerHpSlider().maxValue = playerCurHealth;
         gameManager.PlayerHpSlider().value = playerCurHealth;
@@ -241,6 +259,7 @@ public class Player : MonoBehaviour
         playerBuffDamage();
         playerDamageHit();
         playerDead();
+        petControll();
         playerAni();
     }
 
@@ -323,10 +342,13 @@ public class Player : MonoBehaviour
     private void itmeColliderCheck()
     {
         Collider2D weaponColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
-                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
+                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Weapon")); //플레이어 콜라이더에 닿은 레이어를 확인해  weaponColl에 넣는다
 
         Collider2D itemColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
                 playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Item")); //플레이어 콜라이더에 닿은 레이어를 확인해 itemColl에 넣는다
+
+        Collider2D petColl = Physics2D.OverlapBox(playerBoxColl2D.bounds.center,
+                playerBoxColl2D.bounds.size, 0f, LayerMask.GetMask("Pet")); //플레이어 콜라이더에 닿은 레이어를 확인해 petColl에 넣는다
 
         if (weaponColl != null)
         {
@@ -336,6 +358,11 @@ public class Player : MonoBehaviour
         if (itemColl != null)
         {
             pickUpItem(itemColl);
+        }
+
+        if (petColl != null)
+        {
+            pickUpItem(petColl);
         }
 
         //Collider2D[] colls = Physics2D.OverlapBoxAll(playerBoxColl2D.bounds.center, 
@@ -464,6 +491,10 @@ public class Player : MonoBehaviour
             animIsJump = true;
             isJump = true;
             useWallSliding = true;
+            if (petSc != null)
+            {
+                petSc.PetRunCheck(true);
+            }
         }
         else if (jumpKey == true && isGround == false && isJump == true && doubleJumpTimer >= doubleJumpTime) //점프 사용 후 시간이 지나면 한번 더 가능
         {
@@ -471,6 +502,10 @@ public class Player : MonoBehaviour
             animIsJump = true;
             isJump = false;
             doubleJumpTimer = 0.0f;
+            if (petSc != null)
+            {
+                petSc.PetRunCheck(true);
+            }
         }
     }
 
@@ -487,6 +522,10 @@ public class Player : MonoBehaviour
         if (isGround == false)
         {
             gravityVelocity -= gravity * Time.deltaTime; //지속적으로 받는 중력 
+            if (gravityVelocity > gravity)
+            {
+                gravityVelocity = gravity;
+            }
         }
         else
         {
@@ -530,6 +569,11 @@ public class Player : MonoBehaviour
             dashCoolOn = true;
 
             dashInvincibleOn = true;
+
+            if (petSc != null)
+            {
+                petSc.PetRunCheck(true);
+            }
 
             gameManager.PlayerDashPanel().SetActive(true);
             gameManager.PlayerDashText().SetActive(true);
@@ -801,6 +845,18 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// 펫을 얻었을 때 펫이 플레이어와 행동할 수 있게 해주는 함수
+    /// </summary>
+    private void petControll()
+    {
+        if (petSc != null)
+        {
+            petSc.PetWalkValue(speed);
+            petSc.PetWalkAniValue((int)moveVec.x);
+        }
+    }
+
+    /// <summary>
     /// 플레이어의 애니메이션을 담당하는 함수
     /// </summary>
     private void playerAni()
@@ -866,5 +922,22 @@ public class Player : MonoBehaviour
     public void GravityVelocityValue(float _gravityVelocity)
     {
         gravityVelocity = _gravityVelocity;
+    }
+
+    public float GetGravityVelocity()
+    {
+        return gravityVelocity;
+    }
+
+    public float PlayerBuffDamage()
+    {
+        return playerBuffDamageUp;
+    }
+
+    public void PlayerStatus(float _damageUp, float _armorUp, float _hpUp)
+    {
+        playerDamage = _damageUp;
+        playerArmor =(int) _armorUp;
+
     }
 }

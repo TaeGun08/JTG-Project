@@ -7,7 +7,8 @@ public class ItemPickUp : MonoBehaviour
     public enum ItemType
     {
         Weapon,
-        Buff
+        Buff,
+        Pet
     }
 
     [SerializeField] ItemType itemType;

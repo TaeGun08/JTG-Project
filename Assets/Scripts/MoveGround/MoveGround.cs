@@ -11,29 +11,39 @@ public class MoveGround : MonoBehaviour
     [SerializeField] private float moveChangeTime;
     private float moveChangeTimer;
     [SerializeField] private Transform parentTrs;
-    [SerializeField] private Transform backTrs;
+    [SerializeField] private Transform playerBackTrs;
+    [SerializeField] private Transform enemyBackTrs;
+    [SerializeField] private Transform petBackTrs;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player" && collision.gameObject != null)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && collision.gameObject != null)
         {
             collision.gameObject.transform.SetParent(parentTrs);
         }
-        else if (collision.gameObject.tag == "Enemy")
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
 
+        }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Pet"))
+        {
+            collision.gameObject.transform.SetParent(parentTrs);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player" && collision.gameObject != null)
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && collision.gameObject != null)
         {
-            collision.gameObject.transform.SetParent(backTrs);
+            collision.gameObject.transform.SetParent(playerBackTrs);
         }
-        else if (collision.gameObject.tag == "Enemy")
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
 
+        }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Pet"))
+        {
+            collision.gameObject.transform.SetParent(petBackTrs);
         }
     }
 

@@ -144,7 +144,7 @@ public class Enemy : MonoBehaviour
 
         trashPreFab = TrashPreFab.instance;
 
-        gravity = gameManager.gravityScale();
+        gravity = gameManager.GravityScale();
     }
 
     private void Update()

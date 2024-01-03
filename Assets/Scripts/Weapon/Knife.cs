@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Bullet;
 
 public class Knife : MonoBehaviour
 {
@@ -8,6 +9,22 @@ public class Knife : MonoBehaviour
     private Vector2 moveForce;
     private Vector3 trsRotate;
     private bool isRight = false;
+
+    [SerializeField] private float knifeDamage;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
+            enemySc.EnemyHp((int)knifeDamage, true);
+            Destroy(gameObject);
+        }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Awake()
     {
@@ -39,12 +56,17 @@ public class Knife : MonoBehaviour
 
     public void KnifeForce(Vector2 _moveForce, bool _isRight)
     {
-        moveForce = _moveForce;       
+        moveForce = _moveForce;
         isRight = _isRight;
 
         if (isRight == false)
         {
             moveForce = -_moveForce;
         }
+    }
+
+    public void KnifeDamage(float _damage)
+    {
+        knifeDamage = _damage;
     }
 }

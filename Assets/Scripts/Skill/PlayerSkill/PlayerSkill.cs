@@ -26,7 +26,7 @@ public class PlayerSkill : MonoBehaviour
     private float skillCoolTimer = 0.0f;
     private bool skillCoolOn = false;
     private float coolTime;
-
+    [SerializeField] private float skillADamage;
 
     private void Start()
     {
@@ -98,7 +98,7 @@ public class PlayerSkill : MonoBehaviour
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
                     skillRot.rotation, trashPreFab.transform);
                 Knife knifeSc = skillObj.GetComponent<Knife>();
-
+                knifeSc.KnifeDamage(skillADamage + player.PlayerBuffDamage());
                 knifeSc.KnifeForce(skillRot.rotation * (new Vector2(15.0f, 0f)), player.playerMouseAimRight());
             }
             else if (skillType.ToString() == "skillTypeB")

@@ -13,9 +13,8 @@ public class GameManager : MonoBehaviour
 
     [Header("플레이어 관련 설정")]
     [SerializeField] private GameObject playerPrefab;
-    private GameObject playerObj;
     [SerializeField] private Transform playerStartPos;
-    private bool playerCreateOn = false;
+    private bool playerStartOn = false;
 
     [Header("중력")]
     [SerializeField] private float gravity;
@@ -56,26 +55,27 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        playerCreate();
+        playerStart();
     }
 
     private void LateUpdate()
     {
-        if (playerObj == null)
+        if (playerPrefab == null)
         {
             playerUI.SetActive(false);
         }
-        else if (playerObj != null)
+        else if (playerPrefab != null)
         {
             playerUI.SetActive(true);
         }
     }
 
-    private void playerCreate()
+    private void playerStart()
     {
-        if (playerCreateOn == false)
+        if (playerStartOn == false)
         {
-            playerObj = Instantiate(playerPrefab, playerStartPos.position, Quaternion.identity, playerStartPos);
+            playerPrefab.transform.position = playerStartPos.position;
+            playerPrefab.transform.SetParent(playerStartPos);
         }
     }
 
@@ -86,10 +86,10 @@ public class GameManager : MonoBehaviour
 
     public GameObject PlayerPrefab()
     {
-        return playerObj;
+        return playerPrefab;
     }
 
-    public float gravityScale()
+    public float GravityScale()
     {
         return gravity;
     }
