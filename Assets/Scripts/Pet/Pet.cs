@@ -40,6 +40,7 @@ public class Pet : MonoBehaviour
     private Vector3 playerPos; //플레이어의 포지션
     private float followPosX; //펫이 따라갈 x포지션
     private float followPosY; //펫이 확인할 Y포지션
+    private Enemy enemySc;
 
     [Header("펫의 기본 설정")]
     [SerializeField, Tooltip("펫의 이동속도")] private float speed;
@@ -55,8 +56,17 @@ public class Pet : MonoBehaviour
     private float runStopTimer; //달리는 모션을 멈추게 하는 타이머
 
     [Header("펫의 능력과 효과")]
-    [SerializeField] private float petDamageA;
-    [SerializeField] private GameObject petEffect;
+    [SerializeField, Tooltip("펫의 효과")] private float petEffect;
+    [SerializeField, Tooltip("펫의 공격력")] private float petDamage;
+    [SerializeField, Tooltip("펫의 공격 프리팹")] private GameObject petAttackpreFab;
+    [SerializeField, Tooltip("펫이 공격시 펫에게 생성되는 이펙트")] private GameObject petSkillEffect;
+    [SerializeField, Tooltip("펫의 스킬쿨타임")] private float petSkillTime;
+    [SerializeField, Tooltip("펫이 공격시 데미지가 들어가는 딜레이")] private float attackDelayTime;
+    private bool uesPetSkill = false;
+    private float petSkillTimer;
+    private float attackDelayTimer;
+    private bool isAttack;
+    private bool petPassiveOn = false;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -93,8 +103,34 @@ public class Pet : MonoBehaviour
         }
         else if (_collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            GameObject petSkillObj = Instantiate(petEffect, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-            petSkillObj.transform.SetParent(_collision.gameObject.transform);
+            if (petType.ToString() == "petTypeA")
+            {
+                enemySc = _collision.gameObject.GetComponent<Enemy>();
+                if (uesPetSkill == false)
+                {
+                    GameObject petSkillObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkillObj.transform.SetParent(_collision.gameObject.transform);
+
+                    Vector3 petPos = transform.position;
+                    petPos.x += 1;
+
+                    Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
+            }
+            else if (petType.ToString() == "petTypeB")
+            {
+
+            }
+            else if (petType.ToString() == "petTypeC")
+            {
+
+            }
+            else if (petType.ToString() == "petTypeD")
+            {
+
+            }
         }
     }
 
@@ -105,6 +141,8 @@ public class Pet : MonoBehaviour
         anim = GetComponent<Animator>();
 
         motionTimer = 0;
+
+        petSkillTimer = petSkillTime;
     }
 
     private void Start()
@@ -124,6 +162,7 @@ public class Pet : MonoBehaviour
         petPos();
         petMove();
         petGravity();
+        petPassiveEffect();
         petAni();
     }
 
@@ -160,6 +199,27 @@ public class Pet : MonoBehaviour
             if (runStopTimer > 0.3f)
             {
                 petRun = false;
+            }
+        }
+
+        if (uesPetSkill == true)
+        {
+            petSkillTimer -= Time.deltaTime;
+            if (petSkillTimer < 0)
+            {
+                uesPetSkill = false;
+                petSkillTimer = petSkillTime;
+            }
+        }
+
+        if (isAttack == true)
+        {
+            attackDelayTimer -= Time.deltaTime;
+            if (attackDelayTimer < 0)
+            {
+                enemySc.EnemyHp((int)petDamage, true);
+                attackDelayTimer = attackDelayTime;
+                isAttack = false;
             }
         }
     }
@@ -295,6 +355,36 @@ public class Pet : MonoBehaviour
 
         moveVec.y = gravityVelocity;
         rigid.velocity = moveVec;
+    }
+
+    private void petPassiveEffect()
+    {
+        if (playerSc != null)
+        {
+            if (petPassiveOn == false)
+            {
+                if (petType.ToString() == "petTypeA")
+                {
+                    playerSc.PlayerStatusDamage(5, 0);
+                    petPassiveOn = true;
+                }
+                else if (petType.ToString() == "petTypeB")
+                {
+                    playerSc.PlayerStatusArmor(2, 0);
+                    petPassiveOn = true;
+                }
+                else if (petType.ToString() == "petTypeC")
+                {
+                    playerSc.PlayerStatusHp(20, 0);
+                    petPassiveOn = true;
+                }
+                else if (petType.ToString() == "petTypeD")
+                {
+                    playerSc.PlayerStatusCritical(10, 0.9f);
+                    petPassiveOn = true;
+                }
+            }            
+        }
     }
 
     private void petAni()

@@ -36,6 +36,8 @@ public class Player : MonoBehaviour
     [Header("캐릭터의 기본 설정")]
     [SerializeField] private float playerDamage;
     [SerializeField] private float playerBuffDamageUp;
+    [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
+    [SerializeField, Range(1.1f, 2.5f)] private float playerCriDmg;
     private bool buffDamageUp = false;
     private float buffDuration = 0.0f;
     [SerializeField] private int playerMaxHealth = 100;
@@ -101,6 +103,7 @@ public class Player : MonoBehaviour
 
     [Header("펫 관련 설정")]
     [SerializeField, Tooltip("펫을 저장할 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
+    private Pet petSc;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -169,8 +172,8 @@ public class Player : MonoBehaviour
                     {
                         return;
                     }
-                   
-                    Pet petSc = _collision.gameObject.GetComponent<Pet>();
+
+                    petSc = _collision.gameObject.GetComponent<Pet>();
                     petSc.GetPetCheck(true);
                     Vector3 myPos = transform.position;
                     myPos.x = -1f;
@@ -258,6 +261,8 @@ public class Player : MonoBehaviour
         playerBuffDamage();
         playerDamageHit();
         playerDead();
+        playerCriDamage();
+        petPassiveBuff();
         playerAni();
     }
 
@@ -315,11 +320,6 @@ public class Player : MonoBehaviour
         if (buffDamageUp == true)
         {
             buffDuration -= Time.deltaTime;
-            if (buffDuration < 0)
-            {
-                buffDamageUp = false;
-                playerBuffDamageUp = 0;
-            }
         }
 
         if (playerHitDamage == true)
@@ -730,6 +730,7 @@ public class Player : MonoBehaviour
                     weaponSc.ShootingOn(false); //조정간 안전
                     weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
                     weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
+                    weaponSc.PassiveDamageUp(0, false); //무기에 적용된 패시브효과 삭제
                     weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
                     weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
                     weaponRen.sortingOrder = -2;  //스프라이트의 오더 인 레이어를 -2로 변경
@@ -786,14 +787,28 @@ public class Player : MonoBehaviour
         {
             Weapons weaponSc = weaponPrefabs[0].GetComponent<Weapons>();
             weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
+
+            if (buffDuration < 0)
+            {
+                buffDamageUp = false;
+                playerBuffDamageUp = 0;
+                weaponSc.BuffDamage(0, false);
+            }
         }
         else if (weaponPrefabs.Count == 2)
         {
             int count = weaponPrefabs.Count;
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
                 weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
+
+                if (buffDuration < 0)
+                {
+                    buffDamageUp = false;
+                    playerBuffDamageUp = 0;
+                    weaponSc.BuffDamage(0, false);
+                }
             }
         }
     }
@@ -826,6 +841,54 @@ public class Player : MonoBehaviour
             gameManager.PlayerHpSlider().value = playerCurHealth;
             string hpText = $"{(int)playerCurHealth} / {(int)playerMaxHealth}";
             gameManager.PlayerHpText().text = hpText;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 크리티컬을 담당하는 함수
+    /// </summary>
+    private void playerCriDamage()
+    {
+        if (weaponPrefabs != null)
+        {
+            int count = weaponPrefabs.Count;
+            for (int i = 0; i < count; i++)
+            {
+                SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
+                Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
+
+                if (weaponRen.enabled == true && weaponSc.WeaponUseShootingCheck() == true)
+                {
+                    float ciritical = Random.Range(0.0f, 100.0f);
+                    Debug.Log(ciritical);
+                    if (ciritical <= playerCritical)
+                    {
+                        weaponSc.CriDamage(playerCriDmg, true);
+                        weaponSc.WeaponUseShooting(false);
+                    }
+                    else if (ciritical > playerCritical)
+                    {
+                        weaponSc.CriDamage(0, false);
+                        weaponSc.WeaponUseShooting(false);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 펫이 주는 효과 버프
+    /// </summary>
+    private void petPassiveBuff()
+    {
+        if (weaponPrefabs != null || petSc != null)
+        {
+            int count = weaponPrefabs.Count;
+            for (int i = 0; i < count; i++)
+            {
+                Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
+                weaponSc.PassiveDamageUp(playerDamage, true);
+            }
         }
     }
 
@@ -887,8 +950,17 @@ public class Player : MonoBehaviour
     {
         if (dashInvincibleOn == false)
         {
-            playerCurHealth -= _damage;
-            playerHitDamage = _hit;
+            int dmgReduction = _damage - playerArmor;
+            if (dmgReduction <= 0)
+            {
+                playerCurHealth -= 1;
+                playerHitDamage = _hit;
+            }
+            else if (dmgReduction > 0)
+            {
+                playerCurHealth -= dmgReduction;
+                playerHitDamage = _hit;
+            }
         }
     }
 
@@ -907,9 +979,46 @@ public class Player : MonoBehaviour
         return moveVec;
     }
 
-    public void PlayerStatus(float _damageUp, float _armorUp, float _hpUp)
+    /// <summary>
+    /// 플레이어 공격력을 상승시키는 함수
+    /// </summary>
+    /// <param name="_damageUp"></param>
+    /// <param name="_armorUp"></param>
+    /// <param name="_hpUp"></param>
+    public void PlayerStatusDamage(int _damageUp, float _damageUpPercent)
     {
-        playerDamage = _damageUp;
-        playerArmor =(int) _armorUp;
+        playerDamage += (_damageUp + (playerDamage * _damageUpPercent));
+    }
+
+    /// <summary>
+    /// 플레이어 방어력을 상승시키는 함수
+    /// </summary>
+    /// <param name="_armorUp"></param>
+    /// <param name="_armorUpPercent"></param>
+    public void PlayerStatusArmor(int _armorUp, float _armorUpPercent)
+    {
+        playerArmor += (_armorUp + (int)(playerArmor * _armorUpPercent));
+    }
+
+    /// <summary>
+    /// 플레이어 체력을 상승시키는 함수
+    /// </summary>
+    /// <param name="_hpUp"></param>
+    /// <param name="_hpUpPercent"></param>
+    public void PlayerStatusHp(int _hpUp, float _hpUpPercent)
+    {
+        playerMaxHealth += (_hpUp + (int)(playerMaxHealth * _hpUpPercent));
+        playerCurHealth = playerMaxHealth;
+    }
+
+    /// <summary>
+    /// 플레이어 크리티컬확률과 데미지를 상승시키는 함수
+    /// </summary>
+    /// <param name="_criticalPercentage"></param>
+    /// <param name="_criDamage"></param>
+    public void PlayerStatusCritical(float _criticalPercentage, float _criDamage)
+    {
+        playerCritical += _criticalPercentage;
+        playerCriDmg += _criDamage;
     }
 }

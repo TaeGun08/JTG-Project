@@ -40,6 +40,14 @@ public class Weapons : MonoBehaviour
     [SerializeField, Tooltip("조정간")] private bool shootingOn = false;
     [SerializeField, Tooltip("총의 공격력")] private float weaponDamage;
     [SerializeField, Tooltip("총의 현재 공격력")] private float weaponCurDamage;
+    private float passiveDmgUp;
+    private float weaponDamageReturn;
+    private bool weaponCritical = false;
+    private float weaponCriDmg;
+    private bool useShoot = false;
+    private bool passviUpStop = false;
+    private bool buffDamamgeUp = false;
+    private float buffUpDamage;
 
     [Header("총알 설정")]
     [SerializeField, Tooltip("총알 프리팹")] private GameObject bullet;
@@ -106,6 +114,8 @@ public class Weapons : MonoBehaviour
         autoReloadingTimer = 3.0f;
 
         weaponGravityOn = true;
+
+        weaponDamageReturn = weaponDamage;
     }
 
     private void Start()
@@ -125,6 +135,8 @@ public class Weapons : MonoBehaviour
         colliderCheck();
         weaponMove();
         autoReloading();
+        skillDamageCheck();
+        weaponCriticalCheck();
 
         magazineText.text = $"{curMagazine} / {maxMagazine}";
 
@@ -268,6 +280,7 @@ public class Weapons : MonoBehaviour
         if ((Input.GetKeyDown(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false) //마우스를 누를 때 마다 발사
             || (Input.GetKey(keyManager.PlayerAttackKey()) && shootTimer == 0.0f && reloading == false)) //마우스를 누르고 있으면 발사
         {
+            useShoot = true;
             shootBullet();
             shootTimer = shootDelay;
 
@@ -313,6 +326,23 @@ public class Weapons : MonoBehaviour
         }
     }
 
+    private void weaponCriticalCheck()
+    {
+        if (weaponCritical == true)
+        {
+            weaponCurDamage = (weaponDamage * weaponCriDmg) + buffUpDamage;            
+        }
+        else if (weaponCritical == false)
+        {
+            weaponCurDamage = weaponDamage + buffUpDamage;
+        }
+    }
+
+    private void skillDamageCheck()
+    {
+        weaponSkill.GetSkillDamage(weaponCurDamage);
+    }
+
     /// <summary>
     /// 총의 조정간을 담당하는 함수, 공격을 할 수 있는지 없는지
     /// </summary>
@@ -356,11 +386,6 @@ public class Weapons : MonoBehaviour
         gravityOff = _gravityOff;
     }
 
-    public float WeaponCurDamage()
-    {
-        return weaponCurDamage;
-    }
-
     /// <summary>
     /// 버프로 인한 공격력 상승을 시켜주는 함수
     /// </summary>
@@ -368,13 +393,65 @@ public class Weapons : MonoBehaviour
     /// <param name="_damageUp"></param>
     public void BuffDamage(float _buffDamage, bool _damageUp)
     {
-        if (_buffDamage >= weaponCurDamage && _damageUp == true)
+        if (buffDamamgeUp == false)
         {
-            weaponCurDamage += _buffDamage;
+            if (_damageUp == true)
+            {
+                buffUpDamage = _buffDamage;
+                buffDamamgeUp = true;
+            }
         }
-        else if (weaponDamage <= weaponCurDamage && _damageUp == false)
+        else if (buffDamamgeUp == true)
         {
-            weaponCurDamage = weaponDamage;
+            if (_damageUp == false)
+            {
+                buffUpDamage = _buffDamage;
+                buffDamamgeUp = false;
+            }
         }
+    }
+
+    /// <summary>
+    /// 패시브로 인한 공격력 상승을 시켜주는 함수
+    /// </summary>
+    public void PassiveDamageUp(float _passiveUp, bool _passiveOn)
+    {
+        if (passviUpStop == false)
+        {
+            if (_passiveOn == true)
+            {
+                passiveDmgUp = _passiveUp;
+                weaponDamage += passiveDmgUp;
+                passviUpStop = true;
+            }
+        }
+        else if (passviUpStop == true)
+        {
+            if (_passiveOn == false)
+            {
+                weaponDamage = weaponDamageReturn;
+                weaponCurDamage = weaponDamage;
+                passviUpStop = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 치명타확률로 인한 공격력 상승을 시켜주는 함수
+    /// </summary>
+    public void CriDamage(float _criDamage, bool _ciritical)
+    {
+        weaponCritical = _ciritical;
+        weaponCriDmg =_criDamage;
+    }
+
+    public void WeaponUseShooting(bool _useShoot)
+    {
+        useShoot = _useShoot;
+    }
+
+    public bool WeaponUseShootingCheck()
+    {
+        return useShoot;
     }
 }

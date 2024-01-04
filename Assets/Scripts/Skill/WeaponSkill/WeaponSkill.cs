@@ -36,6 +36,7 @@ public class WeaponSkill : MonoBehaviour
     private bool skillCoolOn = false; //스킬을 썼을 때 쿨타임을 작동시키기 위한 변수
     private SpriteRenderer weaponRen; //무기의 스프라이트 렌더러
     private bool useSkill = false;
+    private float skillDamage;
 
     [Header("스킬 UI")]
     [SerializeField, Tooltip("활성화 시킬 스킬 오브젝트")] private GameObject weaponSkill;
@@ -157,6 +158,8 @@ public class WeaponSkill : MonoBehaviour
 
             useSkill = true;
 
+            weapons.WeaponUseShooting(true);
+
             if (skillType.ToString() == "skillA")
             {
                 curBullet = weapons.CurBullet();
@@ -169,7 +172,7 @@ public class WeaponSkill : MonoBehaviour
             {
                 GameObject bulletObj = Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = bulletObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(6, 0, false);
+                bulletSc.BulletDamage(skillDamage, 2, true);
                 useSkill = false;
             }
             else if (skillType.ToString() == "skillD")
@@ -192,12 +195,13 @@ public class WeaponSkill : MonoBehaviour
         {
             skillCoolOn = true;
             useSkill = false;
+            weapons.WeaponUseShooting(true);
             if (chargingTimer <= chargingLevel1Time)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = skillObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 1.2f, true);
+                bulletSc.BulletDamage(skillDamage, 1.2f, true);
                 skillObj.transform.localScale = new Vector2(1.0f, 1.0f);
             }
             else if (chargingTimer > chargingLevel1Time && chargingTimer <= chargingLevel2Time)
@@ -205,7 +209,7 @@ public class WeaponSkill : MonoBehaviour
                 GameObject skillObj = Instantiate(skillPrefabs[1], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = skillObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 2f, true);
+                bulletSc.BulletDamage(skillDamage, 2f, true);
                 skillObj.transform.localScale = new Vector2(2.0f, 2.0f);
             }
             else if (chargingTimer >= lastChargingTime)
@@ -213,7 +217,7 @@ public class WeaponSkill : MonoBehaviour
                 GameObject skillObj = Instantiate(skillPrefabs[2], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = skillObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(weapons.WeaponCurDamage(), 3f, true);
+                bulletSc.BulletDamage(skillDamage, 3f, true);
                 skillObj.transform.localScale = new Vector2(3.0f, 3.0f);
             }
 
@@ -255,5 +259,10 @@ public class WeaponSkill : MonoBehaviour
     public void WeaponSkillOff(bool _skillOff)
     {
         weaponSkill.SetActive(_skillOff);
+    }
+
+    public void GetSkillDamage(float _skillDmg)
+    {
+        skillDamage = _skillDmg;
     }
 }

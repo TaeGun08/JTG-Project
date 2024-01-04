@@ -173,4 +173,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletType: 2
   bulletSpeed: 7
-  bulletDamage: 1
+  bulletDamage: 0

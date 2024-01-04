@@ -18227,6 +18227,22 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
+      propertyPath: playerArmor
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
+      propertyPath: playerCriDmg
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
+      propertyPath: playerDamage
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
+      propertyPath: playerCritical
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3929847378406297729, guid: e6afe9e4a872eb34f8acab89b2034492, type: 3}
       propertyPath: petPrefabs.Array.size
       value: 0
       objectReference: {fileID: 0}
@@ -22550,6 +22566,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cat
       objectReference: {fileID: 0}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petEffect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petSkillTime
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petSkillEffect
+      value: 
+      objectReference: {fileID: 6521286549316152587, guid: 8bf841699b21d0d468bac4d910b97703, type: 3}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: attackDelayTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petAttackEffect
+      value: 
+      objectReference: {fileID: 6256000064686517436, guid: 1608eec706d109640be9bee41a3fedfc, type: 3}
+    - target: {fileID: 8899842267021529801, guid: 80c278fdc62917244baf7753d042c9b1, type: 3}
+      propertyPath: petAttackpreFab
+      value: 
+      objectReference: {fileID: 6256000064686517436, guid: 1608eec706d109640be9bee41a3fedfc, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
