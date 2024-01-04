@@ -161,6 +161,7 @@ public class Player : MonoBehaviour
                     getWeaponSc.ShootingOn(true);
                     getWeaponSc.PickUpImageOff(true);
                     getWeaponSc.WeaponGravityOff(true);
+                    getWeaponSc.WeaponUseShooting(false);
                     SpriteRenderer getWeaponRen = getWeapon.GetComponent<SpriteRenderer>();
                     getWeaponRen.sortingOrder = 2;
 
@@ -178,6 +179,8 @@ public class Player : MonoBehaviour
                     Vector3 myPos = transform.position;
                     myPos.x = -1f;
                     _collision.gameObject.transform.position = myPos;
+
+                    petPrefabs.Add(_collision.gameObject);
                 }
             }
             else if (itemPickUpType == ItemPickUp.ItemType.Buff)
@@ -261,7 +264,7 @@ public class Player : MonoBehaviour
         playerBuffDamage();
         playerDamageHit();
         playerDead();
-        playerCriDamage();
+        playerWeaponCritical();
         petPassiveBuff();
         playerAni();
     }
@@ -320,6 +323,11 @@ public class Player : MonoBehaviour
         if (buffDamageUp == true)
         {
             buffDuration -= Time.deltaTime;
+            if (buffDuration < 0)
+            {
+                buffDamageUp = false;
+                playerBuffDamageUp = 0;
+            }
         }
 
         if (playerHitDamage == true)
@@ -730,7 +738,9 @@ public class Player : MonoBehaviour
                     weaponSc.ShootingOn(false); //조정간 안전
                     weaponSc.PickUpImageOff(false); //아이템 줍기 키 이미지 재사용
                     weaponSc.WeaponGravityOff(false); //무기 아이템의 중력을 활성화
-                    weaponSc.PassiveDamageUp(0, false); //무기에 적용된 패시브효과 삭제
+                    weaponSc.PassiveDamageUp(0); //무기에 적용된 패시브효과 삭제
+                    weaponSc.ReturnDamage(); //무기를 기본값으로 되돌림
+                    weaponSc.GetPlayerCriticalPcent(0, 1);
                     weaponSkillSc.WeaponSkillOff(false); //스킬 이미지 비활성화
                     weaponBoxColl.enabled = true; //무기의 박스콜라이더를 활성화
                     weaponRen.sortingOrder = -2;  //스프라이트의 오더 인 레이어를 -2로 변경
@@ -748,7 +758,7 @@ public class Player : MonoBehaviour
                 Weapons weaponScA = weaponPrefabs[0].GetComponent<Weapons>();
 
                 weaponScA.ShootingOn(false);
-                weaponScA.BuffDamage(10000, false);
+                weaponScA.BuffDamage(0);
             }
             else if (weaponPrefabs.Count == 2)
             {
@@ -763,7 +773,7 @@ public class Player : MonoBehaviour
                     weaponScA.ShootingOn(false);
                     weaponScB.ShootingOn(true);
                     weaponSwap = true;
-                    weaponScA.BuffDamage(10000, false);
+                    weaponScA.BuffDamage(0);
                 }
                 else if (weaponRenB.enabled == true)
                 {
@@ -771,7 +781,7 @@ public class Player : MonoBehaviour
                     weaponScA.ShootingOn(true);
                     weaponScB.ShootingOn(false);
                     weaponSwap = false;
-                    weaponScB.BuffDamage(10000, false);
+                    weaponScB.BuffDamage(0);
                 }
             }
             weaponPrefabs.RemoveAt(removeIndex);
@@ -786,13 +796,14 @@ public class Player : MonoBehaviour
         if (weaponPrefabs.Count == 1)
         {
             Weapons weaponSc = weaponPrefabs[0].GetComponent<Weapons>();
-            weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
 
-            if (buffDuration < 0)
+            if (buffDamageUp == true)
             {
-                buffDamageUp = false;
-                playerBuffDamageUp = 0;
-                weaponSc.BuffDamage(0, false);
+                weaponSc.BuffDamage(playerBuffDamageUp);
+            }
+            if (buffDamageUp == false)
+            {
+                weaponSc.BuffDamage(0);
             }
         }
         else if (weaponPrefabs.Count == 2)
@@ -801,13 +812,15 @@ public class Player : MonoBehaviour
             for (int i = 0; i < count; i++)
             {
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
-                weaponSc.BuffDamage(playerBuffDamageUp, buffDamageUp);
+                weaponSc.BuffDamage(playerBuffDamageUp);
 
-                if (buffDuration < 0)
+                if (buffDamageUp == true)
                 {
-                    buffDamageUp = false;
-                    playerBuffDamageUp = 0;
-                    weaponSc.BuffDamage(0, false);
+                    weaponSc.BuffDamage(playerBuffDamageUp);
+                }
+                if (buffDamageUp == false)
+                {
+                    weaponSc.BuffDamage(0);
                 }
             }
         }
@@ -847,7 +860,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 플레이어의 크리티컬을 담당하는 함수
     /// </summary>
-    private void playerCriDamage()
+    private void playerWeaponCritical()
     {
         if (weaponPrefabs != null)
         {
@@ -857,20 +870,9 @@ public class Player : MonoBehaviour
                 SpriteRenderer weaponRen = weaponPrefabs[i].GetComponent<SpriteRenderer>();
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
 
-                if (weaponRen.enabled == true && weaponSc.WeaponUseShootingCheck() == true)
+                if (weaponRen.enabled == true)
                 {
-                    float ciritical = Random.Range(0.0f, 100.0f);
-                    Debug.Log(ciritical);
-                    if (ciritical <= playerCritical)
-                    {
-                        weaponSc.CriDamage(playerCriDmg, true);
-                        weaponSc.WeaponUseShooting(false);
-                    }
-                    else if (ciritical > playerCritical)
-                    {
-                        weaponSc.CriDamage(0, false);
-                        weaponSc.WeaponUseShooting(false);
-                    }
+                    weaponSc.GetPlayerCriticalPcent(playerCritical, playerCriDmg);
                 }
             }
         }
@@ -887,7 +889,7 @@ public class Player : MonoBehaviour
             for (int i = 0; i < count; i++)
             {
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
-                weaponSc.PassiveDamageUp(playerDamage, true);
+                weaponSc.PassiveDamageUp(playerDamage);
             }
         }
     }

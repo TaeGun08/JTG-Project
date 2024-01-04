@@ -158,7 +158,7 @@ public class WeaponSkill : MonoBehaviour
 
             useSkill = true;
 
-            weapons.WeaponUseShooting(true);
+            weapons.WeaponUseShooting(false);
 
             if (skillType.ToString() == "skillA")
             {
@@ -170,6 +170,7 @@ public class WeaponSkill : MonoBehaviour
             }
             else if (skillType.ToString() == "skillB")
             {
+                Debug.Log("스킬확인");
                 GameObject bulletObj = Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = bulletObj.GetComponent<Bullet>();
                 bulletSc.BulletDamage(skillDamage, 2, true);
@@ -194,8 +195,11 @@ public class WeaponSkill : MonoBehaviour
             && weapons.ShootingOnCheck() == true && weaponRen.enabled == true && skillType.ToString() == "skillC")
         {
             skillCoolOn = true;
+
             useSkill = false;
-            weapons.WeaponUseShooting(true);
+
+            weapons.WeaponUseShooting(false);
+
             if (chargingTimer <= chargingLevel1Time)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
