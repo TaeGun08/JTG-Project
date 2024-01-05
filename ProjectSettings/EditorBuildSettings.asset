@@ -6,9 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/TutorialScene.unity
+    path: Assets/JTGProjectAssets/Scenes/MainScene.unity
+    guid: 6af96fa7da9318b4090ab6571d62a34a
+  - enabled: 1
+    path: Assets/JTGProjectAssets/Scenes/TutorialScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/DeadScene.unity
+    path: Assets/JTGProjectAssets/Scenes/DeadScene.unity
     guid: 55249286f58ae7c4a9d117a98ac52fb5
   m_configObjects: {}
