@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class Enemy : MonoBehaviour
     private bool enemyHitDamage = false;
     private float hitTimer;
 
-    //적군에 가져올 매니저
+    //적에게 가져올 매니저
     private GameManager gameManager; //게임매니저
 
     private TrashPreFab trashPreFab;
@@ -68,6 +69,9 @@ public class Enemy : MonoBehaviour
     [SerializeField, Tooltip("벽 체크를 위한 콜라이더")] private Collider2D wallCheckColl;
     [SerializeField, Tooltip("땅 체크를 위한 콜라이더")] private Collider2D groundCheckColl;
     [SerializeField, Tooltip("공격을 위한 콜라이더")] private CircleCollider2D attackCheckColl;
+
+    [Header("DPS측정을 위한 텍스트")]
+    [SerializeField] private GameObject dpsObj;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -341,6 +345,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void enemyDpsCheck(int _dps)
+    {
+        Vector3 enemyPos = transform.position;
+        enemyPos.x += Random.Range(-0.4f, 0.4f);
+        enemyPos.y += Random.Range(0.2f, 0.5f);
+        TMP_Text dpsText = dpsObj.transform.GetComponentInChildren<TMP_Text>();
+        dpsText.text = _dps.ToString();
+        Instantiate(dpsObj, enemyPos, Quaternion.identity, trashPreFab.transform);
+    }
+
     /// <summary>
     /// 적군의 애니메이션을 담당하는 함수
     /// </summary>
@@ -355,9 +369,29 @@ public class Enemy : MonoBehaviour
         anim.SetInteger("isWalk", (int)moveVec.x);
     }
 
-    public void EnemyHp(int _damage, bool _hit)
+    public void EnemyHp(int _damage, bool _hit, bool _trueDam)
     {
-        enemyHealth -= _damage;
-        enemyHitDamage = _hit;
+        if (_trueDam == true)
+        {          
+            enemyHealth -= _damage;
+            enemyHitDamage = _hit;
+            enemyDpsCheck(_damage);
+        }
+        else if (_trueDam == false)
+        {
+            int dmgReduction = _damage - enemyArmor;
+            if (dmgReduction <= 0)
+            {
+                enemyHealth -= 1;
+                enemyHitDamage = _hit;
+                enemyDpsCheck(1);
+            }
+            else if (dmgReduction > 0)
+            {
+                enemyHealth -= dmgReduction;
+                enemyHitDamage = _hit;
+                enemyDpsCheck(dmgReduction);
+            }
+        }
     }
 }

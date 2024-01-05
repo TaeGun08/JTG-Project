@@ -26,7 +26,7 @@ public class Bullet : MonoBehaviour
             if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
-                enemySc.EnemyHp((int)bulletDamage, true);
+                enemySc.EnemyHp((int)bulletDamage, true, false);
                 Destroy(gameObject);
             }
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -39,7 +39,7 @@ public class Bullet : MonoBehaviour
             if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
-                enemySc.EnemyHp((int)bulletDamage, true);
+                enemySc.EnemyHp((int)bulletDamage, true, false);
             }
         }
         else if (bulletType.ToString() == "enemyBullet")
@@ -47,7 +47,7 @@ public class Bullet : MonoBehaviour
             if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
                 Player playerSc = collision.gameObject.GetComponent<Player>();
-                playerSc.PlayerCurHp((int)bulletDamage, true);
+                playerSc.PlayerCurHp((int)bulletDamage, true, false);
                 Destroy(gameObject);
             }
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))

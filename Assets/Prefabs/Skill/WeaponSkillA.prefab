@@ -227,4 +227,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletType: 1
   bulletSpeed: 18
-  bulletDamage: 1
+  bulletDamage: 0

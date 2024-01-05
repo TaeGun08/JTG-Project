@@ -68,7 +68,7 @@ Transform:
   - {fileID: 3771673804365366641}
   - {fileID: 2073291929947131138}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7843006286100972308
 SpriteRenderer:
@@ -229,8 +229,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillType: 0
   gravity: 0
+  playerDamage: 0
   playerBuffDamageUp: 0
-  playerMaxHealth: 100
+  playerCritical: 0
+  playerCriDmg: 1.1
+  playerMaxHealth: 50
   playerCurHealth: 0
   playerArmor: 0
   speed: 4
@@ -245,6 +248,7 @@ MonoBehaviour:
   wallSlidingSpeed: 2
   weaponsChangeCoolTime: 1
   weaponPrefabs: []
+  petPrefabs: []
 --- !u!114 &5917703433449329635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,7 +265,8 @@ MonoBehaviour:
   - {fileID: 8240504392270299575, guid: 71cf685284c1bc24e8721f91e54c711d, type: 3}
   skillPos: {fileID: 3771673804365366641}
   skillRot: {fileID: 3771673804365366641}
-  skillCoolTime: 2
+  skillCoolTime: 4
+  skillADamage: 5
 --- !u!1 &9174799507057116923
 GameObject:
   m_ObjectHideFlags: 0

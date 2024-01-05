@@ -64,13 +64,13 @@ public class Trap : MonoBehaviour
         if (isHit == false && playerSc != null)
         {
             isHit = true;
-            playerSc.PlayerCurHp(trapDamage, isHit);
+            playerSc.PlayerCurHp(trapDamage, isHit, true);
             playerSc.GravityVelocityValue(3);
         }
         else if (isHit == false && enemySc != null)
         {
             isHit = true;
-            enemySc.EnemyHp(trapDamage, isHit);
+            enemySc.EnemyHp(trapDamage, isHit, true);
         }
     }
 }

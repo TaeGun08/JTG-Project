@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
 
     private void playerStart()
     {
-        if (playerStartOn == false)
+        if (playerStartOn == false && playerPrefab != null)
         {
             playerPrefab.transform.position = playerStartPos.position;
             playerPrefab.transform.SetParent(playerStartPos);

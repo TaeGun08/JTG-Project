@@ -42,6 +42,8 @@ public class Pet : MonoBehaviour
     private float followPosY; //펫이 확인할 Y포지션
     private Enemy enemySc;
 
+    [SerializeField] private GameObject pickUpKeyImage;
+
     [Header("펫의 기본 설정")]
     [SerializeField, Tooltip("펫의 이동속도")] private float speed;
     [SerializeField, Tooltip("플레이어가 펫을 얻었는지 체크해주는 변수")] private bool getPet = false;
@@ -55,8 +57,20 @@ public class Pet : MonoBehaviour
     private bool runStop = false; //달리는 애니메이션을 제어해줄 변수
     private float runStopTimer; //달리는 모션을 멈추게 하는 타이머
 
-    [Header("펫의 능력과 효과")]
-    [SerializeField, Tooltip("펫의 효과")] private float petEffect;
+    [Header("펫의 능력치 증가 패시브")]
+    [SerializeField, Tooltip("패시브 효과 공격력 증가(합)")] private int petDamageEffect;
+    [SerializeField, Tooltip("패시브 효과 공격력 증가(곱)")] private float petDamageEffectPcent;
+    [Space]
+    [SerializeField, Tooltip("패시브 효과 방어력 증가(합)")] private int petArmorEffect;
+    [SerializeField, Tooltip("패시브 효과 방어력 증가(곱)")] private float petArmorEffectPcent;
+    [Space]
+    [SerializeField, Tooltip("패시브 효과 체력 증가(합)")] private int petHpEffect;
+    [SerializeField, Tooltip("패시브 효과 체력 증가(곱)")] private float petHpEffectPcent;
+    [Space]
+    [SerializeField, Tooltip("패시브 효과 치명타확률 증가(합)")] private float petCriPcentEffect;
+    [SerializeField, Tooltip("패시브 효과 치명타데미지 증가(합)")] private float petCriDamageEffect;
+
+    [Header("펫의 능력")]
     [SerializeField, Tooltip("펫의 공격력")] private float petDamage;
     [SerializeField, Tooltip("펫의 공격 프리팹")] private GameObject petAttackpreFab;
     [SerializeField, Tooltip("펫이 공격시 펫에게 생성되는 이펙트")] private GameObject petSkillEffect;
@@ -67,6 +81,8 @@ public class Pet : MonoBehaviour
     private float attackDelayTimer;
     private bool isAttack;
     private bool petPassiveOn = false;
+    private GameObject petSkilAttacklObj;
+    private GameObject petSkillEfObj;
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -83,6 +99,7 @@ public class Pet : MonoBehaviour
         if (_collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             playerIn = true;
+
             playerSc = _collision.gameObject.GetComponent<Player>();
             playerTrs = _collision.gameObject.transform;
             playerPos = _collision.gameObject.transform.position;
@@ -108,13 +125,14 @@ public class Pet : MonoBehaviour
                 enemySc = _collision.gameObject.GetComponent<Enemy>();
                 if (uesPetSkill == false)
                 {
-                    GameObject petSkillObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkillObj.transform.SetParent(_collision.gameObject.transform);
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
                     Vector3 petPos = transform.position;
-                    petPos.x += 1;
+                    petPos.y += 0.8f;
 
-                    Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
                     uesPetSkill = true;
                     isAttack = true;
                 }
@@ -143,6 +161,8 @@ public class Pet : MonoBehaviour
         motionTimer = 0;
 
         petSkillTimer = petSkillTime;
+
+        attackDelayTimer = attackDelayTime;
     }
 
     private void Start()
@@ -217,7 +237,8 @@ public class Pet : MonoBehaviour
             attackDelayTimer -= Time.deltaTime;
             if (attackDelayTimer < 0)
             {
-                enemySc.EnemyHp((int)petDamage, true);
+                enemySc.EnemyHp((int)petDamage, true, true);
+                Destroy(petSkillEfObj);
                 attackDelayTimer = attackDelayTime;
                 isAttack = false;
             }
@@ -228,8 +249,14 @@ public class Pet : MonoBehaviour
     {
         if (getPet == false)
         {
+            pickUpKeyImage.SetActive(true);
             return;
         }
+        else if (getPet == true)
+        {
+            pickUpKeyImage.SetActive(false);
+        }
+
         playerIn = false;
 
         Collider2D playerColl = Physics2D.OverlapCircle(playerCheck.bounds.center,
@@ -365,22 +392,22 @@ public class Pet : MonoBehaviour
             {
                 if (petType.ToString() == "petTypeA")
                 {
-                    playerSc.PlayerStatusDamage(5, 0);
+                    playerSc.PlayerStatusHp(petHpEffect, 0);                 
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeB")
                 {
-                    playerSc.PlayerStatusArmor(2, 0);
+                    playerSc.PlayerStatusArmor(petArmorEffect, 0);
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeC")
                 {
-                    playerSc.PlayerStatusHp(20, 0);
+                    playerSc.PlayerStatusDamage(petDamageEffect, 0);
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeD")
                 {
-                    playerSc.PlayerStatusCritical(10, 0.9f);
+                    playerSc.PlayerStatusCritical(petCriPcentEffect, petCriDamageEffect);
                     petPassiveOn = true;
                 }
             }            

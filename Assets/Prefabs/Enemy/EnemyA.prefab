@@ -299,7 +299,7 @@ Transform:
   - {fileID: 6822450419774058307}
   - {fileID: 6628296441209417642}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7470506412883351496
 SpriteRenderer:
@@ -475,6 +475,7 @@ MonoBehaviour:
   wallCheckColl: {fileID: 3798491721953559137}
   groundCheckColl: {fileID: 8565035187983406849}
   attackCheckColl: {fileID: 1607040978994875366}
+  dpsObj: {fileID: 7450560070548849562, guid: dd0f507e2ec5555409e02b260f40aba0, type: 3}
 --- !u!1 &7583375947973363531
 GameObject:
   m_ObjectHideFlags: 0

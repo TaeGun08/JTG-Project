@@ -173,6 +173,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletType: 0
   bulletSpeed: 30
-  bulletDamage: 1
-  enemyObj: {fileID: 0}
-  playerObj: {fileID: 0}
+  bulletDamage: 0

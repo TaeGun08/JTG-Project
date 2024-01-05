@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
     private bool dashCoolOn = false;
     private bool isDash = false;
     private bool dashKey;
-    private bool dashInvincibleOn = false;
+    private bool dashInvincibleOn = false; //대쉬를 사용할 시 무적을 위한 변수
 
     [Header("벽 타기 및 벽 슬라이딩")]
     [SerializeField, Tooltip("벽 점프를 위한 힘")] private float wallJumpPower = 0.5f; //벽 점프를 위한 힘
@@ -948,20 +948,31 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 다른 스크립트에서 플레이어 Hp에 넣어진 값을 받아오기 위한 함수
     /// </summary>
-    public void PlayerCurHp(int _damage, bool _hit)
+    public void PlayerCurHp(int _damage, bool _hit, bool _trueDmg)
     {
-        if (dashInvincibleOn == false)
+        if (_trueDmg == true)
         {
-            int dmgReduction = _damage - playerArmor;
-            if (dmgReduction <= 0)
+            if (dashInvincibleOn == false)
             {
-                playerCurHealth -= 1;
+                playerCurHealth -= _damage;
                 playerHitDamage = _hit;
             }
-            else if (dmgReduction > 0)
+        }
+        else if (_trueDmg == false)
+        {
+            if (dashInvincibleOn == false)
             {
-                playerCurHealth -= dmgReduction;
-                playerHitDamage = _hit;
+                int dmgReduction = _damage - playerArmor;
+                if (dmgReduction <= 0)
+                {
+                    playerCurHealth -= 1;
+                    playerHitDamage = _hit;
+                }
+                else if (dmgReduction > 0)
+                {
+                    playerCurHealth -= _damage - playerArmor;
+                    playerHitDamage = _hit;
+                }
             }
         }
     }
