@@ -18,6 +18,7 @@ public class Bullet : MonoBehaviour
     [SerializeField, Tooltip("총알의 공격력")] private float bulletDamage = 1.0f;
 
     private bool damageUpOn = false;
+    private bool hitCritical = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -26,7 +27,7 @@ public class Bullet : MonoBehaviour
             if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
-                enemySc.EnemyHp((int)bulletDamage, true, false);
+                enemySc.EnemyHp((int)bulletDamage, true, false, hitCritical);
                 Destroy(gameObject);
             }
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -39,7 +40,7 @@ public class Bullet : MonoBehaviour
             if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
-                enemySc.EnemyHp((int)bulletDamage, true, false);
+                enemySc.EnemyHp((int)bulletDamage, true, false, hitCritical);
             }
         }
         else if (bulletType.ToString() == "enemyBullet")
@@ -69,10 +70,10 @@ public class Bullet : MonoBehaviour
         transform.position += bulletMove;
     }
 
-    public void BulletDamage(float _bulletDamage, float _bulletUpDamage, bool _damageUpOn)
+    public void BulletDamage(float _bulletDamage, float _bulletUpDamage, bool _damageUpOn, bool _critical)
     {
         damageUpOn = _damageUpOn;
-
+        hitCritical = _critical;
         if (damageUpOn == false)
         {
             bulletDamage = _bulletDamage;

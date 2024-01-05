@@ -70,7 +70,7 @@ public class Trap : MonoBehaviour
         else if (isHit == false && enemySc != null)
         {
             isHit = true;
-            enemySc.EnemyHp(trapDamage, isHit, true);
+            enemySc.EnemyHp(trapDamage, isHit, true, false);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -77,6 +78,11 @@ public class GameManager : MonoBehaviour
             playerPrefab.transform.position = playerStartPos.position;
             playerPrefab.transform.SetParent(playerStartPos);
         }
+    }
+
+    public void DeadScenesLoad()
+    {
+        SceneManager.LoadSceneAsync("DeadScene");
     }
 
     public bool GamePause()

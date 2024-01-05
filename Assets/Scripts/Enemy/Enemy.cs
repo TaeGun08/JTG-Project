@@ -93,7 +93,7 @@ public class Enemy : MonoBehaviour
                 float angle = Quaternion.FromToRotation(Vector3.up, playerPos).eulerAngles.z;
                 GameObject bulletObj = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0 , angle), trashPreFab.transform);
                 Bullet bulletSc = bulletObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(enemyDamage, 0, false);
+                bulletSc.BulletDamage(enemyDamage, 0, false, false);
                 isAttack = true;
             }
 
@@ -345,13 +345,28 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void enemyDpsCheck(int _dps)
+    private void enemyDpsCheck(int _dps, bool _trueDmg, bool _critical)
     {
         Vector3 enemyPos = transform.position;
         enemyPos.x += Random.Range(-0.4f, 0.4f);
         enemyPos.y += Random.Range(0.2f, 0.5f);
         TMP_Text dpsText = dpsObj.transform.GetComponentInChildren<TMP_Text>();
         dpsText.text = _dps.ToString();
+        if (_critical == false)
+        {
+            if (_trueDmg == false)
+            {
+                dpsText.color = Color.white;
+            }
+            else if (_trueDmg == true)
+            {
+                dpsText.color = Color.blue;
+            }
+        }
+        else if (_critical == true)
+        {
+            dpsText.color = Color.red;
+        }
         Instantiate(dpsObj, enemyPos, Quaternion.identity, trashPreFab.transform);
     }
 
@@ -369,13 +384,13 @@ public class Enemy : MonoBehaviour
         anim.SetInteger("isWalk", (int)moveVec.x);
     }
 
-    public void EnemyHp(int _damage, bool _hit, bool _trueDam)
+    public void EnemyHp(int _damage, bool _hit, bool _trueDam, bool _critical)
     {
         if (_trueDam == true)
         {          
             enemyHealth -= _damage;
             enemyHitDamage = _hit;
-            enemyDpsCheck(_damage);
+            enemyDpsCheck(_damage, _trueDam, _critical);
         }
         else if (_trueDam == false)
         {
@@ -384,13 +399,13 @@ public class Enemy : MonoBehaviour
             {
                 enemyHealth -= 1;
                 enemyHitDamage = _hit;
-                enemyDpsCheck(1);
+                enemyDpsCheck(1, _trueDam, _critical);
             }
             else if (dmgReduction > 0)
             {
                 enemyHealth -= dmgReduction;
                 enemyHitDamage = _hit;
-                enemyDpsCheck(dmgReduction);
+                enemyDpsCheck(_damage, _trueDam, _critical);
             }
         }
     }

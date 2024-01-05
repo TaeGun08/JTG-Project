@@ -237,7 +237,7 @@ public class Pet : MonoBehaviour
             attackDelayTimer -= Time.deltaTime;
             if (attackDelayTimer < 0)
             {
-                enemySc.EnemyHp((int)petDamage, true, true);
+                enemySc.EnemyHp((int)petDamage, true, true, false);
                 Destroy(petSkillEfObj);
                 attackDelayTimer = attackDelayTime;
                 isAttack = false;

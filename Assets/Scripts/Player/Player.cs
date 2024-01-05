@@ -843,16 +843,16 @@ public class Player : MonoBehaviour
     private void playerDead()
     {
         if (playerCurHealth <= 0)
-        {
-            Destroy(gameObject);
+        {         
             gameManager.PlayerHpSlider().value = 0;
-            string hpText = $"0 / {(int)playerMaxHealth}";
+            string hpText = $"0 / {playerMaxHealth}";
             gameManager.PlayerHpText().text = hpText;
+            gameManager.DeadScenesLoad();
         }
         else if (playerCurHealth > 0 && transform.gameObject != null)
         {
             gameManager.PlayerHpSlider().value = playerCurHealth;
-            string hpText = $"{(int)playerCurHealth} / {(int)playerMaxHealth}";
+            string hpText = $"{playerCurHealth} / {playerMaxHealth}";
             gameManager.PlayerHpText().text = hpText;
         }
     }

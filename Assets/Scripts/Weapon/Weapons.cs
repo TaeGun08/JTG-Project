@@ -45,6 +45,7 @@ public class Weapons : MonoBehaviour
     private float buffUpDamage;
     private float playerCriticalPcent;
     private float playerCriticalDamage;
+    private bool hitCriticalCheck = false;
 
     [Header("ÃÑ¾Ë ¼³Á¤")]
     [SerializeField, Tooltip("ÃÑ¾Ë ÇÁ¸®ÆÕ")] private GameObject bullet;
@@ -300,11 +301,11 @@ public class Weapons : MonoBehaviour
             Bullet bulletSc = bulletObj.GetComponent<Bullet>();
             if (weaponSkill.SkillAOn() == false)
             {
-                bulletSc.BulletDamage(weaponCurDamage, 0, false);
+                bulletSc.BulletDamage(weaponCurDamage, 0, false, hitCriticalCheck);
             }
             else if (weaponSkill.SkillAOn() == true)
             {
-                bulletSc.BulletDamage(weaponCurDamage, 1.2f, true);
+                bulletSc.BulletDamage(weaponCurDamage, 1.2f, true, hitCriticalCheck);
             }
         }
         else if (weaponType.ToString() == "weaponTypeB")
@@ -315,9 +316,9 @@ public class Weapons : MonoBehaviour
             Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
             Bullet bulletScB = bulletObjB.GetComponent<Bullet>();
             Bullet bulletScC = bulletObjC.GetComponent<Bullet>();
-            bulletScA.BulletDamage(weaponCurDamage, 0, false);
-            bulletScB.BulletDamage(weaponCurDamage, 0, false);
-            bulletScC.BulletDamage(weaponCurDamage, 0, false);
+            bulletScA.BulletDamage(weaponCurDamage, 0, false, hitCriticalCheck);
+            bulletScB.BulletDamage(weaponCurDamage, 0, false, hitCriticalCheck);
+            bulletScC.BulletDamage(weaponCurDamage, 0, false, hitCriticalCheck);
         }
     }
 
@@ -328,11 +329,13 @@ public class Weapons : MonoBehaviour
             float ciritical = Random.Range(0.0f, 100.0f);
             if (ciritical <= playerCriticalPcent)
             {
+                hitCriticalCheck = true;
                 weaponCurDamage = ((weaponDamage + passiveDmgUp) * playerCriticalDamage) + buffUpDamage;
                 useShoot = true;
             }
             else if (ciritical > playerCriticalPcent)
             {
+                hitCriticalCheck = false;
                 weaponCurDamage = (weaponDamage + passiveDmgUp) + buffUpDamage;
                 useShoot = true;
             }
@@ -424,5 +427,10 @@ public class Weapons : MonoBehaviour
     public void ReturnDamage()
     {
          weaponCurDamage = weaponDamage;
+    }
+
+    public bool HitCriticalCheck()
+    {
+        return hitCriticalCheck;
     }
 }

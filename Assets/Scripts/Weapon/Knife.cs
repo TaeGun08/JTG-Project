@@ -17,7 +17,7 @@ public class Knife : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
-            enemySc.EnemyHp((int)knifeDamage, true, true);
+            enemySc.EnemyHp((int)knifeDamage, true, true, false);
             Destroy(gameObject);
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
