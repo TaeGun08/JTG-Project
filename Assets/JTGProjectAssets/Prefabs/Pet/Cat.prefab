@@ -441,7 +441,7 @@ MonoBehaviour:
   petHpEffect: 20
   petHpEffectPcent: 0
   petCriPcentEffect: 10
-  petCriDamageEffect: 0.4
+  petCriDamageEffect: 0.5
   petDamage: 10
   petAttackpreFab: {fileID: 8054764785227492223, guid: 05f7239e63409d64d8a87af779e420e2, type: 3}
   petSkillEffect: {fileID: 1840418798332165952, guid: 7143def795517114e91b07df4bd55657, type: 3}

@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float playerDamage;
     [SerializeField] private float playerBuffDamageUp;
     [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
-    [SerializeField, Range(1.1f, 2.5f)] private float playerCriDmg;
+    [SerializeField, Range(2.0f, 3.5f)] private float playerCriDmg;
     private bool buffDamageUp = false;
     private float buffDuration = 0.0f;
     [SerializeField] private int playerMaxHealth = 100;
@@ -1034,4 +1034,15 @@ public class Player : MonoBehaviour
         playerCritical += _criticalPercentage;
         playerCriDmg += _criDamage;
     }
+}
+
+public class PlayerData
+{
+    private float playerDamage;
+    private float playerBuffDamageUp;
+    private float playerCritical;
+    private float playerCriDmg;
+    private int playerMaxHealth;
+    private int playerCurHealth;
+    private int playerArmor;
 }

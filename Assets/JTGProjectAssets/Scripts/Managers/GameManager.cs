@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
+using static Player;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,7 +61,7 @@ public class GameManager : MonoBehaviour
         playerStart();
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         if (playerPrefab == null)
         {
