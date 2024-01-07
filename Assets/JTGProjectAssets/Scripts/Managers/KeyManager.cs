@@ -18,6 +18,7 @@ public class KeyManager : MonoBehaviour
     [SerializeField] KeyCode weaponSkiilKey;
     [SerializeField] KeyCode pickUpItemKey;
     [SerializeField] KeyCode dropItemKey;
+    [SerializeField] KeyCode interactionKey;
 
     private void Awake()
     {
@@ -84,5 +85,10 @@ public class KeyManager : MonoBehaviour
     public KeyCode DropItemKey()
     {
         return dropItemKey;
+    }
+
+    public KeyCode InteractionKey()
+    {
+        return interactionKey;
     }
 }

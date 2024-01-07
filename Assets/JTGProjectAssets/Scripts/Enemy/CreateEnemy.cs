@@ -5,15 +5,20 @@ using UnityEngine;
 public class CreateEnemy : MonoBehaviour
 {
     [Header("利 积己 包访 汲沥")]
-    [SerializeField] private List<GameObject> enemyPrefab = new List<GameObject>();
-    [SerializeField] private Transform enemyCreatePos;
-
-    [Header("积己且 利 橇府普")]
-    [SerializeField] private int enemyPrefabNember;
+    [SerializeField] private List<GameObject> enemyPrefab;
+    [SerializeField] private List<Transform> enemyCreatePos;
 
     private TrashPreFab trashPreFab;
 
     private bool isCreate = false;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            isCreate = true;
+        }
+    }
 
     private void Start()
     {
@@ -27,10 +32,13 @@ public class CreateEnemy : MonoBehaviour
 
     private void enemyCreate()
     {
-        if (isCreate == false && (enemyPrefabNember <= enemyPrefab.Count - 1))
+        if (isCreate == true)
         {
-            Instantiate(enemyPrefab[enemyPrefabNember], enemyCreatePos.position, Quaternion.identity, trashPreFab.transform);
-            isCreate = true;
+            for (int i = 0; i < enemyPrefab.Count; i++)
+            {
+                Instantiate(enemyPrefab[i], enemyCreatePos[i].position, Quaternion.identity, trashPreFab.transform);
+            }
+            isCreate = false;
         }
     }
 }
