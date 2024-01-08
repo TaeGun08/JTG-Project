@@ -11,28 +11,43 @@ public class MainSceneManager : MonoBehaviour
     [SerializeField, Tooltip("파일을 처음 시작할 때 버튼")] private Button startButton;
     [SerializeField, Tooltip("저장 파일을 불러오는 버튼")] private Button loadButton;
     [SerializeField, Tooltip("종료 버튼")] private Button exitButton;
-    private bool loadOn = false;
     [Space]
-    [SerializeField, Tooltip("저장된 파일")] private GameObject saveFileObj;
-    [SerializeField, Tooltip("저장 파일 닫기 버튼")] private Button saveCloseButton;
-    [SerializeField, Tooltip("저장 파일 A")] private Button saveFileA;
-    [SerializeField, Tooltip("저장 파일 B")] private Button saveFileB;
-    [SerializeField, Tooltip("저장 파일 C")] private Button saveFileC;
-
+    [SerializeField, Tooltip("저장된 파일")] private GameObject saveClearCheckObj;
+    [SerializeField, Tooltip("저장 파일 초기화 확인 버튼")] private Button newClearButton;
+    [SerializeField, Tooltip("저장 파일 초기화 취소 버튼")] private Button newCancelButton;
+    [SerializeField, Tooltip("저장 파일이 없으면 뜨는 메세지")] private GameObject notSaveFile;
+    private float closeObj;
 
     private void Awake()
     {
-        saveFileObj.SetActive(false);
+        saveClearCheckObj.SetActive(false);
+        notSaveFile.SetActive(false);
 
         startButton.onClick.AddListener(() =>
         {
-            saveFileObj.SetActive(true);
+            int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
+
+            if (nextLevel > 1)
+            {
+                saveClearCheckObj.SetActive(true);
+            }
+            else
+            {
+                SceneManager.LoadSceneAsync(1);
+            }
         });
 
         loadButton.onClick.AddListener(() =>
         {
-            saveFileObj.SetActive(true);
-            loadOn = true;
+            int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
+            if (nextLevel > 1)
+            {
+                SceneManager.LoadSceneAsync(nextLevel);
+            }
+            else
+            {
+                notSaveFile.SetActive(true);
+            }
         });
 
         exitButton.onClick.AddListener(() =>
@@ -44,50 +59,29 @@ public class MainSceneManager : MonoBehaviour
 #endif
         });
 
-        saveCloseButton.onClick.AddListener(() =>
+        newClearButton.onClick.AddListener(() =>
         {
-            saveFileObj.SetActive(false);
-            loadOn = false;
+            string getScene = JsonConvert.SerializeObject(1);
+            PlayerPrefs.SetString("saveKey", getScene);
+            saveClearCheckObj.SetActive(false);
         });
 
-        saveFileA.onClick.AddListener(() =>
+        newCancelButton.onClick.AddListener(() =>
         {
-            if (loadOn == false)
-            {
-                SceneManager.LoadSceneAsync("TutorialScene");
-            }
-            else if (loadOn == true)
-            {
-
-            }
-        });
-
-        saveFileB.onClick.AddListener(() =>
-        {
-            if (loadOn == false)
-            {
-
-            }
-            else if (loadOn == true)
-            {
-
-            }
-        });
-
-        saveFileC.onClick.AddListener(() =>
-        {
-            if (loadOn == false)
-            {
-
-            }
-            else if (loadOn == true)
-            {
-
-            }
+            saveClearCheckObj.SetActive(false);
         });
     }
 
-    private void resetSaveFileA()
+    private void Update()
     {
+        if (notSaveFile.activeSelf == true)
+        {
+            closeObj += Time.deltaTime;
+            if (closeObj >= 1)
+            {
+                notSaveFile.SetActive(false);
+                closeObj = 0;
+            }
+        }
     }
 }

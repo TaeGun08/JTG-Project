@@ -16,11 +16,14 @@ public class Tutorial : MonoBehaviour
     private int conversationsCount = 0;
     private bool conversationing = false;
     private bool conversationsEnd = false;
+    private bool talking = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
+            talking = true;
+
             conversationing = true;
             if (conversationing == true && conversationsEnd == false)
             {
@@ -34,6 +37,8 @@ public class Tutorial : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
+            talking = false;
+
             if (conversationing == true && conversationsEnd == false)
             {
                 interactionKeyImage.SetActive(false);
@@ -46,7 +51,7 @@ public class Tutorial : MonoBehaviour
                     conversations[i].SetActive(false);
                 }
 
-                Destroy(gameObject);
+                Destroy(gameObject, 2);
             }
         }
     }
@@ -73,6 +78,7 @@ public class Tutorial : MonoBehaviour
     {
         collCheck();
         interaction();
+        npcEndMove();
     }
 
     private void collCheck()
@@ -92,7 +98,7 @@ public class Tutorial : MonoBehaviour
 
     private void interaction()
     {
-        if (conversationsEnd == false)
+        if (conversationsEnd == false && talking == true)
         {
             if (conversationing == true)
             {
@@ -114,6 +120,15 @@ public class Tutorial : MonoBehaviour
                     conversationsCount++;
                 }
             }
+        }
+    }
+
+    private void npcEndMove()
+    {
+        if (conversationsEnd == true)
+        {
+            transform.position += Vector3.up * 18 * Time.deltaTime;
+            transform.Rotate(new Vector3(0, 360, 0) * 2* Time.deltaTime);
         }
     }
 }

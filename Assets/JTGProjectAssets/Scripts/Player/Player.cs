@@ -1035,14 +1035,3 @@ public class Player : MonoBehaviour
         playerCriDmg += _criDamage;
     }
 }
-
-public class PlayerData
-{
-    private float playerDamage;
-    private float playerBuffDamageUp;
-    private float playerCritical;
-    private float playerCriDmg;
-    private int playerMaxHealth;
-    private int playerCurHealth;
-    private int playerArmor;
-}

@@ -16,7 +16,7 @@ public class CreateEnemy : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            isCreate = true;
+            enemyCreate();
         }
     }
 
@@ -25,20 +25,15 @@ public class CreateEnemy : MonoBehaviour
         trashPreFab = TrashPreFab.instance;
     }
 
-    private void Update()
-    {
-        enemyCreate();
-    }
-
     private void enemyCreate()
     {
-        if (isCreate == true)
+        if (isCreate == false)
         {
             for (int i = 0; i < enemyPrefab.Count; i++)
             {
                 Instantiate(enemyPrefab[i], enemyCreatePos[i].position, Quaternion.identity, trashPreFab.transform);
             }
-            isCreate = false;
+            isCreate = true;
         }
     }
 }
