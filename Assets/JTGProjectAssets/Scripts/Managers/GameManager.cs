@@ -1,11 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using Newtonsoft.Json;
-using static Player;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,21 +21,6 @@ public class GameManager : MonoBehaviour
     [Header("재장전UI")]
     [SerializeField] private GameObject reloadingObj;
     [SerializeField] private Slider reloadingUI;
-
-    [Header("플레이어 UI")]
-    [SerializeField] private GameObject playerUI;
-    [SerializeField] private GameObject playerSkill;
-    [SerializeField] private Image playerSkillImage;
-    [SerializeField] private GameObject playerSkillCoolTimePanel;
-    [SerializeField] private Image playerCoolTimePanelImage;
-    [SerializeField] private GameObject playerSkillCollTimeText;
-    [SerializeField] private TMP_Text playerCoolTimeText;
-    [SerializeField] private GameObject playerDashCoolPanel;
-    [SerializeField] private Image playerDashCoolPanelImage;
-    [SerializeField] private GameObject playerDashCoolText;
-    [SerializeField] private TMP_Text playerDashCoolTimeText;
-    [SerializeField] private Slider playerHpSlider;
-    [SerializeField] private TMP_Text playerHpText;
 
     [Header("아이템 드랍 오브젝트 위치")]
     [SerializeField] private Transform itemDropTrs;
@@ -63,13 +44,18 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerPrefab == null)
+        gamePauseOn();
+    }
+
+    private void gamePauseOn()
+    {
+        if (gamePause == false)
         {
-            playerUI.SetActive(false);
+            Time.timeScale = 1;
         }
-        else if (playerPrefab != null)
+        else if (gamePause == true)
         {
-            playerUI.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 
@@ -80,11 +66,6 @@ public class GameManager : MonoBehaviour
             playerPrefab.transform.position = playerStartPos.position;
             playerPrefab.transform.SetParent(playerStartPos);
         }
-    }
-
-    public void DeadScenesLoad()
-    {
-        SceneManager.LoadSceneAsync("DeadScene");
     }
 
     public bool GamePause()
@@ -110,69 +91,6 @@ public class GameManager : MonoBehaviour
     public Slider ReloadingUI()
     {
         return reloadingUI;
-    }
-
-    /// <summary>
-    /// 플레이어의 스킬 이미지를 화면에 보이게 함
-    /// </summary>
-    public void PlayerSkillOn(bool _skillOn)
-    {
-        playerSkill.SetActive(_skillOn);
-    }
-
-    public Image PlayerSkillImage()
-    {
-        return playerSkillImage;
-    }
-
-    /// <summary>
-    /// 플레이어 스킬을 사용 후 쿨타임이 실행될 때 활성화 됨
-    /// </summary>
-    /// <param name="_objOn"></param>
-    public void PlayerSkillCoolTime(bool _objOn)
-    {
-        playerSkillCoolTimePanel.SetActive(_objOn);
-        playerSkillCollTimeText.SetActive(_objOn);
-    }
-
-    public Image PlayerCoolTimeImage()
-    {
-        return playerCoolTimePanelImage;
-    }
-
-    public TMP_Text PlayerCoolTimeText()
-    {
-        return playerCoolTimeText;
-    }
-
-    public GameObject PlayerDashPanel()
-    {
-        return playerDashCoolPanel;
-    }
-
-    public GameObject PlayerDashText()
-    {
-        return playerDashCoolText;
-    }
-
-    public Image PlayerDashCoolPanelImage()
-    {
-        return playerDashCoolPanelImage;
-    }
-
-    public TMP_Text PlayerDashCoolTimeText()
-    {
-        return playerDashCoolTimeText;
-    }
-
-    public Slider PlayerHpSlider()
-    {
-        return playerHpSlider;
-    }
-
-    public TMP_Text PlayerHpText()
-    {
-        return playerHpText;
     }
 
     public Transform ItemDropTrs()

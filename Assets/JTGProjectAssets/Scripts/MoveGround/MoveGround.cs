@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MoveGround : MonoBehaviour
 {
-    private Vector3 moveVec;
+    [SerializeField] private Vector3 moveVec;
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private float moveChangeTime;
@@ -47,11 +47,6 @@ public class MoveGround : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        moveVec = new Vector3(0, 1, 0);
-    }
-
     private void Update()
     {
         moveChange();
@@ -68,7 +63,7 @@ public class MoveGround : MonoBehaviour
         if (moveChangeTimer >= moveChangeTime)
         {
             moveChangeTimer = 0;
-            moveVec.y *= -1f;
+            moveVec *= -1f;
         }
     }
 

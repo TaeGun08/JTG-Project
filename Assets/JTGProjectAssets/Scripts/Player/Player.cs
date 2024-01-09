@@ -1,12 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using TMPro;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -26,6 +20,8 @@ public class Player : MonoBehaviour
     private Camera mainCam; //메인 카메라
     private Animator anim;
     private SpriteRenderer playerRen;
+
+    private PlayerUI playerUI;
 
     //플레이어에 가져올 매니저
     private GameManager gameManager; //게임매니저
@@ -103,7 +99,9 @@ public class Player : MonoBehaviour
 
     [Header("펫 관련 설정")]
     [SerializeField, Tooltip("펫을 저장할 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
-    private Pet petSc;
+    private Pet petSc; //펫의 스크립트 가져올 변수
+
+    private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -176,10 +174,6 @@ public class Player : MonoBehaviour
 
                     petSc = _collision.gameObject.GetComponent<Pet>();
                     petSc.GetPetCheck(true);
-                    Vector3 myPos = transform.position;
-                    myPos.x = -1f;
-                    _collision.gameObject.transform.position = myPos;
-
                     petPrefabs.Add(_collision.gameObject);
                 }
             }
@@ -214,6 +208,7 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>(); //플레이어의 애니메이션을 가져옴
         playerHand = transform.Find("PlayerHand");
         playerRen = GetComponent<SpriteRenderer>();
+        playerUI = GetComponent<PlayerUI>();
 
         playerCurHealth = playerMaxHealth;
 
@@ -235,17 +230,11 @@ public class Player : MonoBehaviour
 
         gravity = gameManager.GravityScale();
 
-        gameManager.PlayerHpSlider().maxValue = playerCurHealth;
-        gameManager.PlayerHpSlider().value = playerCurHealth;
+        playerUI.OptionOn(false);
     }
 
     private void Update()
     {
-        if (gameManager.GamePause() == true || transform.gameObject == null) //게임매니저에서 gamePause가 true라면 플레이어 동작을 멈춤
-        {
-            return;
-        }
-
         if (playerCurHealth > playerMaxHealth)
         {
             playerCurHealth = playerMaxHealth;
@@ -266,6 +255,7 @@ public class Player : MonoBehaviour
         playerDead();
         playerWeaponCritical();
         petPassiveBuff();
+        playerOption();
         playerAni();
     }
 
@@ -287,16 +277,15 @@ public class Player : MonoBehaviour
         if (dashCoolOn == true) //대쉬를 하기 위한 쿨타임
         {
             dashCoolTimer -= Time.deltaTime;
-            gameManager.PlayerDashCoolPanelImage().fillAmount = dashCoolTimer / dashCoolTime;
             if (dashCoolTimer >= 1)
             {
                 string timerTextInt = $"{(int)dashCoolTimer}";
-                gameManager.PlayerDashCoolTimeText().text = timerTextInt;
+                playerUI.SetPlayerDashCool(dashCoolTimer / dashCoolTime, timerTextInt);
             }
             else if (dashCoolTimer < 1)
             {
                 string timerTextInt = $"{dashCoolTimer.ToString("F1")}";
-                gameManager.PlayerDashCoolTimeText().text = timerTextInt;
+                playerUI.SetPlayerDashCool(dashCoolTimer / dashCoolTime, timerTextInt);
             }
         }
 
@@ -556,8 +545,7 @@ public class Player : MonoBehaviour
         {
             dashCoolOn = false;
             dashCoolTimer = dashCoolTime;
-            gameManager.PlayerDashPanel().SetActive(false);
-            gameManager.PlayerDashText().SetActive(false);
+            playerUI.PlayerDashCool(false);
         }
 
         if (dashKey == true && isDash == false && dashCoolOn == false)
@@ -568,8 +556,7 @@ public class Player : MonoBehaviour
 
             dashInvincibleOn = true;
 
-            gameManager.PlayerDashPanel().SetActive(true);
-            gameManager.PlayerDashText().SetActive(true);
+            playerUI.PlayerDashCool(true);
 
             gravityVelocity = 0.0f;
 
@@ -843,17 +830,15 @@ public class Player : MonoBehaviour
     private void playerDead()
     {
         if (playerCurHealth <= 0)
-        {         
-            gameManager.PlayerHpSlider().value = 0;
+        {
             string hpText = $"0 / {playerMaxHealth}";
-            gameManager.PlayerHpText().text = hpText;
-            gameManager.DeadScenesLoad();
+            playerUI.SetPlayerHp(0, hpText);
+            SceneManager.LoadSceneAsync("DeadScene");
         }
         else if (playerCurHealth > 0 && transform.gameObject != null)
         {
-            gameManager.PlayerHpSlider().value = playerCurHealth;
             string hpText = $"{playerCurHealth} / {playerMaxHealth}";
-            gameManager.PlayerHpText().text = hpText;
+            playerUI.SetPlayerHp(playerCurHealth, hpText);
         }
     }
 
@@ -891,6 +876,23 @@ public class Player : MonoBehaviour
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
                 weaponSc.PassiveDamageUp(playerDamage);
             }
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
+    /// </summary>
+    private void playerOption()
+    {
+        if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == false)
+        {
+            optionOn = true;
+            playerUI.OptionOn(optionOn);
+        }
+        else if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == true)
+        {
+            optionOn = false;
+            playerUI.OptionOn(optionOn);
         }
     }
 
@@ -990,6 +992,14 @@ public class Player : MonoBehaviour
     public Vector3 PlayerMoveVec()
     {
         return moveVec;
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 옵션창을 끄기 위한 함수
+    /// </summary>
+    public void OptionOff(bool _off)
+    {
+        optionOn = _off;
     }
 
     /// <summary>

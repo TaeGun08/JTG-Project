@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerSkill : MonoBehaviour
 {
-    //플레이어스킬에 가져올 매니저
-    private GameManager gameManager; //게임매니저
+    private PlayerUI playerUI;
+
     private KeyManager keyManager; //키매니저
 
     private TrashPreFab trashPreFab;
@@ -28,21 +28,21 @@ public class PlayerSkill : MonoBehaviour
     private float coolTime;
     [SerializeField] private float skillADamage;
 
+    private void Awake()
+    {
+        player = GetComponent<Player>();
+        playerUI = GetComponent<PlayerUI>();
+    }
+
     private void Start()
     {
-        gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
         trashPreFab = TrashPreFab.instance;
 
-        player = GetComponent<Player>();
-
         skillCoolTimer = skillCoolTime;
 
-        gameManager.PlayerSkillOn(true);
-        gameManager.PlayerSkillCoolTime(false);
-
-        coolTime = gameManager.PlayerCoolTimeImage().fillAmount;
+        playerUI.PlayerSkiilCool(false);
     }
 
     private void Update()
@@ -58,26 +58,24 @@ public class PlayerSkill : MonoBehaviour
     {
         if (skillCoolOn == true)
         {
-            gameManager.PlayerSkillCoolTime(true);
+            playerUI.PlayerSkiilCool(true);
 
             if (skillCoolTimer > 1.0f)
             {
                 string timerTextInt = $"{(int)skillCoolTimer}";
-                gameManager.PlayerCoolTimeText().text = timerTextInt;
+                playerUI.SetPlayerSkillCool(skillCoolTimer / skillCoolTime, timerTextInt);
             }
             else if (skillCoolTimer < 1.0f)
             {
                 string timerTextInt = $"{skillCoolTimer.ToString("F1")}";
-                gameManager.PlayerCoolTimeText().text = timerTextInt;
+                playerUI.SetPlayerSkillCool(skillCoolTimer / skillCoolTime, timerTextInt);
             }
 
-            skillCoolTimer -= Time.deltaTime;
-            gameManager.PlayerCoolTimeImage().fillAmount = skillCoolTimer / skillCoolTime;
+            skillCoolTimer -= Time.deltaTime;           
             if (skillCoolTimer < 0.0f)
             {
                 skillCoolOn = false;
-                gameManager.PlayerSkillCoolTime(false);
-                gameManager.PlayerCoolTimeImage().fillAmount = coolTime;
+                playerUI.PlayerSkiilCool(false);
                 skillCoolTimer = skillCoolTime;
             }
         }
