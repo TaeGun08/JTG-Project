@@ -1,9 +1,23 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static SaveObject;
 
 public class Player : MonoBehaviour
 {
+    public class PlayerData
+    {
+        public float playerDamage;
+        public int playerArmor;
+        public int playerHp;
+        public float playerCritical;
+        public float playerCriDamage;
+    }
+
+    private PlayerData playerData = new PlayerData();
+    private SaveObject saveObject;
+
     public enum PlayerSkillType
     {
         skillTypeA,
@@ -33,7 +47,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float playerDamage;
     [SerializeField] private float playerBuffDamageUp;
     [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
-    [SerializeField, Range(2.0f, 3.5f)] private float playerCriDmg;
+    [SerializeField, Range(2.0f, 3.5f)] private float playerCriDamage;
     private bool buffDamageUp = false;
     private float buffDuration = 0.0f;
     [SerializeField] private int playerMaxHealth = 100;
@@ -209,6 +223,7 @@ public class Player : MonoBehaviour
         playerHand = transform.Find("PlayerHand");
         playerRen = GetComponent<SpriteRenderer>();
         playerUI = GetComponent<PlayerUI>();
+        saveObject = GetComponent<SaveObject>();
 
         playerCurHealth = playerMaxHealth;
 
@@ -231,10 +246,18 @@ public class Player : MonoBehaviour
         gravity = gameManager.GravityScale();
 
         playerUI.OptionOn(false);
+
+        playerUI.SetPlayerHp(playerCurHealth, playerMaxHealth, "");
+
+        saveObject.Load();
+
+        setPlayerData();
     }
 
     private void Update()
     {
+        saveObject.JsonSave(playerData);
+
         if (playerCurHealth > playerMaxHealth)
         {
             playerCurHealth = playerMaxHealth;
@@ -257,6 +280,15 @@ public class Player : MonoBehaviour
         petPassiveBuff();
         playerOption();
         playerAni();
+    }
+
+    private void setPlayerData()
+    {
+        playerData.playerDamage = playerDamage;
+        playerData.playerArmor = playerArmor;
+        playerData.playerHp = playerMaxHealth;
+        playerData.playerCritical = playerCritical;
+        playerData.playerCriDamage = playerCriDamage;
     }
 
     /// <summary>
@@ -832,13 +864,13 @@ public class Player : MonoBehaviour
         if (playerCurHealth <= 0)
         {
             string hpText = $"0 / {playerMaxHealth}";
-            playerUI.SetPlayerHp(0, hpText);
+            playerUI.SetPlayerHp(0, playerMaxHealth, hpText);
             SceneManager.LoadSceneAsync("DeadScene");
         }
         else if (playerCurHealth > 0 && transform.gameObject != null)
         {
             string hpText = $"{playerCurHealth} / {playerMaxHealth}";
-            playerUI.SetPlayerHp(playerCurHealth, hpText);
+            playerUI.SetPlayerHp(playerCurHealth, playerMaxHealth, hpText);
         }
     }
 
@@ -857,7 +889,7 @@ public class Player : MonoBehaviour
 
                 if (weaponRen.enabled == true)
                 {
-                    weaponSc.GetPlayerCriticalPcent(playerCritical, playerCriDmg);
+                    weaponSc.GetPlayerCriticalPcent(playerCritical, playerCriDamage);
                 }
             }
         }
@@ -894,6 +926,8 @@ public class Player : MonoBehaviour
             optionOn = false;
             playerUI.OptionOn(optionOn);
         }
+
+        gameManager.GamePause(optionOn);
     }
 
     /// <summary>
@@ -1042,6 +1076,23 @@ public class Player : MonoBehaviour
     public void PlayerStatusCritical(float _criticalPercentage, float _criDamage)
     {
         playerCritical += _criticalPercentage;
-        playerCriDmg += _criDamage;
+        playerCriDamage += _criDamage;
+    }
+
+    public void PlayerSavedData(float _damage, int _armor, int _hp, float _critical, float _cridmg)
+    {
+        playerDamage = _damage;
+        playerArmor = _armor;
+        playerMaxHealth = _hp;
+        playerCritical = _critical;
+        playerCriDamage = _cridmg;
+    }
+    public void PlayerSavedData(SavedObj _savedObject)
+    {
+        playerDamage = _savedObject.playerDamage;
+        playerArmor = _savedObject.playerArmor;
+        playerMaxHealth = _savedObject.playerHp;
+        playerCritical = _savedObject.playerCritical;
+        playerCriDamage = _savedObject.playerCriDamage;
     }
 }

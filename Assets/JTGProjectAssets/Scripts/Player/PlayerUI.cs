@@ -68,10 +68,11 @@ public class PlayerUI : MonoBehaviour
     /// </summary>
     /// <param name="_hpValue"></param>
     /// <param name="_textValue"></param>
-    public void SetPlayerHp(int _hpValue, string _textValue)
+    public void SetPlayerHp(int _hpValue, int _hpMaxValue, string _textValue)
     {
         Slider hpSlider = playerHp.GetComponent<Slider>();
         hpSlider.value = _hpValue;
+        hpSlider.maxValue = _hpMaxValue;
 
         TMP_Text HpText = playerHpText.GetComponent<TMP_Text>();
         HpText.text = _textValue;

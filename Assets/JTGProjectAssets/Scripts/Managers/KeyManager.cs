@@ -20,6 +20,7 @@ public class KeyManager : MonoBehaviour
     [SerializeField] KeyCode dropItemKey;
     [SerializeField] KeyCode interactionKey;
     [SerializeField] KeyCode optionKey;
+    [SerializeField] KeyCode statuswindowKey;
 
     private void Awake()
     {
@@ -96,5 +97,10 @@ public class KeyManager : MonoBehaviour
     public KeyCode OptionKey()
     {
         return optionKey;
+    }
+
+    public KeyCode StatuswindowKey()
+    {
+        return statuswindowKey;
     }
 }

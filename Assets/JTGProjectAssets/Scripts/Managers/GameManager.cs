@@ -68,9 +68,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool GamePause()
+    public void GamePause(bool _gamePause)
     {
-        return gamePause;
+        gamePause = _gamePause;
     }
 
     public GameObject PlayerPrefab()

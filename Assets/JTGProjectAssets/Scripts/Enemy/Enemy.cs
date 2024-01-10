@@ -153,11 +153,6 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (gameManager.GamePause() == true)
-        {
-            return;
-        }
-
         enemyTimer();
         enemyAttackCollCheck();
         enemyGroundCheck();

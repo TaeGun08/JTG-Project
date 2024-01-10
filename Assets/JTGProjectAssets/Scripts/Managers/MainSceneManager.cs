@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using System.Globalization;
 
 public class MainSceneManager : MonoBehaviour
 {
@@ -23,8 +24,14 @@ public class MainSceneManager : MonoBehaviour
         saveClearCheckObj.SetActive(false);
         notSaveFile.SetActive(false);
 
-        startButton.onClick.AddListener(() =>
+        if (PlayerPrefs.GetString("saveKey") == string.Empty)
         {
+            string getScene = JsonConvert.SerializeObject(0);
+            PlayerPrefs.SetString("saveKey", getScene);
+        }
+
+        startButton.onClick.AddListener(() =>
+        {           
             int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
 
             if (nextLevel > 1)
