@@ -21,6 +21,8 @@ public class MainSceneManager : MonoBehaviour
 
     private void Awake()
     {
+        Time.timeScale = 1;
+
         saveClearCheckObj.SetActive(false);
         notSaveFile.SetActive(false);
 

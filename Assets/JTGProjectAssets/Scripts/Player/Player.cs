@@ -11,12 +11,14 @@ public class Player : MonoBehaviour
         public float playerDamage;
         public int playerArmor;
         public int playerHp;
+        public int playerCurHp;
         public float playerCritical;
         public float playerCriDamage;
     }
 
     private PlayerData playerData = new PlayerData();
     private SaveObject saveObject;
+    private bool dataSave = false;
 
     public enum PlayerSkillType
     {
@@ -249,20 +251,17 @@ public class Player : MonoBehaviour
 
         playerUI.SetPlayerHp(playerCurHealth, playerMaxHealth, "");
 
-        saveObject.Load();
-
-        setPlayerData();
+        saveObject.PlayerObjectDataLoad();
     }
 
     private void Update()
     {
-        saveObject.JsonSave(playerData);
-
         if (playerCurHealth > playerMaxHealth)
         {
             playerCurHealth = playerMaxHealth;
         }
 
+        setPlayerData();
         timers();
         itmeColliderCheck();
         playerCheckGround();
@@ -282,13 +281,24 @@ public class Player : MonoBehaviour
         playerAni();
     }
 
+    /// <summary>
+    /// 플레이어의 데이터를 세이브하기 위한 함수
+    /// </summary>
     private void setPlayerData()
     {
-        playerData.playerDamage = playerDamage;
-        playerData.playerArmor = playerArmor;
-        playerData.playerHp = playerMaxHealth;
-        playerData.playerCritical = playerCritical;
-        playerData.playerCriDamage = playerCriDamage;
+        if (dataSave == true)
+        {
+            playerData.playerDamage = playerDamage;
+            playerData.playerArmor = playerArmor;
+            playerData.playerHp = playerMaxHealth;
+            playerData.playerCurHp = playerCurHealth;
+            playerData.playerCritical = playerCritical;
+            playerData.playerCriDamage = playerCriDamage;
+
+            saveObject.PlayerObjectSaveData(playerData);
+
+            dataSave = false;
+        }
     }
 
     /// <summary>
@@ -1087,12 +1097,19 @@ public class Player : MonoBehaviour
         playerCritical = _critical;
         playerCriDamage = _cridmg;
     }
-    public void PlayerSavedData(SavedObj _savedObject)
+
+    public void PlayerSavedData(SavedObjectData _savedObject)
     {
         playerDamage = _savedObject.playerDamage;
         playerArmor = _savedObject.playerArmor;
         playerMaxHealth = _savedObject.playerHp;
+        playerCurHealth = _savedObject.playerCurHp;
         playerCritical = _savedObject.playerCritical;
         playerCriDamage = _savedObject.playerCriDamage;
+    }
+
+    public void PlayerSaveOn(bool _save)
+    {
+        dataSave = _save;
     }
 }

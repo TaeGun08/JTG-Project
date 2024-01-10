@@ -8,6 +8,9 @@ using UnityEngine.SocialPlatforms;
 
 public class TutorialClearCheck : MonoBehaviour
 {
+    [SerializeField] Player player;
+    [SerializeField] SaveObject saveObject;
+
     private KeyManager keyManager;
 
     [SerializeField] private GameObject homeInKeyImage;
@@ -37,8 +40,11 @@ public class TutorialClearCheck : MonoBehaviour
     {
         keyManager = KeyManager.instance;
 
+        saveObject.PlayerDataResetOn(true);
+
         homeInKeyImage.SetActive(false);
     }
+
     private void Update()
     {
         nextLevelLoading();
@@ -48,6 +54,8 @@ public class TutorialClearCheck : MonoBehaviour
     {
         if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
         {
+            saveObject.PlayerDataResetOn(false);
+            player.PlayerSaveOn(true);
             string get = JsonConvert.SerializeObject(2);
             PlayerPrefs.SetString("saveKey", get);
             int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
