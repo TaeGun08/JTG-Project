@@ -20,7 +20,7 @@ public class SaveObject : MonoBehaviour
 
     private Player player;
 
-    [SerializeField] private bool dataReset = false;
+    private bool dataReset = false;
 
     private void Awake()
     {

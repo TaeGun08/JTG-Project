@@ -46,17 +46,21 @@ public class Player : MonoBehaviour
     [SerializeField] private float gravity; //게임매니저에서 가져올 중력값을 저장할 변수
 
     [Header("캐릭터의 기본 설정")]
-    [SerializeField] private float playerDamage;
-    [SerializeField] private float playerBuffDamageUp;
-    [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
-    [SerializeField, Range(2.0f, 3.5f)] private float playerCriDamage;
-    private bool buffDamageUp = false;
-    private float buffDuration = 0.0f;
-    [SerializeField] private int playerMaxHealth = 100;
-    [SerializeField] private int playerCurHealth = 0;
-    [SerializeField] private int playerArmor = 0;
-    private bool playerHitDamage = false;
-    private float hitDamageTimer;
+    [SerializeField] private float playerDamage; //플레이어의 공격력, 전체적인 범위에서 영구적인 영향을 미침
+    [SerializeField] private float playerBuffDamageUp; //플레이어의 공격력, 전체적인 범위에서 잠깐의 영향을 미침
+    [SerializeField, Range(0.0f, 100.0f)] private float playerCritical; //플레이어의 치명타 확률
+    [SerializeField, Range(2.0f, 3.5f)] private float playerCriDamage; //플레이어의 치명타 데미지
+    private bool buffDamageUp = false; //버프 데미지가 적용됐을 때 사용되는 변수
+    private float buffDuration = 0.0f; //지속 시간 타이머
+    [SerializeField] private int playerMaxHp = 100; //플레이어의 최대체력
+    [SerializeField] private int playerCurHp = 0; //플레이어의 현재체력
+    [SerializeField] private int playerArmor = 0; //플레이어의 방어력
+    private bool playerHitDamage = false; //플레이어가 맞았을 시 스프라이트렌더러 색깔을 변경하기 위한 변수
+    private float hitDamageTimer; //변경되고 다시 원래 색깔로 돌아오기 위한 시간
+    [SerializeField] private int playerLevel;
+    [SerializeField] private int levelPoint;
+    private float playerExp;
+    [SerializeField, Tooltip("플레이어가 이 경험치만큼 도달 시 레벨업")] private float playerMaxExp;
 
     [Header("이동")]
     [SerializeField, Tooltip("플레이어의 이동속도")] private float speed = 1.0f; //플레이어의 이동속도
@@ -118,6 +122,7 @@ public class Player : MonoBehaviour
     private Pet petSc; //펫의 스크립트 가져올 변수
 
     private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
+    private bool statusOpen = false; //플레이어가 정보창을 켰는지 안 켰는지 확인하기 위한 변수
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -210,7 +215,7 @@ public class Player : MonoBehaviour
                 }
                 else if (buffType == Buff.BuffType.heal)
                 {
-                    playerCurHealth += (int)buffSc.BuffTypeValue();
+                    playerCurHp += (int)buffSc.BuffTypeValue();
                 }
                 DestroyImmediate(_collision.gameObject);
             }
@@ -227,7 +232,7 @@ public class Player : MonoBehaviour
         playerUI = GetComponent<PlayerUI>();
         saveObject = GetComponent<SaveObject>();
 
-        playerCurHealth = playerMaxHealth;
+        playerCurHp = playerMaxHp;
 
         dashCoolTimer = dashCoolTime;
 
@@ -249,16 +254,16 @@ public class Player : MonoBehaviour
 
         playerUI.OptionOn(false);
 
-        playerUI.SetPlayerHp(playerCurHealth, playerMaxHealth, "");
+        playerUI.SetPlayerHp(playerCurHp, playerMaxHp, "");
 
         saveObject.PlayerObjectDataLoad();
     }
 
     private void Update()
     {
-        if (playerCurHealth > playerMaxHealth)
+        if (playerCurHp > playerMaxHp)
         {
-            playerCurHealth = playerMaxHealth;
+            playerCurHp = playerMaxHp;
         }
 
         setPlayerData();
@@ -278,6 +283,8 @@ public class Player : MonoBehaviour
         playerWeaponCritical();
         petPassiveBuff();
         playerOption();
+        playerStatusOpen();
+        playerLevelUpCheck();
         playerAni();
     }
 
@@ -290,8 +297,8 @@ public class Player : MonoBehaviour
         {
             playerData.playerDamage = playerDamage;
             playerData.playerArmor = playerArmor;
-            playerData.playerHp = playerMaxHealth;
-            playerData.playerCurHp = playerCurHealth;
+            playerData.playerHp = playerMaxHp;
+            playerData.playerCurHp = playerCurHp;
             playerData.playerCritical = playerCritical;
             playerData.playerCriDamage = playerCriDamage;
 
@@ -871,16 +878,16 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerDead()
     {
-        if (playerCurHealth <= 0)
+        if (playerCurHp <= 0)
         {
-            string hpText = $"0 / {playerMaxHealth}";
-            playerUI.SetPlayerHp(0, playerMaxHealth, hpText);
+            string hpText = $"0 / {playerMaxHp}";
+            playerUI.SetPlayerHp(0, playerMaxHp, hpText);
             SceneManager.LoadSceneAsync("DeadScene");
         }
-        else if (playerCurHealth > 0 && transform.gameObject != null)
+        else if (playerCurHp > 0 && transform.gameObject != null)
         {
-            string hpText = $"{playerCurHealth} / {playerMaxHealth}";
-            playerUI.SetPlayerHp(playerCurHealth, playerMaxHealth, hpText);
+            string hpText = $"{playerCurHp} / {playerMaxHp}";
+            playerUI.SetPlayerHp(playerCurHp, playerMaxHp, hpText);
         }
     }
 
@@ -938,6 +945,37 @@ public class Player : MonoBehaviour
         }
 
         gameManager.GamePause(optionOn);
+    }
+
+    /// <summary>
+    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
+    /// </summary>
+    private void playerStatusOpen()
+    {
+        if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == false)
+        {
+            statusOpen = true;
+            playerUI.StatusOpen(statusOpen);
+        }
+        else if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == true)
+        {
+            statusOpen = false;
+            playerUI.StatusOpen(statusOpen);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 레벨업을 할 수 있게 도와주는 함수
+    /// </summary>
+    private void playerLevelUpCheck()
+    {
+        if (playerExp >= playerMaxExp)
+        {
+            playerLevel++;
+            levelPoint++;
+            playerExp = 0;
+            playerMaxExp *= 2;
+        }
     }
 
     /// <summary>
@@ -1000,7 +1038,7 @@ public class Player : MonoBehaviour
         {
             if (dashInvincibleOn == false)
             {
-                playerCurHealth -= _damage;
+                playerCurHp -= _damage;
                 playerHitDamage = _hit;
             }
         }
@@ -1011,12 +1049,12 @@ public class Player : MonoBehaviour
                 int dmgReduction = _damage - playerArmor;
                 if (dmgReduction <= 0)
                 {
-                    playerCurHealth -= 1;
+                    playerCurHp -= 1;
                     playerHitDamage = _hit;
                 }
                 else if (dmgReduction > 0)
                 {
-                    playerCurHealth -= _damage - playerArmor;
+                    playerCurHp -= _damage - playerArmor;
                     playerHitDamage = _hit;
                 }
             }
@@ -1074,8 +1112,7 @@ public class Player : MonoBehaviour
     /// <param name="_hpUpPercent"></param>
     public void PlayerStatusHp(int _hpUp, float _hpUpPercent)
     {
-        playerMaxHealth += (_hpUp + (int)(playerMaxHealth * _hpUpPercent));
-        playerCurHealth = playerMaxHealth;
+        playerMaxHp += (_hpUp + (int)(playerMaxHp * _hpUpPercent));
     }
 
     /// <summary>
@@ -1089,27 +1126,162 @@ public class Player : MonoBehaviour
         playerCriDamage += _criDamage;
     }
 
-    public void PlayerSavedData(float _damage, int _armor, int _hp, float _critical, float _cridmg)
-    {
-        playerDamage = _damage;
-        playerArmor = _armor;
-        playerMaxHealth = _hp;
-        playerCritical = _critical;
-        playerCriDamage = _cridmg;
-    }
 
+    /// <summary>
+    /// 세이브데이터를 받아와 플레이어에게 넣어 주는 함수
+    /// </summary>
+    /// <param name="_savedObject"></param>
     public void PlayerSavedData(SavedObjectData _savedObject)
     {
         playerDamage = _savedObject.playerDamage;
         playerArmor = _savedObject.playerArmor;
-        playerMaxHealth = _savedObject.playerHp;
-        playerCurHealth = _savedObject.playerCurHp;
+        playerMaxHp = _savedObject.playerHp;
+        playerCurHp = _savedObject.playerCurHp;
         playerCritical = _savedObject.playerCritical;
         playerCriDamage = _savedObject.playerCriDamage;
     }
 
+    /// <summary>
+    /// 적이 죽었을 때 받아올 경험치
+    /// </summary>
+    /// <param name="_exp"></param>
+    public void SetPlayerExp(float _exp)
+    {
+        playerExp += _exp;
+    }
+
+    /// <summary>
+    /// 플레이어가 데이터를 저장할 때 저장이 가능한지 불러올 변수
+    /// </summary>
+    /// <param name="_save"></param>
     public void PlayerSaveOn(bool _save)
     {
         dataSave = _save;
     }
+
+    /// <summary>
+    /// 레벨포인트를 이용해서 공격력을 증가시키는 함수
+    /// </summary>
+    public void playerPointDamageUp()
+    {
+        if (levelPoint > 0)
+        {
+            playerDamage += 1;
+            levelPoint--;
+        }
+        else
+        {
+            levelPoint = 0;
+        }
+    }
+
+    /// <summary>
+    /// 레벨포인트를 이용해서 방어력을 증가시키는 함수
+    /// </summary>
+    public void playerPointArmorUp()
+    {
+        if (levelPoint > 0)
+        {
+            playerArmor += 1;
+            levelPoint--;
+        }
+        else
+        {
+            levelPoint = 0;
+        }
+    }
+
+    /// <summary>
+    /// 레벨포인트를 이용해서 체력을 증가시키는 함수
+    /// </summary>
+    public void playerPointHpUp()
+    {
+        if (levelPoint > 0)
+        {
+            playerMaxHp += 10;
+            levelPoint--;
+        }
+        else
+        {
+            levelPoint = 0;
+        }
+    }
+
+    /// <summary>
+    /// 레벨포인트를 이용해서 치명타확률을 증가시키는 함수
+    /// </summary>
+    public void playerPointCriticalUp()
+    {
+        if (levelPoint > 0)
+        {
+            playerCritical += 1;
+            levelPoint--;
+        }
+        else
+        {
+            levelPoint = 0;
+        }
+    }
+
+    #region 스테이터스 스크립트에서 사용할 플레이어 능력치를 반환
+    public float PlayerDamageReturn()
+    {
+        return playerDamage;
+    }
+
+    public float PlayerBuffDamageReturn()
+    {
+        return playerBuffDamageUp;
+    }
+
+    public int PlayerArmorReturn()
+    {
+        return playerArmor;
+    }
+
+    public int PlayerMaxHpReturn()
+    {
+        return playerMaxHp;
+    }
+
+    public int PlayerCrHpReturn()
+    {
+        return playerCurHp;
+    }
+
+    public float PlayerCriticalReturn()
+    {
+        return playerCritical;
+    }
+
+    public float PlayerCriDamageReturn()
+    {
+        return playerCriDamage;
+    }
+
+    public int PlayerLevelReturn()
+    {
+        return playerLevel;
+    }
+
+    public float PlayerMaxExpReturn()
+    {
+        return playerMaxExp;
+    }
+
+    public float PlayerExpReturn()
+    {
+        return playerExp;
+    }
+
+    public float PlayerLevelPointReturn()
+    {
+        return levelPoint;
+    }
+
+    public bool PlayerStatusOpen()
+    {
+        return statusOpen;
+    }
+    #endregion
 }

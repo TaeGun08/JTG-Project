@@ -54,8 +54,7 @@ public class TutorialClearCheck : MonoBehaviour
     {
         if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
         {
-            saveObject.PlayerDataResetOn(false);
-            player.PlayerSaveOn(true);
+            saveObject.PlayerDataResetOn(true);
             string get = JsonConvert.SerializeObject(2);
             PlayerPrefs.SetString("saveKey", get);
             int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));

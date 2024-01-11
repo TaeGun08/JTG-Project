@@ -73,6 +73,9 @@ public class Enemy : MonoBehaviour
     [Header("DPS측정을 위한 텍스트")]
     [SerializeField] private GameObject dpsObj;
 
+    [Header("적이 죽었을 때 플레이어에게 줄 경험치")]
+    [SerializeField] private float SetExp;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (enemyBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -336,6 +339,8 @@ public class Enemy : MonoBehaviour
     {
         if (enemyHealth <= 0)
         {
+            Player playerSc = gameManager.PlayerPrefab().GetComponent<Player>();
+            playerSc.SetPlayerExp(SetExp);
             Destroy(gameObject);
         }
     }
