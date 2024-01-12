@@ -8,8 +8,9 @@ using UnityEngine.SocialPlatforms;
 
 public class TutorialClearCheck : MonoBehaviour
 {
-    [SerializeField] Player player;
-    [SerializeField] SaveObject saveObject;
+    [SerializeField] private Player player;
+    [SerializeField] private SaveObject saveObject;
+    [SerializeField] private Status status;
 
     private KeyManager keyManager;
 

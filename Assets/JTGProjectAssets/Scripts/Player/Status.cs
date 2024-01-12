@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Player;
 using static SaveObject;
-using static Status;
 
 public class Status : MonoBehaviour
 {
@@ -25,6 +23,7 @@ public class Status : MonoBehaviour
     private bool dataSave = false;
 
     [SerializeField] private Player player;
+    [SerializeField] private SaveObject saveObject;
 
     [Header("플레이어의 능력치를 올릴 버튼")]
     [SerializeField] private Button damageUp; //경험치 포인트를 이용하여 공격력을 상승 시키는 버튼
@@ -59,6 +58,11 @@ public class Status : MonoBehaviour
         passiveUpButton();
     }
 
+    private void Start()
+    {
+        saveObject.PlayerObjectDataLoad();
+    }
+
     private void Update()
     {
         setPlayerData();
@@ -81,6 +85,8 @@ public class Status : MonoBehaviour
             statusData.damage = damage;
             statusData.armor = armor;
             statusData.health = health;
+
+            saveObject.PlayerStatusSaveData(statusData);
 
             dataSave = false;
         }

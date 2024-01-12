@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static Player;
+using static SaveObject;
 using static Status;
 
 public class SaveObject : MonoBehaviour
@@ -16,6 +17,10 @@ public class SaveObject : MonoBehaviour
         public int playerCurHp;
         public float playerCritical;
         public float playerCriDamage;
+        public int playerLevel;
+        public float playerMaxExp;
+        public float playerExp;
+        public int playerLevelPoint;
     }
 
     private SavedObjectData savedObj = new SavedObjectData();
@@ -35,6 +40,7 @@ public class SaveObject : MonoBehaviour
     private SaveStatusData saveStatusData = new SaveStatusData();
 
     private Player player;
+    [SerializeField] private Status status;
 
     private bool dataReset = false;
 
@@ -61,6 +67,10 @@ public class SaveObject : MonoBehaviour
             savedObj.playerCurHp = 50;
             savedObj.playerCritical = 0;
             savedObj.playerCriDamage = 2;
+            savedObj.playerLevel = 1;
+            savedObj.playerMaxExp = 1;
+            savedObj.playerExp = 0;
+            savedObj.playerLevelPoint = 0;
 
             saveStatusData.lv2click = false;
             saveStatusData.lv4click = false;
@@ -80,7 +90,7 @@ public class SaveObject : MonoBehaviour
 
             player.PlayerSavedData(savedObj);
 
-            dataReset = false;          
+            dataReset = false;
         }
     }
 
@@ -98,6 +108,10 @@ public class SaveObject : MonoBehaviour
             savedObj.playerCurHp = _playerData.playerCurHp;
             savedObj.playerCritical = _playerData.playerCritical;
             savedObj.playerCriDamage = _playerData.playerCriDamage;
+            savedObj.playerLevel = _playerData.playerLevel;
+            savedObj.playerMaxExp = _playerData.playerMaxExp;
+            savedObj.playerExp = _playerData.playerExp;
+            savedObj.playerLevelPoint = _playerData.playerLevelPoint;
         }
 
         saveData();
@@ -109,6 +123,10 @@ public class SaveObject : MonoBehaviour
         PlayerPrefs.SetString("playerDataSave", savedData);
     }
 
+    /// <summary>
+    /// 플레이어가 씬을 넘어갈 때마다 저장되는 스테이터스 데이터
+    /// </summary>
+    /// <param name="_statusData"></param>
     public void PlayerStatusSaveData(StatusData _statusData)
     {
         if (dataReset == false)
@@ -128,8 +146,8 @@ public class SaveObject : MonoBehaviour
 
     private void statusSaveData()//Json으로 저장
     {
-        string savedData = JsonConvert.SerializeObject(saveStatusData);
-        PlayerPrefs.SetString("playerStatusDataSave", savedData);
+        string savedStatusData = JsonConvert.SerializeObject(saveStatusData);
+        PlayerPrefs.SetString("playerStatusDataSave", savedStatusData);
     }
 
     /// <summary>
@@ -138,15 +156,18 @@ public class SaveObject : MonoBehaviour
     public void PlayerObjectDataLoad()
     {
         string savedData = PlayerPrefs.GetString("playerDataSave");
+        string savedStatusData = PlayerPrefs.GetString("playerStatusDataSave");
 
-        if (savedData == string.Empty)
+        if (savedData == string.Empty && savedStatusData == string.Empty)
         {
             return;
         }
 
         savedObj = JsonConvert.DeserializeObject<SavedObjectData>(savedData);
+        saveStatusData = JsonConvert.DeserializeObject<SaveStatusData>(savedStatusData);
 
         player.PlayerSavedData(savedObj);
+        status.PlayerStatusSavedData(saveStatusData);
     }
 
     public void PlayerDataResetOn(bool _reset)

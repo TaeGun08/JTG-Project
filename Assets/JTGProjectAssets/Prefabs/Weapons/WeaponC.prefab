@@ -364,9 +364,8 @@ MonoBehaviour:
   weaponSkillCoolTimePanel: {fileID: 8843526239237896817}
   weaponSkillCollTimeText: {fileID: 4419388062009927121}
   skillATime: 0
-  chargingLevel1Time: 1
-  chargingLevel2Time: 2
-  lastChargingTime: 3
+  chargingLevel1Time: 2
+  lastChargingTime: 4
   chargingObj: {fileID: 3261013777662869760}
 --- !u!1 &3261013777662869760
 GameObject:

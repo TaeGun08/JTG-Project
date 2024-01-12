@@ -21368,6 +21368,7 @@ MonoBehaviour:
   dropItemKey: 103
   interactionKey: 102
   optionKey: 27
+  statuswindowKey: 107
 --- !u!1 &1791396751
 GameObject:
   m_ObjectHideFlags: 0

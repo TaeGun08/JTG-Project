@@ -668,7 +668,6 @@ MonoBehaviour:
   weaponSkillCollTimeText: {fileID: 7703154221923760570}
   skillATime: 0
   chargingLevel1Time: 0
-  chargingLevel2Time: 0
   lastChargingTime: 0
   chargingObj: {fileID: 5806062475396371664}
 --- !u!1 &5107962001475086034

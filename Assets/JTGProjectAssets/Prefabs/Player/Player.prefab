@@ -686,9 +686,8 @@ GameObject:
   - component: {fileID: 2319208370738238016}
   - component: {fileID: 1504647950764014426}
   - component: {fileID: 173284651790751335}
-  - component: {fileID: 844784715497926348}
   m_Layer: 5
-  m_Name: StatusWindow
+  m_Name: Status
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -702,18 +701,18 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200125204606676494}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -3.0684743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 772675002168526860}
-  m_Father: {fileID: 205154410296553919}
+  m_Father: {fileID: 3144793204855554198}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 925.6806, y: 526.1006}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1504647950764014426
 CanvasRenderer:
@@ -753,45 +752,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &844784715497926348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200125204606676494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ec26e46bb9f9184f901c7defd86c7de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3929847378406297729}
-  damageUp: {fileID: 2235299608891113328}
-  armorUp: {fileID: 873472914128733756}
-  hpUp: {fileID: 5701909797441090873}
-  criticalUp: {fileID: 2197382705146010391}
-  lvpassiveSkills:
-  - {fileID: 1280395769480984715}
-  - {fileID: 3200780178811857248}
-  - {fileID: 3355885722695766597}
-  - {fileID: 8087457122628951589}
-  - {fileID: 4482980934145877725}
-  - {fileID: 8153388965365074031}
-  - {fileID: 4840104932177070107}
-  - {fileID: 5140456116014716884}
-  - {fileID: 1292273125551979802}
-  - {fileID: 5041146724472796633}
-  - {fileID: 5024799582663761550}
-  - {fileID: 4691578716173133006}
-  - {fileID: 6074536776726287441}
-  playerLevel: {fileID: 2983260881688976893}
-  playerExp: {fileID: 2420465132120548910}
-  playerLevelPoint: {fileID: 3108537901095641788}
-  playerDamage: {fileID: 1980415584837671469}
-  playerArmor: {fileID: 3621762570133323675}
-  playerCurHp: {fileID: 4045377722479943720}
-  playerCritical: {fileID: 4965931057478372574}
-  playerCriDamage: {fileID: 45111894855620950}
 --- !u!1 &1275936570363528659
 GameObject:
   m_ObjectHideFlags: 0
@@ -2371,7 +2331,7 @@ RectTransform:
   m_Children:
   - {fileID: 6505842215722584737}
   - {fileID: 3076834584581366208}
-  - {fileID: 2319208370738238016}
+  - {fileID: 3144793204855554198}
   - {fileID: 2160601635740735237}
   m_Father: {fileID: 7869107309022994701}
   m_RootOrder: -1
@@ -2402,7 +2362,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &5697717850803488038
 MonoBehaviour:
@@ -4144,6 +4104,79 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5776008188133986735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3144793204855554198}
+  - component: {fileID: 1348865751679688222}
+  m_Layer: 0
+  m_Name: StatusWindow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3144793204855554198
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776008188133986735}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -925.6806, y: -526.1006, z: 3.0684743}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2319208370738238016}
+  m_Father: {fileID: 205154410296553919}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1348865751679688222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776008188133986735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec26e46bb9f9184f901c7defd86c7de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 3929847378406297729}
+  saveObject: {fileID: 3137365909197536320}
+  damageUp: {fileID: 2235299608891113328}
+  armorUp: {fileID: 873472914128733756}
+  hpUp: {fileID: 5701909797441090873}
+  criticalUp: {fileID: 2197382705146010391}
+  lvpassiveSkills:
+  - {fileID: 1280395769480984715}
+  - {fileID: 3200780178811857248}
+  - {fileID: 3355885722695766597}
+  - {fileID: 8087457122628951589}
+  - {fileID: 4482980934145877725}
+  - {fileID: 8153388965365074031}
+  - {fileID: 4840104932177070107}
+  - {fileID: 5140456116014716884}
+  - {fileID: 1292273125551979802}
+  - {fileID: 5041146724472796633}
+  - {fileID: 5024799582663761550}
+  - {fileID: 4691578716173133006}
+  - {fileID: 6074536776726287441}
+  playerLevel: {fileID: 2983260881688976893}
+  playerExp: {fileID: 2420465132120548910}
+  playerLevelPoint: {fileID: 3108537901095641788}
+  playerDamage: {fileID: 1980415584837671469}
+  playerArmor: {fileID: 3621762570133323675}
+  playerCurHp: {fileID: 4045377722479943720}
+  playerCritical: {fileID: 4965931057478372574}
+  playerCriDamage: {fileID: 45111894855620950}
 --- !u!1 &5802116591735629877
 GameObject:
   m_ObjectHideFlags: 0
@@ -4539,6 +4572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2100bb7de5d8372448b225c81e47c72c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  status: {fileID: 1348865751679688222}
 --- !u!1 &5853989572080715945
 GameObject:
   m_ObjectHideFlags: 0

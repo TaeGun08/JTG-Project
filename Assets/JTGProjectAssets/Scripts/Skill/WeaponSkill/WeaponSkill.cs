@@ -54,7 +54,6 @@ public class WeaponSkill : MonoBehaviour
 
     [Header("스킬C 설정")]
     [SerializeField, Tooltip("스킬 C의 차징 1단계 시간")] private float chargingLevel1Time;
-    [SerializeField, Tooltip("스킬 C의 차징 2단계 시간")] private float chargingLevel2Time;
     [SerializeField, Tooltip("스킬 C의 최대 차징 시간")] private float lastChargingTime;
     [SerializeField] private GameObject chargingObj;
     private Image chargingImage;
@@ -200,7 +199,7 @@ public class WeaponSkill : MonoBehaviour
 
             weapons.WeaponUseShooting(false);
 
-            if (chargingTimer <= chargingLevel1Time)
+            if (chargingTimer < chargingLevel1Time)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[0], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);
@@ -208,7 +207,7 @@ public class WeaponSkill : MonoBehaviour
                 bulletSc.BulletDamage(skillDamage, 1.2f, true, weapons.HitCriticalCheck());
                 skillObj.transform.localScale = new Vector2(1.0f, 1.0f);
             }
-            else if (chargingTimer > chargingLevel1Time && chargingTimer <= chargingLevel2Time)
+            else if (chargingTimer >= chargingLevel1Time && chargingTimer <= lastChargingTime)
             {
                 GameObject skillObj = Instantiate(skillPrefabs[1], skillPos.position,
                 skillRot.rotation, trashPreFab.transform);

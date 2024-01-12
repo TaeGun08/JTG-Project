@@ -14,6 +14,10 @@ public class Player : MonoBehaviour
         public int playerCurHp;
         public float playerCritical;
         public float playerCriDamage;
+        public int playerLevel;
+        public float playerMaxExp;
+        public float playerExp;
+        public int playerLevelPoint;
     }
 
     private PlayerData playerData = new PlayerData();
@@ -256,6 +260,8 @@ public class Player : MonoBehaviour
 
         playerUI.SetPlayerHp(playerCurHp, playerMaxHp, "");
 
+        playerUI.StatusOpen(false);
+
         saveObject.PlayerObjectDataLoad();
     }
 
@@ -301,6 +307,10 @@ public class Player : MonoBehaviour
             playerData.playerCurHp = playerCurHp;
             playerData.playerCritical = playerCritical;
             playerData.playerCriDamage = playerCriDamage;
+            playerData.playerLevel = playerLevel;
+            playerData.playerMaxExp = playerMaxExp;
+            playerData.playerExp = playerExp;
+            playerData.playerLevelPoint = levelPoint;
 
             saveObject.PlayerObjectSaveData(playerData);
 
@@ -1146,6 +1156,10 @@ public class Player : MonoBehaviour
         playerCurHp = _savedObject.playerCurHp;
         playerCritical = _savedObject.playerCritical;
         playerCriDamage = _savedObject.playerCriDamage;
+        playerLevel = _savedObject.playerLevel;
+        playerMaxExp = _savedObject.playerMaxExp;
+        playerExp = _savedObject.playerExp;
+        levelPoint = _savedObject.playerLevelPoint;
     }
 
     /// <summary>
