@@ -933,7 +933,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerOption()
     {
-        if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == false)
+        if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == false && statusOpen == false)
         {
             optionOn = true;
             playerUI.OptionOn(optionOn);
@@ -944,7 +944,14 @@ public class Player : MonoBehaviour
             playerUI.OptionOn(optionOn);
         }
 
-        gameManager.GamePause(optionOn);
+        if (optionOn == false && statusOpen == false)
+        {
+            gameManager.GamePause(false);
+        }
+        else if (optionOn == true || statusOpen == true)
+        {
+            gameManager.GamePause(true);
+        }
     }
 
     /// <summary>
@@ -952,7 +959,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerStatusOpen()
     {
-        if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == false)
+        if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == false && optionOn == false)
         {
             statusOpen = true;
             playerUI.StatusOpen(statusOpen);
@@ -1090,9 +1097,9 @@ public class Player : MonoBehaviour
     /// <param name="_damageUp"></param>
     /// <param name="_armorUp"></param>
     /// <param name="_hpUp"></param>
-    public void PlayerStatusDamage(int _damageUp, float _damageUpPercent)
+    public void PlayerStatusDamage(int _damageUp)
     {
-        playerDamage += (_damageUp + (playerDamage * _damageUpPercent));
+        playerDamage += _damageUp;
     }
 
     /// <summary>
@@ -1100,9 +1107,9 @@ public class Player : MonoBehaviour
     /// </summary>
     /// <param name="_armorUp"></param>
     /// <param name="_armorUpPercent"></param>
-    public void PlayerStatusArmor(int _armorUp, float _armorUpPercent)
+    public void PlayerStatusArmor(int _armorUp)
     {
-        playerArmor += (_armorUp + (int)(playerArmor * _armorUpPercent));
+        playerArmor += _armorUp;
     }
 
     /// <summary>
@@ -1110,9 +1117,9 @@ public class Player : MonoBehaviour
     /// </summary>
     /// <param name="_hpUp"></param>
     /// <param name="_hpUpPercent"></param>
-    public void PlayerStatusHp(int _hpUp, float _hpUpPercent)
+    public void PlayerStatusHp(int _hpUp)
     {
-        playerMaxHp += (_hpUp + (int)(playerMaxHp * _hpUpPercent));
+        playerMaxHp += _hpUp;
     }
 
     /// <summary>

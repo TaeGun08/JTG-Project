@@ -392,17 +392,17 @@ public class Pet : MonoBehaviour
             {
                 if (petType.ToString() == "petTypeA")
                 {
-                    playerSc.PlayerStatusHp(petHpEffect, 0);                 
+                    playerSc.PlayerStatusHp(petHpEffect);                 
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeB")
                 {
-                    playerSc.PlayerStatusArmor(petArmorEffect, 0);
+                    playerSc.PlayerStatusArmor(petArmorEffect);
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeC")
                 {
-                    playerSc.PlayerStatusDamage(petDamageEffect, 0);
+                    playerSc.PlayerStatusDamage(petDamageEffect);
                     petPassiveOn = true;
                 }
                 else if (petType.ToString() == "petTypeD")
