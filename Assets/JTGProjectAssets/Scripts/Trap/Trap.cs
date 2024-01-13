@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Trap : MonoBehaviour
 {
+    private GameManager gameManager;
+
     [SerializeField] private int trapDamage;
     [SerializeField] private bool isHit = false;
     [SerializeField] private float hitTimer;
@@ -42,8 +44,18 @@ public class Trap : MonoBehaviour
         hitTimer = 0.5f;
     }
 
+    private void Start()
+    {
+        gameManager = GameManager.Instance;
+    }
+
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         hitDamageTimer();
         hitDamage();
     }

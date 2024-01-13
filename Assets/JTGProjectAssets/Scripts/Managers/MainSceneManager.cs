@@ -42,7 +42,7 @@ public class MainSceneManager : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadSceneAsync(1);
+                SceneManager.LoadSceneAsync("LoadingScene");
             }
         });
 
@@ -51,7 +51,7 @@ public class MainSceneManager : MonoBehaviour
             int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
             if (nextLevel > 1)
             {
-                SceneManager.LoadSceneAsync(nextLevel);
+                SceneManager.LoadSceneAsync("SaveLoadScene");
             }
             else
             {

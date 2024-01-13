@@ -9,6 +9,7 @@ public class PlayerSkill : MonoBehaviour
 {
     private PlayerUI playerUI;
 
+    private GameManager gameManager; //게임매니저
     private KeyManager keyManager; //키매니저
 
     private TrashPreFab trashPreFab;
@@ -36,6 +37,7 @@ public class PlayerSkill : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
         trashPreFab = TrashPreFab.instance;
@@ -47,6 +49,11 @@ public class PlayerSkill : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         skillCool();
         playerSpecialAttack();
     }

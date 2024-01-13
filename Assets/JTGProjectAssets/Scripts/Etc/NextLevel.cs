@@ -6,6 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class NextLevel : MonoBehaviour
 {
+    [SerializeField] private Player player;
+    [SerializeField] private SaveObject saveObject;
+    [SerializeField] private Status status;
+
+    private GameManager gameManager;
     private KeyManager keyManager;
 
     [SerializeField] private GameObject homeInKeyImage;
@@ -18,13 +23,6 @@ public class NextLevel : MonoBehaviour
             homeIn = true;
 
             homeInKeyImage.SetActive(true);
-
-            if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
-            {
-                int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
-                nextLevel++;
-                SceneManager.LoadSceneAsync(nextLevel);
-            }
         }
     }
 
@@ -40,8 +38,30 @@ public class NextLevel : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
         homeInKeyImage.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
+        nextLevelLoading();
+    }
+
+    private void nextLevelLoading()
+    {
+        if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
+        {
+            saveObject.PlayerDataResetOn(false);
+            player.PlayerSaveOn(true);
+            status.PlayerStatusSaveOn(true);
+            SceneManager.LoadSceneAsync("LoadingScene");
+        }
     }
 }

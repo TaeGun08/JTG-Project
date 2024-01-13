@@ -1,10 +1,6 @@
 using Newtonsoft.Json;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using static Player;
-using static SaveObject;
 using static Status;
 
 public class SaveObject : MonoBehaviour
@@ -21,6 +17,9 @@ public class SaveObject : MonoBehaviour
         public float playerMaxExp;
         public float playerExp;
         public int playerLevelPoint;
+        public int playerWeaponA;
+        public int playerWeaponB;
+        public int playerPet;
     }
 
     private SavedObjectData savedObj = new SavedObjectData();
@@ -71,6 +70,9 @@ public class SaveObject : MonoBehaviour
             savedObj.playerMaxExp = 1;
             savedObj.playerExp = 0;
             savedObj.playerLevelPoint = 0;
+            savedObj.playerWeaponA = 0;
+            savedObj.playerWeaponB = 0;
+            savedObj.playerPet = 0;
 
             saveStatusData.lv2click = false;
             saveStatusData.lv4click = false;
@@ -112,6 +114,9 @@ public class SaveObject : MonoBehaviour
             savedObj.playerMaxExp = _playerData.playerMaxExp;
             savedObj.playerExp = _playerData.playerExp;
             savedObj.playerLevelPoint = _playerData.playerLevelPoint;
+            savedObj.playerWeaponA = _playerData.playerWeaponA;
+            savedObj.playerWeaponB = _playerData.playerWeaponB;
+            savedObj.playerPet = _playerData.playerPet;
         }
 
         saveData();

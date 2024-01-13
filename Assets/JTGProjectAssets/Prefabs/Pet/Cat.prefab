@@ -428,18 +428,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d1229460103c0f4c96b89e181369128, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  petType: 0
+  petType: 1
   playerCheck: {fileID: 3582557485103431319}
   enemyCheck: {fileID: 5734221419951892405}
   pickUpKeyImage: {fileID: 2222241704137785115}
   speed: 2
   getPet: 0
   petDamageEffect: 5
-  petDamageEffectPcent: 0
   petArmorEffect: 2
-  petArmorEffectPcent: 0
   petHpEffect: 20
-  petHpEffectPcent: 0
   petCriPcentEffect: 10
   petCriDamageEffect: 0.5
   petDamage: 10

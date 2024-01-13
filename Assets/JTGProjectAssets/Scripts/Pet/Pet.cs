@@ -8,7 +8,7 @@ public class Pet : MonoBehaviour
 {
     public enum PetType
     {
-        petTypeA,
+        petTypeA = 1,
         petTypeB,
         petTypeC,
         petTypeD,
@@ -58,17 +58,15 @@ public class Pet : MonoBehaviour
     private float runStopTimer; //달리는 모션을 멈추게 하는 타이머
 
     [Header("펫의 능력치 증가 패시브")]
-    [SerializeField, Tooltip("패시브 효과 공격력 증가(합)")] private int petDamageEffect;
-    [SerializeField, Tooltip("패시브 효과 공격력 증가(곱)")] private float petDamageEffectPcent;
+    [SerializeField, Tooltip("패시브 효과 공격력 증가")] private int petDamageEffect;
     [Space]
-    [SerializeField, Tooltip("패시브 효과 방어력 증가(합)")] private int petArmorEffect;
-    [SerializeField, Tooltip("패시브 효과 방어력 증가(곱)")] private float petArmorEffectPcent;
+    [SerializeField, Tooltip("패시브 효과 방어력 증가")] private int petArmorEffect;
     [Space]
-    [SerializeField, Tooltip("패시브 효과 체력 증가(합)")] private int petHpEffect;
-    [SerializeField, Tooltip("패시브 효과 체력 증가(곱)")] private float petHpEffectPcent;
+    [SerializeField, Tooltip("패시브 효과 체력 증가")] private int petHpEffect;
     [Space]
-    [SerializeField, Tooltip("패시브 효과 치명타확률 증가(합)")] private float petCriPcentEffect;
-    [SerializeField, Tooltip("패시브 효과 치명타데미지 증가(합)")] private float petCriDamageEffect;
+    [SerializeField, Tooltip("패시브 효과 치명타확률 증가")] private float petCriPcentEffect;
+    [SerializeField, Tooltip("패시브 효과 치명타데미지 증가")] private float petCriDamageEffect;
+    private bool petPassiveOn = false;
 
     [Header("펫의 능력")]
     [SerializeField, Tooltip("펫의 공격력")] private float petDamage;
@@ -80,7 +78,6 @@ public class Pet : MonoBehaviour
     private float petSkillTimer;
     private float attackDelayTimer;
     private bool isAttack;
-    private bool petPassiveOn = false;
     private GameObject petSkilAttacklObj;
     private GameObject petSkillEfObj;
 
@@ -176,6 +173,11 @@ public class Pet : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         petTimer();
         colliderCheck();
         petGroundCheck();
@@ -432,8 +434,26 @@ public class Pet : MonoBehaviour
         anim.SetBool("isRun", petRun);
     }
 
+    /// <summary>
+    /// 펫을 얻었는지 체크하기 위한 함수
+    /// </summary>
+    /// <param name="_get"></param>
     public void GetPetCheck(bool _get)
     {
         getPet = _get;
+    }
+
+    /// <summary>
+    /// 펫의 정보를 정하기 위해 타입을 플레이어에게 전달할 함수
+    /// </summary> 
+    /// <returns></returns>
+    public PetType GetPetType()
+    {
+        return petType;
+    }
+
+    public void SetPetPassiveOn(bool _on)
+    {
+        petPassiveOn = _on;
     }
 }

@@ -156,6 +156,11 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         enemyTimer();
         enemyAttackCollCheck();
         enemyGroundCheck();
@@ -341,7 +346,7 @@ public class Enemy : MonoBehaviour
         {
             Player playerSc = gameManager.PlayerPrefab().GetComponent<Player>();
             playerSc.SetPlayerExp(SetExp);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 

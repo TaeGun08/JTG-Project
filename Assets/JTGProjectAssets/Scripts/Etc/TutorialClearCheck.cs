@@ -12,6 +12,7 @@ public class TutorialClearCheck : MonoBehaviour
     [SerializeField] private SaveObject saveObject;
     [SerializeField] private Status status;
 
+    private GameManager gameManager;
     private KeyManager keyManager;
 
     [SerializeField] private GameObject homeInKeyImage;
@@ -39,6 +40,7 @@ public class TutorialClearCheck : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
         saveObject.PlayerDataResetOn(true);
@@ -48,6 +50,11 @@ public class TutorialClearCheck : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         nextLevelLoading();
     }
 
@@ -56,10 +63,7 @@ public class TutorialClearCheck : MonoBehaviour
         if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
         {
             saveObject.PlayerDataResetOn(true);
-            string get = JsonConvert.SerializeObject(2);
-            PlayerPrefs.SetString("saveKey", get);
-            int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
-            SceneManager.LoadSceneAsync(nextLevel);
+            SceneManager.LoadSceneAsync("LoadingScene");
         }
     }
 }

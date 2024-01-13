@@ -83,6 +83,11 @@ public class WeaponSkill : MonoBehaviour
     {
         weaponSkillOn();
 
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         if (weaponSkill.activeSelf == false)
         {
             skillATimer = 0;

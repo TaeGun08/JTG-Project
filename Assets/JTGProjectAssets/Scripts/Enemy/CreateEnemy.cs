@@ -5,19 +5,22 @@ using UnityEngine;
 public class CreateEnemy : MonoBehaviour
 {
     [Header("적 생성 관련 설정")]
-    [SerializeField] private List<GameObject> enemyPrefab;
-    [SerializeField] private List<Transform> enemyCreatePos;
+    [SerializeField, Tooltip("생성할 적의 프리팹")] private List<GameObject> enemyPrefab;
+    [SerializeField, Tooltip("적을 생성할 위치")] private List<Transform> enemyCreatePosA;
+    [SerializeField, Tooltip("적을 생성할 위치")] private List<Transform> enemyCreatePosB;
+    [SerializeField, Tooltip("적을 생성할 위치")] private List<Transform> enemyCreatePosC;
+    [SerializeField, Tooltip("적을 생성할 위치")] private List<Transform> enemyCreatePosD;
+    [SerializeField, Tooltip("적을 생성할 위치")] private List<Transform> enemyCreatePosE;
+    [SerializeField, Tooltip("처음으로 생성한 오브젝트가 죽으면 재사용")] private int enemyPhase;
+    [SerializeField, Tooltip("닿았을 때 생성을 위한 콜라이더")] private List<BoxCollider2D> boxCollider2D;
+    private int phase;
+    private List<GameObject> enemyPrefabList = new List<GameObject>();
 
     private TrashPreFab trashPreFab;
 
-    private bool isCreate = false;
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Awake()
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
-        {
-            enemyCreate();
-        }
+        phase = enemyPhase;
     }
 
     private void Start()
@@ -25,15 +28,33 @@ public class CreateEnemy : MonoBehaviour
         trashPreFab = TrashPreFab.instance;
     }
 
+    private void Update()
+    {
+        enemyCreate();
+    }
+
     private void enemyCreate()
     {
-        if (isCreate == false)
+        if (phase != -1)
         {
-            for (int i = 0; i < enemyPrefab.Count; i++)
+            if (phase == enemyPhase)
             {
-                Instantiate(enemyPrefab[i], enemyCreatePos[i].position, Quaternion.identity, trashPreFab.transform);
+                for (int i = 0; i < enemyPrefab.Count; i++)
+                {
+                    GameObject enemyObj = Instantiate(enemyPrefab[i], enemyCreatePosA[i].position, Quaternion.identity, trashPreFab.transform);
+                    enemyPrefabList.Add(enemyObj);
+                }
+                phase--;
             }
-            isCreate = true;
+            else if (phase < enemyPhase)
+            {
+                for (int i = 0; i < enemyPrefabList.Count; i++)
+                {
+                    enemyPrefabList[i].transform.position = enemyCreatePosB[i].position;
+                    enemyPrefab[i].SetActive(true);
+                }
+                phase--;
+            }
         }
     }
 }

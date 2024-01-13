@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec2f60101f6f0f341b5b639b2f2539af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponType: 3
+  weaponType: 4
   shootDelay: 2
   shootingOn: 0
   weaponDamage: 20
@@ -299,7 +299,6 @@ MonoBehaviour:
   weaponSkillCollTimeText: {fileID: 6010196239231811993}
   skillATime: 0
   chargingLevel1Time: 0
-  chargingLevel2Time: 0
   lastChargingTime: 0
   chargingObj: {fileID: 4815863660527121377}
 --- !u!1 &4057864699953749242

@@ -10,7 +10,7 @@ public class Weapons : MonoBehaviour
 {
     public enum WeaponType
     {
-        weaponTypeA,
+        weaponTypeA = 1,
         weaponTypeB,
         weaponTypeC,
         weaponTypeD,
@@ -128,6 +128,11 @@ public class Weapons : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         colliderCheck();
         weaponMove();
         autoReloading();
@@ -432,5 +437,10 @@ public class Weapons : MonoBehaviour
     public bool HitCriticalCheck()
     {
         return hitCriticalCheck;
+    }
+
+    public WeaponType GetWeaponType()
+    {
+        return weaponType;
     }
 }

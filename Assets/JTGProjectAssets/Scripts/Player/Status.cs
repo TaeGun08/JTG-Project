@@ -43,14 +43,9 @@ public class Status : MonoBehaviour
     private bool health = false;
 
     [Header("플레이어의 정보를 넣어줄 UI들")]
-    [SerializeField] private TMP_Text playerLevel;
-    [SerializeField] private TMP_Text playerExp;
-    [SerializeField] private TMP_Text playerLevelPoint;
-    [SerializeField] private TMP_Text playerDamage;
-    [SerializeField] private TMP_Text playerArmor;
-    [SerializeField] private TMP_Text playerCurHp;
-    [SerializeField] private TMP_Text playerCritical;
-    [SerializeField] private TMP_Text playerCriDamage;
+    [SerializeField] private List<TMP_Text> playerStatusText;
+    [SerializeField] private List<Image> items;
+    [SerializeField] private List<GameObject> itemsTextObj;
 
     private void Awake()
     {
@@ -68,6 +63,7 @@ public class Status : MonoBehaviour
         setPlayerData();
         playerStatus();
         levelCheck();
+        itemImage();
     }
 
     /// <summary>
@@ -144,7 +140,7 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[2].onClick.AddListener(() =>
         {
-            player.PlayerStatusArmor(3);
+            player.PlayerStatusArmor(2);
             armor = true;
             lv4click = false;
             lv6click = true;
@@ -170,7 +166,7 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[5].onClick.AddListener(() =>
         {
-            player.PlayerStatusArmor(3);
+            player.PlayerStatusArmor(2);
             lv6click = false;
             lv8click = true;
             lvpassiveSkills[5].interactable = false;
@@ -194,7 +190,7 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[8].onClick.AddListener(() =>
         {
-            player.PlayerStatusArmor(3);
+            player.PlayerStatusArmor(2);
             lv8click = false;
             lv10click = true;
             lvpassiveSkills[8].interactable = false;
@@ -218,7 +214,7 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[11].onClick.AddListener(() =>
         {
-            player.PlayerStatusArmor(3);
+            player.PlayerStatusArmor(2);
             lv10click = false;
             lvpassiveSkills[11].interactable = false;
         });
@@ -350,22 +346,65 @@ public class Status : MonoBehaviour
     {
         if (player.PlayerStatusOpen() == true)
         {
-            playerLevel.text = $"LV: {player.PlayerLevelReturn()}";
-            playerExp.text = $"Exp: {player.PlayerExpReturn()} / {player.PlayerMaxExpReturn()}";
-            playerLevelPoint.text = $"포인트: {player.PlayerLevelPointReturn()}";
-            playerDamage.text = $"공격력: {player.PlayerDamageReturn()}";
+            playerStatusText[0].text = $"LV: {player.PlayerLevelReturn()}";
+            playerStatusText[1].text = $"Exp: {player.PlayerExpReturn()} / {player.PlayerMaxExpReturn()}";
+            playerStatusText[2].text = $"포인트: {player.PlayerLevelPointReturn()}";
+            playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()}";
             if (player.PlayerBuffDamageReturn() <= 0)
             {
-                playerDamage.text = $"공격력: {player.PlayerDamageReturn()}";
+                playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()}";
             }
             else if (player.PlayerBuffDamageReturn() > 0)
             {
-                playerDamage.text = $"공격력: {player.PlayerDamageReturn()} <color=red>+{player.PlayerBuffDamageReturn()}</color>"; //리치텍스트 기억하기
+                playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()} <color=red>+{player.PlayerBuffDamageReturn()}</color>"; //리치텍스트 기억하기
             }
-            playerArmor.text = $"방어력: {player.PlayerArmorReturn()}";
-            playerCurHp.text = $"체력: {player.PlayerCrHpReturn()} / {player.PlayerMaxHpReturn()}";
-            playerCritical.text = $"치명타확률: {player.PlayerCriticalReturn().ToString("F1")}%";
-            playerCriDamage.text = $"치명타데미지: {(int)player.PlayerCriDamageReturn() * 100}%";
+            playerStatusText[4].text = $"방어력: {player.PlayerArmorReturn()}";
+            playerStatusText[5].text = $"체력: {player.PlayerCrHpReturn()} / {player.PlayerMaxHpReturn()}";
+            playerStatusText[6].text = $"치명타확률: {player.PlayerCriticalReturn().ToString("F1")}%";
+            playerStatusText[7].text = $"치명타데미지: {(int)player.PlayerCriDamageReturn() * 100}%";
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 아이템 배열에 있는 오브젝트의 이미지를 가져와 스테이터스에 보여줌
+    /// </summary>
+    private void itemImage()
+    {
+        if (player.GetWeaponPrefabs().Count == 1)
+        {
+            SpriteRenderer weaponARen = player.GetWeaponPrefabs()[0].GetComponent<SpriteRenderer>();
+            items[0].enabled = true;
+            items[1].enabled = false;
+            itemsTextObj[0].SetActive(false);
+            itemsTextObj[1].SetActive(true);
+            items[0].sprite = weaponARen.sprite;
+        }
+        else if (player.GetWeaponPrefabs().Count == 2)
+        {
+            SpriteRenderer weaponBRen = player.GetWeaponPrefabs()[1].GetComponent<SpriteRenderer>();
+            items[1].enabled = true;
+            itemsTextObj[1].SetActive(false);
+            items[1].sprite = weaponBRen.sprite;
+        }
+        else if (player.GetWeaponPrefabs().Count == 0)
+        {
+            items[0].enabled = false;
+            items[1].enabled = false;
+            itemsTextObj[0].SetActive(true);
+            itemsTextObj[1].SetActive(true);
+        }
+
+        if (player.GetPetPreFabs().Count == 1)
+        {
+            SpriteRenderer petRen = player.GetPetPreFabs()[0].GetComponent<SpriteRenderer>();
+            items[2].enabled = true;
+            itemsTextObj[2].SetActive(false);
+            items[2].sprite = petRen.sprite;
+        }
+        else if (player.GetPetPreFabs().Count == 0)
+        {
+            items[2].enabled = false;
+            itemsTextObj[2].SetActive(true);
         }
     }
 

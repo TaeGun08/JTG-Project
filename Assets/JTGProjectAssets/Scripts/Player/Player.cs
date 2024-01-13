@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,6 +17,9 @@ public class Player : MonoBehaviour
         public float playerMaxExp;
         public float playerExp;
         public int playerLevelPoint;
+        public int playerWeaponA;
+        public int playerWeaponB;
+        public int playerPet;
     }
 
     private PlayerData playerData = new PlayerData();
@@ -114,16 +116,20 @@ public class Player : MonoBehaviour
     [SerializeField, Tooltip("무기 변경 딜레이")] private float weaponsChangeCoolTime = 1.0f; //무기 변경을 대기 시간
     private float weaponsChangeCoolTimer = 0.0f; //무기 변경을 위한 타이머
     private bool weaponsChangeCoolOn = false; //무기가 변경이 가능하면 false
-    [SerializeField] private List<GameObject> weaponPrefabs = new List<GameObject>(); //무기를 담을 인벤토리 역할
+    [SerializeField, Tooltip("무기를 담아둘 공간")] private List<GameObject> weaponPrefabs = new List<GameObject>(); //무기를 담을 인벤토리 역할
     private GameObject getWeapon; //콜라이더에 닿은 오브젝트를 담아 올 변수
     private bool weaponSwap = false; //무기 변경을 담당하는 변수
     private bool weaponDrop = false;
     private float weaponDropTime = 0.0f;
     private Vector3 weaponLocalScale;
+    private int playerWeaponA;
+    private int playerWeaponB;
+    private bool playerWeaponCheck= false;
 
     [Header("펫 관련 설정")]
-    [SerializeField, Tooltip("펫을 저장할 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
+    [SerializeField, Tooltip("펫을 담아둘 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
     private Pet petSc; //펫의 스크립트 가져올 변수
+    private int playerPet;
 
     private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
     private bool statusOpen = false; //플레이어가 정보창을 켰는지 안 켰는지 확인하기 위한 변수
@@ -172,6 +178,7 @@ public class Player : MonoBehaviour
                     getWeapon.transform.position = playerHand.transform.position;
                     getWeapon.transform.rotation = playerHand.transform.rotation;
                     weaponLocalScale = getWeapon.transform.localScale;
+
                     if (getWeapon.transform.localScale.x < 0)
                     {
                         weaponLocalScale.x *= -1;
@@ -189,6 +196,20 @@ public class Player : MonoBehaviour
                     getWeaponRen.sortingOrder = 2;
 
                     weaponPrefabs.Add(getWeapon); //무기를 인벤토리 역할을 하는 배열에 추가함
+
+                    playerWeaponCheck = true;
+
+                    if (playerWeaponCheck == true && weaponPrefabs != null)
+                    {
+                        if (weaponPrefabs.Count == 1)
+                        {
+                            playerWeaponA = (int)getWeaponSc.GetWeaponType();
+                        }
+                        else if (weaponPrefabs.Count == 2)
+                        {
+                            playerWeaponB = (int)getWeaponSc.GetWeaponType();
+                        }
+                    }
                 }
                 else if (itemPickUpType == ItemPickUp.ItemType.Pet)
                 {
@@ -200,6 +221,8 @@ public class Player : MonoBehaviour
                     petSc = _collision.gameObject.GetComponent<Pet>();
                     petSc.GetPetCheck(true);
                     petPrefabs.Add(_collision.gameObject);
+
+                    playerPet = (int)petSc.GetPetType();
                 }
             }
             else if (itemPickUpType == ItemPickUp.ItemType.Buff)
@@ -267,12 +290,20 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        setPlayerData();
+        playerOption();
+        playerStatusOpen();
+
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         if (playerCurHp > playerMaxHp)
         {
             playerCurHp = playerMaxHp;
         }
 
-        setPlayerData();
         timers();
         itmeColliderCheck();
         playerCheckGround();
@@ -288,8 +319,6 @@ public class Player : MonoBehaviour
         playerDead();
         playerWeaponCritical();
         petPassiveBuff();
-        playerOption();
-        playerStatusOpen();
         playerLevelUpCheck();
         playerAni();
     }
@@ -311,10 +340,57 @@ public class Player : MonoBehaviour
             playerData.playerMaxExp = playerMaxExp;
             playerData.playerExp = playerExp;
             playerData.playerLevelPoint = levelPoint;
+            playerData.playerWeaponA = playerWeaponA;
+            playerData.playerWeaponB = playerWeaponB;
+            playerData.playerPet = playerPet;
 
             saveObject.PlayerObjectSaveData(playerData);
 
             dataSave = false;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
+    /// </summary>
+    private void playerOption()
+    {
+        if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == false && statusOpen == false)
+        {
+            optionOn = true;
+            playerUI.OptionOn(optionOn);
+        }
+        else if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == true)
+        {
+            optionOn = false;
+            playerUI.OptionOn(optionOn);
+        }
+
+        if (optionOn == false && statusOpen == false)
+        {
+            gameManager.SetGamePause(false);
+        }
+        else if (optionOn == true || statusOpen == true)
+        {
+            gameManager.SetGamePause(true);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
+    /// </summary>
+    private void playerStatusOpen()
+    {
+        if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == false && optionOn == false)
+        {
+            statusOpen = true;
+            playerUI.StatusOpen(statusOpen);
+        }
+        else if ((Input.GetKeyDown(keyManager.StatuswindowKey()) || 
+            Input.GetKeyDown(keyManager.OptionKey())) && statusOpen == true)
+        {
+            statusOpen = false;
+            playerUI.StatusOpen(statusOpen);
         }
     }
 
@@ -805,6 +881,7 @@ public class Player : MonoBehaviour
 
                 weaponScA.ShootingOn(false);
                 weaponScA.BuffDamage(0);
+                playerWeaponA = 0;
             }
             else if (weaponPrefabs.Count == 2)
             {
@@ -820,6 +897,7 @@ public class Player : MonoBehaviour
                     weaponScB.ShootingOn(true);
                     weaponSwap = true;
                     weaponScA.BuffDamage(0);
+                    playerWeaponA = 0;
                 }
                 else if (weaponRenB.enabled == true)
                 {
@@ -828,6 +906,7 @@ public class Player : MonoBehaviour
                     weaponScB.ShootingOn(false);
                     weaponSwap = false;
                     weaponScB.BuffDamage(0);
+                    playerWeaponB = 0;
                 }
             }
             weaponPrefabs.RemoveAt(removeIndex);
@@ -935,49 +1014,6 @@ public class Player : MonoBehaviour
                 Weapons weaponSc = weaponPrefabs[i].GetComponent<Weapons>();
                 weaponSc.PassiveDamageUp(playerDamage);
             }
-        }
-    }
-
-    /// <summary>
-    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
-    /// </summary>
-    private void playerOption()
-    {
-        if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == false && statusOpen == false)
-        {
-            optionOn = true;
-            playerUI.OptionOn(optionOn);
-        }
-        else if (Input.GetKeyDown(keyManager.OptionKey()) && optionOn == true)
-        {
-            optionOn = false;
-            playerUI.OptionOn(optionOn);
-        }
-
-        if (optionOn == false && statusOpen == false)
-        {
-            gameManager.GamePause(false);
-        }
-        else if (optionOn == true || statusOpen == true)
-        {
-            gameManager.GamePause(true);
-        }
-    }
-
-    /// <summary>
-    /// 플레이어가 옵션창을 켜고 끌 수 있게 제어하도록 도와주는 함수
-    /// </summary>
-    private void playerStatusOpen()
-    {
-        if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == false && optionOn == false)
-        {
-            statusOpen = true;
-            playerUI.StatusOpen(statusOpen);
-        }
-        else if (Input.GetKeyDown(keyManager.StatuswindowKey()) && statusOpen == true)
-        {
-            statusOpen = false;
-            playerUI.StatusOpen(statusOpen);
         }
     }
 
@@ -1160,6 +1196,9 @@ public class Player : MonoBehaviour
         playerMaxExp = _savedObject.playerMaxExp;
         playerExp = _savedObject.playerExp;
         levelPoint = _savedObject.playerLevelPoint;
+        playerWeaponA = _savedObject.playerWeaponA;
+        playerWeaponB = _savedObject.playerWeaponB;
+        playerPet = _savedObject.playerPet;
     }
 
     /// <summary>
@@ -1242,6 +1281,61 @@ public class Player : MonoBehaviour
         {
             levelPoint = 0;
         }
+    }
+
+    /// <summary>
+    /// 무기의 번호를 저장해 생성하기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetPlayerWeaponA()
+    {
+        return playerWeaponA;
+    }
+
+    /// <summary>
+    /// 무기의 번호를 저장해 생성하기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetPlayerWeaponB()
+    {
+        return playerWeaponB;
+    }
+
+    /// <summary>
+    /// 펫의 번호를 저장해 생성하기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetPlayerPet()
+    {
+        return playerPet;
+    }
+
+    /// <summary>
+    /// 다른 스키립트에서 이용할 무기 배열
+    /// </summary>
+    /// <returns></returns>
+    public List<GameObject> GetWeaponPrefabs()
+    {
+        return weaponPrefabs;
+    }
+
+    public List<GameObject> GetPetPreFabs()
+    {
+        return petPrefabs;
+    }
+
+    /// <summary>
+    /// 저장된 데이터로 생성한 무기를 배열에 다시 추가하는 함수
+    /// </summary>
+    /// <param name="_weapons"></param>
+    public void SetWeaponList(GameObject _weapons)
+    {
+        weaponPrefabs.Add(_weapons);
+    }
+
+    public void SetPetList(GameObject _pet)
+    {
+        petPrefabs.Add(_pet);
     }
 
     #region 스테이터스 스크립트에서 사용할 플레이어 능력치를 반환
