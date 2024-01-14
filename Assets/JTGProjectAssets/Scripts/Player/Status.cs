@@ -207,7 +207,7 @@ public class Status : MonoBehaviour
         lvpassiveSkills[10].onClick.AddListener(() =>
         {
             player.PlayerStatusDamage(5);
-            player.PlayerStatusCritical(10, 0.3f);
+            player.PlayerStatusCritical(20, 0.3f);
             lv10click = false;
             lvpassiveSkills[10].interactable = false;
         });
@@ -349,19 +349,18 @@ public class Status : MonoBehaviour
             playerStatusText[0].text = $"LV: {player.PlayerLevelReturn()}";
             playerStatusText[1].text = $"Exp: {player.PlayerExpReturn()} / {player.PlayerMaxExpReturn()}";
             playerStatusText[2].text = $"포인트: {player.PlayerLevelPointReturn()}";
-            playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()}";
             if (player.PlayerBuffDamageReturn() <= 0)
             {
-                playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()}";
+                playerStatusText[3].text = $"추가공격력: {player.PlayerDamageReturn()}";
             }
             else if (player.PlayerBuffDamageReturn() > 0)
             {
-                playerStatusText[3].text = $"공격력: {player.PlayerDamageReturn()} <color=red>+{player.PlayerBuffDamageReturn()}</color>"; //리치텍스트 기억하기
+                playerStatusText[3].text = $"추가공격력: {player.PlayerDamageReturn()} <color=red>+{player.PlayerBuffDamageReturn()}</color>"; //리치텍스트 기억하기
             }
             playerStatusText[4].text = $"방어력: {player.PlayerArmorReturn()}";
             playerStatusText[5].text = $"체력: {player.PlayerCrHpReturn()} / {player.PlayerMaxHpReturn()}";
             playerStatusText[6].text = $"치명타확률: {player.PlayerCriticalReturn().ToString("F1")}%";
-            playerStatusText[7].text = $"치명타데미지: {(int)player.PlayerCriDamageReturn() * 100}%";
+            playerStatusText[7].text = $"치명타데미지: {player.PlayerCriDamageReturn() * 100}%";
         }
     }
 

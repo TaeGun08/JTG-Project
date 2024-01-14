@@ -166,7 +166,7 @@ public class Pet : MonoBehaviour
     {
         gameManager = GameManager.Instance;
 
-        trashPreFab = TrashPreFab.instance;
+        trashPreFab = TrashPreFab.Instance;
 
         gravity = gameManager.GravityScale();
     }

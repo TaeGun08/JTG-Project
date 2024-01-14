@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class TrashPreFab : MonoBehaviour
 {
-    public static TrashPreFab instance; //사라질 프리팹들을 담을 스크립트
+    public static TrashPreFab Instance; //사라질 프리팹들을 담을 스크립트
 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
         }
         else
         {

@@ -40,7 +40,7 @@ public class PlayerSkill : MonoBehaviour
         gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
-        trashPreFab = TrashPreFab.instance;
+        trashPreFab = TrashPreFab.Instance;
 
         skillCoolTimer = skillCoolTime;
 

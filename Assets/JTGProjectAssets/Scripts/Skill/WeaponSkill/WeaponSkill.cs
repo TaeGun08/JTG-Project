@@ -70,7 +70,7 @@ public class WeaponSkill : MonoBehaviour
         gameManager = GameManager.Instance;
         keyManager = KeyManager.instance;
 
-        trashPreFab = TrashPreFab.instance;
+        trashPreFab = TrashPreFab.Instance;
 
         weaponCoolTimePanelImage = weaponSkillCoolTimePanel.GetComponent<Image>();
         weaponCoolTimeText = weaponSkillCollTimeText.GetComponent<TMP_Text>();
@@ -174,7 +174,6 @@ public class WeaponSkill : MonoBehaviour
             }
             else if (skillType.ToString() == "skillB")
             {
-                Debug.Log("스킬확인");
                 GameObject bulletObj = Instantiate(skillPrefabs[0], skillPos.position, skillRot.rotation, trashPreFab.transform);
                 Bullet bulletSc = bulletObj.GetComponent<Bullet>();
                 bulletSc.BulletDamage(skillDamage, 2, true, weapons.HitCriticalCheck());

@@ -1026,7 +1026,7 @@ public class Player : MonoBehaviour
         {
             playerLevel++;
             levelPoint++;
-            playerExp = 0;
+            playerExp -= playerMaxExp;
             playerMaxExp *= 2;
         }
     }

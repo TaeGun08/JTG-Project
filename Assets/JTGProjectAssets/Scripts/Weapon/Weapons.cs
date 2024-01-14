@@ -119,7 +119,7 @@ public class Weapons : MonoBehaviour
         gameManager = GameManager.Instance; //게임 매니저를 가져와 gameManager에 담아 줌
         keyManager = KeyManager.instance; //키매니저를 가져와 keyManager 담아 줌
 
-        trashPreFab = TrashPreFab.instance;
+        trashPreFab = TrashPreFab.Instance;
 
         curReloadingSlider = gameManager.ReloadingUI().value;
 

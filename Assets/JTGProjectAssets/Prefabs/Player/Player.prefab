@@ -7114,7 +7114,7 @@ MonoBehaviour:
   playerBuffDamageUp: 0
   playerCritical: 0
   playerCriDamage: 2
-  playerMaxHp: 100
+  playerMaxHp: 50
   playerCurHp: 0
   playerArmor: 0
   playerLevel: 1

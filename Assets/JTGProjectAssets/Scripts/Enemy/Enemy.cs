@@ -11,7 +11,7 @@ public class Enemy : MonoBehaviour
     public enum EnemyType
     {
         enemyA,
-        enemyB, 
+        enemyB,
         enemyC,
     }
 
@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
 
     [Header("체크할 레이어")]
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask trapLayer;
 
     private Rigidbody2D rigid; //플레이어의 리지드바디
     private RaycastHit2D hit;
@@ -40,7 +41,8 @@ public class Enemy : MonoBehaviour
     private float gravityVelocity;
 
     [Header("적의 기본 설정")]
-    [SerializeField, Tooltip("적의 체력")] private int enemyHealth;
+    [SerializeField, Tooltip("적의 체력")] private int enemyHp;
+    [SerializeField, Tooltip("적의 최대체력")] private int enemyMaxHp;
     [SerializeField, Tooltip("적의 공격력")] private int enemyDamage;
     [SerializeField, Tooltip("적의 방어력")] private int enemyArmor;
 
@@ -52,6 +54,7 @@ public class Enemy : MonoBehaviour
     private bool moveStop = false;
     private float useMove;
     private bool isRight = false;
+    private float changeSpeed;
 
     [Header("점프")]
     [SerializeField, Tooltip("점프를 하기 위한 힘")] private float enemyJumpPower = 5.0f;
@@ -61,8 +64,10 @@ public class Enemy : MonoBehaviour
     [SerializeField, Tooltip("적의 총알")] private GameObject enemyBullet;
     [SerializeField, Tooltip("총알이 발사될 위치")] private Transform bulletTrs;
     [SerializeField, Tooltip("유저를 저격할 총")] private Transform enemyWeaponTrs;
+    [SerializeField, Tooltip("적의 공격 딜레이")] private float attackDelay;
     private bool isAttack = false;
     private float isAttackTimer;
+    private bool firstAttack = false;
 
     [Header("적이 체크를 위한 콜라이더")]
     [SerializeField, Tooltip("점프 체크를 위한 콜라이더")] private Collider2D jumpCheckColl;
@@ -91,14 +96,39 @@ public class Enemy : MonoBehaviour
         if (_collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             Vector3 playerPos = _collision.gameObject.transform.position - transform.position;
+
             if (isAttack == false)
             {
-                float angle = Quaternion.FromToRotation(Vector3.up, playerPos).eulerAngles.z;
-                GameObject bulletObj = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0 , angle), trashPreFab.transform);
-                Bullet bulletSc = bulletObj.GetComponent<Bullet>();
-                bulletSc.BulletDamage(enemyDamage, 0, false, false);
+                if (enemyType.ToString() == "enemyA")
+                {
+                    float angle = Quaternion.FromToRotation(Vector3.up, playerPos).eulerAngles.z;
+                    GameObject bulletObj = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0, angle), trashPreFab.transform);
+                    Bullet bulletSc = bulletObj.GetComponent<Bullet>();
+                    bulletSc.BulletDamage(enemyDamage, 0, false, false);
+                }
+                else if (enemyType.ToString() == "enemyB")
+                {
+                    float angle = Quaternion.FromToRotation(Vector3.up, playerPos).eulerAngles.z;
+                    GameObject bulletObj = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0, angle), trashPreFab.transform);
+                    GameObject bulletObjB = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0, angle - 15), trashPreFab.transform);
+                    GameObject bulletObjC = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0, angle + 15), trashPreFab.transform);
+                    Bullet bulletSc = bulletObj.GetComponent<Bullet>();
+                    Bullet bulletScB = bulletObjB.GetComponent<Bullet>();
+                    Bullet bulletScC = bulletObjC.GetComponent<Bullet>();
+                    bulletSc.BulletDamage(enemyDamage, 0, false, false);
+                    bulletScB.BulletDamage(enemyDamage, 0, false, false);
+                    bulletScC.BulletDamage(enemyDamage, 0, false, false);
+                }
+                else if (enemyType.ToString() == "enemyC")
+                {
+                    float angle = Quaternion.FromToRotation(Vector3.up, playerPos).eulerAngles.z;
+                    GameObject bulletObj = Instantiate(enemyBullet, bulletTrs.position, Quaternion.Euler(0, 0, angle), trashPreFab.transform);
+                    Bullet bulletSc = bulletObj.GetComponent<Bullet>();
+                    bulletSc.BulletDamage(enemyDamage, 0, false, false);
+                }
+
                 isAttack = true;
-            }
+            }               
 
             moveStop = true;
             useMove = 1;
@@ -122,13 +152,13 @@ public class Enemy : MonoBehaviour
             {
                 Vector3 shootAim = Vector3.right;
                 float weaponAngle = Quaternion.FromToRotation(shootAim, playerPos).eulerAngles.z;
-                enemyWeaponTrs.rotation = Quaternion.Euler(enemyWeaponTrs.rotation.x, enemyWeaponTrs.rotation.y, weaponAngle);
+                enemyWeaponTrs.rotation = Quaternion.Euler(0, 0, weaponAngle);
             }
             else if (isRight == false)
             {
                 Vector3 shootAim = Vector3.left;
                 float weaponAngle = Quaternion.FromToRotation(shootAim, playerPos).eulerAngles.z;
-                enemyWeaponTrs.rotation = Quaternion.Euler(enemyWeaponTrs.rotation.x, enemyWeaponTrs.rotation.y, weaponAngle);
+                enemyWeaponTrs.rotation = Quaternion.Euler(0, 0, weaponAngle);
             }
         }
     }
@@ -140,16 +170,22 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         enemyRen = GetComponent<SpriteRenderer>();
 
-        isAttackTimer = 2;
+        enemyHp = enemyMaxHp;
+
+        isAttackTimer = 0;
 
         hitTimer = 0.1f;
+
+        changeSpeed = speed;
+
+        isRight = true;
     }
 
     private void Start()
     {
         gameManager = GameManager.Instance;
 
-        trashPreFab = TrashPreFab.instance;
+        trashPreFab = TrashPreFab.Instance;
 
         gravity = gameManager.GravityScale();
     }
@@ -164,7 +200,7 @@ public class Enemy : MonoBehaviour
         enemyTimer();
         enemyAttackCollCheck();
         enemyGroundCheck();
-        wallCheck(); 
+        wallCheck();
         enemyMove();
         enemyGravity();
         enemyDamageHit();
@@ -186,11 +222,11 @@ public class Enemy : MonoBehaviour
 
         if (isAttack == true)
         {
-            isAttackTimer -= Time.deltaTime;
-            if (isAttackTimer < 0)
+            isAttackTimer += Time.deltaTime;
+            if (isAttackTimer > attackDelay)
             {
                 isAttack = false;
-                isAttackTimer = 2;
+                isAttackTimer = 0;
             }
         }
 
@@ -219,6 +255,11 @@ public class Enemy : MonoBehaviour
 
         if (attackColl != null)
         {
+            if (firstAttack == false)
+            {
+                isAttack = true;
+                firstAttack = true;
+            }
             attackTrigger(attackColl);
         }
 
@@ -237,7 +278,7 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        hit = Physics2D.BoxCast(enemyBoxColl2D.bounds.center, enemyBoxColl2D.bounds.size, 
+        hit = Physics2D.BoxCast(enemyBoxColl2D.bounds.center, enemyBoxColl2D.bounds.size,
             0, Vector2.down, 0.1f, LayerMask.GetMask("Ground"));
 
         if (hit.transform != null && hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground"))
@@ -258,18 +299,23 @@ public class Enemy : MonoBehaviour
         {
             isJump = true;
         }
-        else if (wallCheckColl.IsTouchingLayers(groundLayer) == true 
+        else if (wallCheckColl.IsTouchingLayers(groundLayer) == true
             && jumpCheckColl.IsTouchingLayers(groundLayer) == true)
         {
-            enemyTurn();
             isTurn = true;
+            enemyTurn();
         }
         else if (wallCheckColl.IsTouchingLayers(groundLayer) == false
             && jumpCheckColl.IsTouchingLayers(groundLayer) == false
             && groundCheckColl.IsTouchingLayers(groundLayer) == false)
         {
+            isTurn = false;
             enemyTurn();
-            isTurn = true;
+        }
+        else if (groundCheckColl.IsTouchingLayers(trapLayer) == true)
+        {
+            isTurn = false;
+            enemyTurn();
         }
     }
 
@@ -297,6 +343,15 @@ public class Enemy : MonoBehaviour
             transform.localScale = turnVec;
 
             speed *= -1;
+
+            if (speed > 0)
+            {
+                isRight = true;
+            }
+            else if (speed < 0)
+            {
+                isRight = false;
+            }
         }
     }
 
@@ -342,10 +397,11 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void enemyDead()
     {
-        if (enemyHealth <= 0)
+        if (enemyHp <= 0)
         {
             Player playerSc = gameManager.PlayerPrefab().GetComponent<Player>();
             playerSc.SetPlayerExp(SetExp);
+            enemyHp = enemyMaxHp;
             gameObject.SetActive(false);
         }
     }
@@ -392,8 +448,8 @@ public class Enemy : MonoBehaviour
     public void EnemyHp(int _damage, bool _hit, bool _trueDam, bool _critical)
     {
         if (_trueDam == true)
-        {          
-            enemyHealth -= _damage;
+        {
+            enemyHp -= _damage;
             enemyHitDamage = _hit;
             enemyDpsCheck(_damage, _trueDam, _critical);
         }
@@ -402,13 +458,13 @@ public class Enemy : MonoBehaviour
             int dmgReduction = _damage - enemyArmor;
             if (dmgReduction <= 0)
             {
-                enemyHealth -= 1;
+                enemyHp -= 1;
                 enemyHitDamage = _hit;
                 enemyDpsCheck(1, _trueDam, _critical);
             }
             else if (dmgReduction > 0)
             {
-                enemyHealth -= dmgReduction;
+                enemyHp -= dmgReduction;
                 enemyHitDamage = _hit;
                 enemyDpsCheck(_damage, _trueDam, _critical);
             }
