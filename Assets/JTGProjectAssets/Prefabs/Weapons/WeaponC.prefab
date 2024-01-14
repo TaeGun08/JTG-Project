@@ -358,7 +358,7 @@ MonoBehaviour:
   - {fileID: 8278637676415367628, guid: f45ee2554c72cd242b3297fc5c0f42eb, type: 3}
   skillPos: {fileID: 4190219247002062191}
   skillRot: {fileID: 4190219247002062191}
-  skillCoolTime: 8
+  skillCoolTime: 18
   weaponSkill: {fileID: 3317167378940859462}
   weaponSkilImage: {fileID: 8412836916115332131}
   weaponSkillCoolTimePanel: {fileID: 8843526239237896817}

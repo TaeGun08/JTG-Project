@@ -36,4 +36,9 @@ public class CreateEnemy : MonoBehaviour
             isCreate = true;
         }
     }
+
+    public int GetCreatePosCount()
+    {
+        return enemyCreatePos.Count;
+    }
 }

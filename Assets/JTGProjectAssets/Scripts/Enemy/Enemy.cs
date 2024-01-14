@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using TMPro;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -54,7 +49,6 @@ public class Enemy : MonoBehaviour
     private bool moveStop = false;
     private float useMove;
     private bool isRight = false;
-    private float changeSpeed;
 
     [Header("점프")]
     [SerializeField, Tooltip("점프를 하기 위한 힘")] private float enemyJumpPower = 5.0f;
@@ -176,8 +170,6 @@ public class Enemy : MonoBehaviour
 
         hitTimer = 0.1f;
 
-        changeSpeed = speed;
-
         isRight = true;
     }
 
@@ -188,6 +180,8 @@ public class Enemy : MonoBehaviour
         trashPreFab = TrashPreFab.Instance;
 
         gravity = gameManager.GravityScale();
+
+        enemyTurn();
     }
 
     private void Update()
@@ -402,6 +396,12 @@ public class Enemy : MonoBehaviour
             Player playerSc = gameManager.PlayerPrefab().GetComponent<Player>();
             playerSc.SetPlayerExp(SetExp);
             enemyHp = enemyMaxHp;
+            firstAttack = false;
+            isAttack = true;
+            isAttackTimer = 0;
+            hitTimer = 0.1f;
+            enemyHitDamage = false;
+            enemyRen.color = Color.white;
             gameObject.SetActive(false);
         }
     }
