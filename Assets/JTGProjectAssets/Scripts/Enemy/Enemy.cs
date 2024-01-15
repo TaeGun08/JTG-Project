@@ -470,4 +470,9 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    public EnemyType GetEnemyType()
+    {
+        return enemyType;
+    }
 }

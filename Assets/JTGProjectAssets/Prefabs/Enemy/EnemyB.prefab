@@ -277,7 +277,7 @@ MonoBehaviour:
   enemyMaxHp: 15
   enemyDamage: 2
   enemyArmor: 8
-  speed: 4
+  speed: 3
   enemyJumpPower: 5
   enemyBullet: {fileID: 4630793766377982419, guid: e2084235d88d13f488e18d95ae28f475, type: 3}
   bulletTrs: {fileID: 2300408019342511344}

@@ -5,8 +5,8 @@ using UnityEngine;
 public class EnemyPhaseCheck : MonoBehaviour
 {
     [SerializeField, Tooltip("적 생성 스크립트")] private CreateEnemy createEnemy;
-
     [SerializeField, Tooltip("다음 페이즈 오브젝트")] private GameObject nextPhaseObj;
+    [SerializeField, Tooltip("다음 페이즈를 위해 처치할 수")] private int enemyKill;
     private int enemyCount;
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -17,9 +17,9 @@ public class EnemyPhaseCheck : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
-        enemyCount = createEnemy.GetCreatePosCount();
+        enemyCount = enemyKill;
     }
 
     private void Update()

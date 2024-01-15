@@ -17714,6 +17714,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 220927468}
   - {fileID: 1496949082}
+  enemyCreateType: 
 --- !u!61 &172347063
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17941,6 +17942,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 301963352}
   - {fileID: 1660231417}
+  enemyCreateType: enemyA
 --- !u!61 &208152646
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -19351,6 +19353,7 @@ MonoBehaviour:
   - {fileID: 1758049180}
   - {fileID: 1715748295}
   - {fileID: 915128304}
+  enemyCreateType: enemyA
 --- !u!61 &545696642
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21183,6 +21186,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 1202324192}
   - {fileID: 2016857607}
+  enemyCreateType: enemyA
 --- !u!61 &1181520541
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -22017,6 +22021,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 269100482}
   - {fileID: 1163650253}
+  enemyCreateType: enemyA
 --- !u!61 &1453530803
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -22285,6 +22290,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 566855137}
   - {fileID: 285732078}
+  enemyCreateType: enemyA
 --- !u!61 &1545224298
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -22495,6 +22501,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 737210444}
   - {fileID: 1184953833}
+  enemyCreateType: enemyA
 --- !u!61 &1665641922
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -23398,6 +23405,7 @@ MonoBehaviour:
   enemyCreatePos:
   - {fileID: 249025849}
   - {fileID: 579406731}
+  enemyCreateType: enemyA
 --- !u!61 &2075684174
 BoxCollider2D:
   m_ObjectHideFlags: 0

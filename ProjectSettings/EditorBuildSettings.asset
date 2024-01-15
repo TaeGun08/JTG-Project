@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/JTGProjectAssets/Scenes/Level5.unity
     guid: 3a319e72fbfb81440979385fdad437c1
   - enabled: 1
+    path: Assets/JTGProjectAssets/Scenes/Level6.unity
+    guid: 10916939c33e4ed46a3f8e08728a08f5
+  - enabled: 1
     path: Assets/JTGProjectAssets/Scenes/LoadingScene.unity
     guid: a6b0fcb383cea0342a1a08a078578c2c
   - enabled: 1

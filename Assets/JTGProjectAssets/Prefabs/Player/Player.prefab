@@ -5194,8 +5194,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 287, y: -420}
-  m_SizeDelta: {x: 300, y: 60}
+  m_AnchoredPosition: {x: 334, y: -420}
+  m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1663749125101462316
 CanvasRenderer:
@@ -6949,7 +6949,7 @@ Transform:
   - {fileID: 2073291929947131138}
   - {fileID: 205154410296553919}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7843006286100972308
 SpriteRenderer:
@@ -7171,6 +7171,20 @@ MonoBehaviour:
   playerHpText: {fileID: 6793566497100031529}
   option: {fileID: 412780218652760730}
   statusWindow: {fileID: 1200125204606676494}
+  skillWindow:
+  - {fileID: 3455712624343890950}
+  - {fileID: 8362361448947724603}
+  - {fileID: 2236669599323457469}
+  - {fileID: 8869947818707321476}
+  - {fileID: 5452299753894857048}
+  - {fileID: 8659450592940244558}
+  - {fileID: 2163313056084274408}
+  - {fileID: 4474508510881735606}
+  - {fileID: 2730116735878165997}
+  - {fileID: 629524736940902011}
+  - {fileID: 6177137029877529909}
+  - {fileID: 9183880523550274090}
+  - {fileID: 1073138543518988735}
 --- !u!114 &3137365909197536320
 MonoBehaviour:
   m_ObjectHideFlags: 0

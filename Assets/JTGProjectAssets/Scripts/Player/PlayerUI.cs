@@ -15,6 +15,7 @@ public class PlayerUI : MonoBehaviour
     [SerializeField, Tooltip("플레이어 체력 텍스트")] private TMP_Text playerHpText;
     [SerializeField, Tooltip("옵션창")] private GameObject option;
     [SerializeField, Tooltip("정보창")] private GameObject statusWindow;
+    [SerializeField, Tooltip("정보창을 닫았을 때 잔류 데이터 비활성화")] private List<GameObject> skillWindow;
 
     /// <summary>
     /// 플레이어 스킬과 관련된 오브젝트를 활성화 또는 비활성화를 담당
@@ -87,5 +88,9 @@ public class PlayerUI : MonoBehaviour
     public void StatusOpen(bool _open)
     {
         statusWindow.SetActive(_open);
+        for(int i = 0; i < skillWindow.Count; i++)
+        {
+            skillWindow[i].SetActive(false);
+        }
     }
 }

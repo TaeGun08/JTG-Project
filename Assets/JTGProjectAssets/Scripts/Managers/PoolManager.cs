@@ -10,6 +10,12 @@ public class PoolManager : MonoBehaviour
     [SerializeField] private List<GameObject> prefabs;
     [SerializeField] private List<GameObject> pools = new List<GameObject>();
 
+    public class poolingObj
+    {
+        public GameObject poolObject;
+        public string sTag;
+    }
+
     private TrashPreFab trashPreFab;
 
     private void Awake()
@@ -34,7 +40,7 @@ public class PoolManager : MonoBehaviour
     /// </summary>
     /// <param name="_pool"></param>
     /// <param name="_trs"></param>
-    public void PoolingPrefab(int _pool, Transform _trs)
+    public void PoolingPrefab(int _pool, Transform _trs, string _type)
     {
         GameObject poolObj = null;
 
@@ -42,12 +48,17 @@ public class PoolManager : MonoBehaviour
         {
             for (int i = 0; i < pools.Count; i++)
             {
-                if (pools[i].activeSelf == false)
+                if (pools[i].tag == "Enemy")
                 {
-                    poolObj = pools[i];
-                    poolObj.transform.position = _trs.position;
-                    poolObj.SetActive(true);
-                    break;
+                    Enemy enemySc = pools[i].GetComponent<Enemy>();
+                    Enemy.EnemyType enemyType = enemySc.GetEnemyType();
+                    if (pools[i].activeSelf == false && enemyType.ToString() == _type)
+                    {
+                        poolObj = pools[i];
+                        poolObj.transform.position = _trs.position;
+                        poolObj.SetActive(true);
+                        break;
+                    }
                 }
             }
         }
