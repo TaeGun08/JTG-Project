@@ -13,6 +13,8 @@ public class Boss : MonoBehaviour
 
     private GameManager gameManager;
 
+    private TrashPreFab trashPreFab;
+
     [Header("보스 기본 설정")]
     [SerializeField, Tooltip("보스의 이동속도")] private float bossSpeed;
     [SerializeField, Tooltip("보스의 현재체력")] private int bossCurHp;
@@ -23,8 +25,9 @@ public class Boss : MonoBehaviour
     private bool isGround = false; //땅인지 체크하기 위한 변수
     private float gravity; //중력값을 받아올 변수
     private float gravityVelocity; //중력값을 계산해 적용할 변수
-    private bool isRight = false;
-    private bool moveStop = false;
+    private bool isRight = false; //오른쪽인지 확인하기 위한 변수
+    private bool moveStop = false; //특정행동을 위해 움직임을 멈춰줄 변수
+    private bool isScaleChange = false; //공격중 좌우 변경을 멈춰줄 변수
 
     [Header("보스 공격 설정")]
     [SerializeField, Tooltip("보스가 플레이어를 추격하기 위한 콜라이더")] private BoxCollider2D playerChase;
@@ -35,7 +38,7 @@ public class Boss : MonoBehaviour
     [SerializeField, Tooltip("보스의 패턴3의 공격 프리팹")] private GameObject darkHandPrefab;
     private bool isAttack = false; //플레이어를 공격했는지 확인하기 위한 변수
     private bool attackOn = false; //플레이어를 다시 공격하기 위한 변수
-    private bool patternAttack = false; //기본 공격 시 데미지가 들어가게 하는 변수
+    [SerializeField] private bool patternAttack = false; //기본 공격 시 데미지가 들어가게 하는 변수
     private int randomPattern; //랜덤으로 패턴을 적용시킬 변수
     private float attackDelayTimer; //기본 공격의 딜레이 타이머
     private float telpoDelayTimer; //텔레포트의 딜레이 타이머
@@ -70,13 +73,13 @@ public class Boss : MonoBehaviour
 
             Vector2 scale = transform.localScale;
             scale.x *= -1;
-            if (playerPos.x > 2 && transform.localScale.x != -1)
+            if (playerPos.x > 2 && transform.localScale.x != -1 && isScaleChange == false)
             {
                 transform.localScale = scale;
                 bossSpeed *= -1;
                 isRight = true;
             }
-            else if (playerPos.x < -2 && transform.localScale.x != 1)
+            else if (playerPos.x < -2 && transform.localScale.x != 1 && isScaleChange == false)
             {
                 transform.localScale = scale;
                 bossSpeed *= -1;
@@ -100,6 +103,7 @@ public class Boss : MonoBehaviour
                 isAttack = true;
                 attackOn = true;
                 moveStop = true;
+                isScaleChange = true;
             }
         }
     }
@@ -122,6 +126,7 @@ public class Boss : MonoBehaviour
                 isAttack = true;
                 attackOn = true;
                 moveStop = true;
+                isScaleChange = true;
             }
         }
     }
@@ -144,6 +149,7 @@ public class Boss : MonoBehaviour
                 isAttack = true;
                 attackOn = true;
                 moveStop = true;
+                isScaleChange = true;
             }
         }
     }
@@ -160,8 +166,15 @@ public class Boss : MonoBehaviour
             {
                 Player playerSc = collision.gameObject.GetComponent<Player>();
                 playerSc.PlayerCurHp(10, true, false);
+                if (isRight == false)
+                {
+                    playerSc.PlayerKnockBack(-20, 2);
+                }
+                else if (isRight == true)
+                {
+                    playerSc.PlayerKnockBack(20, 2);
+                }
                 patternAttack = false;
-                moveStop = false;
             }
         }        
     }
@@ -184,6 +197,8 @@ public class Boss : MonoBehaviour
         bossRen = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
         gameManager = GameManager.Instance;
+
+        trashPreFab = TrashPreFab.Instance;
 
         gravity = gameManager.GravityScale();
     }
@@ -249,6 +264,10 @@ public class Boss : MonoBehaviour
         {
             bossAttackArea(patternBossAttack);
         }
+        else
+        {
+            patternAttack = false;
+        }
     }
 
     /// <summary>
@@ -276,7 +295,7 @@ public class Boss : MonoBehaviour
         if (isAttack == true) //공격을 하면 바로 공격을 할 수 없게 만드는 코드
         {
             attackDelayTimer += Time.deltaTime;
-            if (attackDelayTimer > 3)
+            if (attackDelayTimer > 2 )
             {
                 attackDelayTimer = 0;
                 if (curPhase == 1) //2페이즈면 실행되는 코드
@@ -303,18 +322,20 @@ public class Boss : MonoBehaviour
                     }
                 }
                 isAttack = false;
+                moveStop = false;
+                isScaleChange = false;
             }
         }
 
         if (attackDelayOn == true) //보스의 기본 공격 딜레이
         {
             attackDelayTimer += Time.deltaTime;
-            if (attackDelayTimer > 1f)
+            if (attackDelayTimer > 0.8f)
             {
-                attackDelayTimer = 0;
-                attackDelayOn = false;
                 patternAttack = true;
                 attackOn = false;
+                attackDelayTimer = 0;
+                attackDelayOn = false;
             }
         }
 
@@ -329,7 +350,7 @@ public class Boss : MonoBehaviour
                 telpoDelayTimer = 0;
                 telpoDelayOn = false;
                 attackOn = false;
-                moveStop = false;
+                isScaleChange = false;
             }
         }
 
@@ -338,11 +359,10 @@ public class Boss : MonoBehaviour
             darkHandDelayTimer += Time.deltaTime;
             if (darkHandDelayTimer > 0.8f)
             {
-                Instantiate(darkHandPrefab, playerTrs.position + new Vector3(0, 2.5f, 0), Quaternion.identity, transform);
+                Instantiate(darkHandPrefab,  new Vector3(playerTrs.position.x, -18.3f, 0), Quaternion.identity, trashPreFab.transform);
                 darkHandDelayTimer = 0;
                 darkHandDelayOn = false;
                 attackOn = false;
-                moveStop = false;
             }
         }
 
@@ -439,11 +459,13 @@ public class Boss : MonoBehaviour
         {
             bossRen.color = Color.magenta;
             bossCurHp = bossPhaseHp[1];
+            moveStop = false;
         }
         else if (curPhase == 2)
         {
             bossRen.color = Color.red;
             bossCurHp = bossPhaseHp[2];
+            moveStop = false;
         }
     }
 
@@ -459,6 +481,8 @@ public class Boss : MonoBehaviour
         else if (bossCurHp <= 0)
         {
             phaseChange = true;
+            moveStop = true;
+            isAttack = true;
 
             //Color curColor = bossRen.color; 알파값 변경 방법
             //curColor.a = 0.5f;

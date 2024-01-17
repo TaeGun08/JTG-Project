@@ -134,6 +134,8 @@ public class Player : MonoBehaviour
     private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
     private bool statusOpen = false; //플레이어가 정보창을 켰는지 안 켰는지 확인하기 위한 변수
 
+    private bool knockBack = false;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (playerBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -572,7 +574,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
-        if (isDash == true || wallJumpTimerOn == true)
+        if (isDash == true || wallJumpTimerOn == true || knockBack == true)
         {
             return;
         }
@@ -602,7 +604,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerJump()
     {
-        if (isDash == true)
+        if (isDash == true || knockBack == true)
         {
             return;
         }
@@ -636,7 +638,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerGravity()
     {
-        if (isDash == true)
+        if (isDash == true || knockBack == true)
         {
             return;
         }
@@ -666,6 +668,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private void playerDash()
     {
+        if (knockBack == true)
+        {
+            return;
+        }
+
         dashKey = Input.GetKeyDown(keyManager.PlayerDashKey());
 
         if (dashRangeTimer >= dashRange)
@@ -1336,6 +1343,14 @@ public class Player : MonoBehaviour
     public void SetPetList(GameObject _pet)
     {
         petPrefabs.Add(_pet);
+    }
+
+    public void PlayerKnockBack(float _xValue, float _yValue)
+    {
+        knockBack = true;
+        moveVec.x = _xValue;
+        moveVec.y = _yValue;
+        rigid.velocity = moveVec;
     }
 
     #region 스테이터스 스크립트에서 사용할 플레이어 능력치를 반환
