@@ -17,34 +17,40 @@ public class Boss : MonoBehaviour
     [SerializeField, Tooltip("보스의 이동속도")] private float bossSpeed;
     [SerializeField, Tooltip("보스의 현재체력")] private int bossCurHp;
     [SerializeField, Tooltip("보스의 패턴별 체력")] private List<int> bossPhaseHp;
-    [SerializeField] private int curPhase;
-    private bool phaseChange = false;
-    private float changeTimer;
-    private bool isGround = false;
-    private float gravity;
-    private float gravityVelocity;
+    private int curPhase; //현재 페이즈
+    private bool phaseChange = false; //페이즈 변경을 확인하기 위한 변수
+    private float changeTimer; //페이즈 변경 시간
+    private bool isGround = false; //땅인지 체크하기 위한 변수
+    private float gravity; //중력값을 받아올 변수
+    private float gravityVelocity; //중력값을 계산해 적용할 변수
+    private bool isRight = false;
+    private bool moveStop = false;
 
     [Header("보스 공격 설정")]
-    [SerializeField, Tooltip("보스의 기본 공격을 위한 영역")] private BoxCollider2D pattern1AttackCheck;
-    [SerializeField, Tooltip("보스의 패턴2 공격을 위한 영역")] private BoxCollider2D pattern2Attack;
-    [SerializeField, Tooltip("보스의 패턴3 공격을 위한 영역")] private BoxCollider2D pattern3Attack;
-    [SerializeField, Tooltip("보스의 기본 공격 범위")] private BoxCollider2D pattern1Attack;
-    [SerializeField, Tooltip("보스의 패턴3의 공격 프리팹")] private GameObject patternAttackPrefab;
-    private bool isAttack = false;
-    private bool patternAttack = false;
-    [SerializeField] private int randomPattern;
-    private float attack1DelayTimer;
-    private float attack2DelayTimer;
-    private float attack3DelayTimer;
-    private bool attack1DelayOn = false;
-    private bool attack2DelayOn = false;
-    private bool attack3DelayOn = false;
+    [SerializeField, Tooltip("보스가 플레이어를 추격하기 위한 콜라이더")] private BoxCollider2D playerChase;
+    [SerializeField, Tooltip("보스의 기본 공격을 위한 영역")] private BoxCollider2D AttackCheck;
+    [SerializeField, Tooltip("보스의 패턴2 공격을 위한 영역")] private BoxCollider2D telpoArea;
+    [SerializeField, Tooltip("보스의 패턴3 공격을 위한 영역")] private BoxCollider2D darkHandArea;
+    [SerializeField, Tooltip("보스의 기본 공격 범위")] private BoxCollider2D bossAttack;
+    [SerializeField, Tooltip("보스의 패턴3의 공격 프리팹")] private GameObject darkHandPrefab;
+    private bool isAttack = false; //플레이어를 공격했는지 확인하기 위한 변수
+    private bool attackOn = false; //플레이어를 다시 공격하기 위한 변수
+    private bool patternAttack = false; //기본 공격 시 데미지가 들어가게 하는 변수
+    private int randomPattern; //랜덤으로 패턴을 적용시킬 변수
+    private float attackDelayTimer; //기본 공격의 딜레이 타이머
+    private float telpoDelayTimer; //텔레포트의 딜레이 타이머
+    private float darkHandDelayTimer; //다크핸드의 딜레이 타이머
+    private bool attackDelayOn = false; //기본 공격 딜레이를 켜주는 변수
+    private bool telpoDelayOn = false; //텔레포트 딜레이를 켜주는 변수
+    private bool darkHandDelayOn = false; //다크핸드 딜레이를 켜주는 변수
     [Space]
-    [SerializeField, Tooltip("보스가 두 번째 패턴을 사용 후 재사용 대기 시간")] private float pattern2CoolTime;
-    [SerializeField, Tooltip("보스가 세 번째 패턴을 사용 후 재사용 대기 시간")] private float pattern3CoolTime;
-    private bool usePattern2 = false;
-    private bool usePattern3 = false;
-    private Transform playerTrs;
+    [SerializeField, Tooltip("보스가 두 번째 패턴을 사용 후 재사용 대기 시간")] private float bossTelpoCoolTime;
+    [SerializeField, Tooltip("보스가 세 번째 패턴을 사용 후 재사용 대기 시간")] private float darkHandCoolTime;
+    private bool useTelpo = false; //텔포를 사용했는지 알리기 위한 변수
+    private bool useDarkHand = false; //타크핸드를 사용했는지 알리기 위한 변수
+    private float bossTelpoCoolTimer; //텔레포트의 쿨타이머
+    private float darkHandCoolTimer; //다크핸드의 쿨타이머
+    private Transform playerTrs; //스킬을 사용하기 위한 플레이어의 Transform
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -56,59 +62,97 @@ public class Boss : MonoBehaviour
         }
     }
 
-    private void onTriggerArea1Check(Collider2D collision)
+    private void playerCheck(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            if (isAttack == false && randomPattern == 0)
+            Vector3 playerPos = collision.transform.position - transform.position;
+
+            Vector2 scale = transform.localScale;
+            scale.x *= -1;
+            if (playerPos.x > 2 && transform.localScale.x != -1)
             {
-                anim.SetTrigger("isPatternA");
-                attack1DelayOn = true;
-                isAttack = true;
+                transform.localScale = scale;
+                bossSpeed *= -1;
+                isRight = true;
+            }
+            else if (playerPos.x < -2 && transform.localScale.x != 1)
+            {
+                transform.localScale = scale;
+                bossSpeed *= -1;
+                isRight = false;
             }
         }
     }
 
-    private void onTriggerArea2Check(Collider2D collision)
+    /// <summary>
+    /// 기본 공격을 위해 플레이어를 확인하기 위한 함수
+    /// </summary>
+    /// <param name="collision"></param>
+    private void attackCheck(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            if (usePattern2 == true && randomPattern == 1)
+            if (isAttack == false && attackOn == false)
             {
-                return;
+                anim.SetTrigger("isPatternA");
+                attackDelayOn = true;
+                isAttack = true;
+                attackOn = true;
+                moveStop = true;
             }
+        }
+    }
 
-            if (isAttack == false && curPhase >= 1 && randomPattern == 1)
+    /// <summary>
+    /// 텔레포트를 위해 플레이어를 확인하기 위한 함수
+    /// </summary>
+    /// <param name="collision"></param>
+    private void telpoAreaCheck(Collider2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            if (isAttack == false && useTelpo == false &&
+                attackOn == false && curPhase >= 1 && randomPattern == 1)
             {
                 anim.SetBool("isPatternB_bool", true);
                 playerTrs = collision.transform;
-                attack2DelayOn = true;
-                usePattern2 = true;
+                telpoDelayOn = true;
+                useTelpo = true;
+                isAttack = true;
+                attackOn = true;
+                moveStop = true;
             }
         }
     }
 
-    private void onTriggerArea3Check(Collider2D collision)
+    /// <summary>
+    /// 다크핸드를 위해 플레이어를 확인하기 위한 함수
+    /// </summary>
+    /// <param name="collision"></param>
+    private void darkHandCheck(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            if (usePattern3 == true && randomPattern == 2)
-            {
-                return;
-            }
-
-            if (isAttack == false && curPhase == 2 && randomPattern == 2)
+            if (isAttack == false && useDarkHand == false && attackOn == false 
+                && curPhase == 2 && randomPattern == 2)
             {
                 anim.SetTrigger("isPatternC");
-                attack3DelayOn = true;
+                darkHandDelayOn = true;
                 playerTrs = collision.transform;
-                usePattern3 = true;
+                useDarkHand = true;
                 isAttack = true;
+                attackOn = true;
+                moveStop = true;
             }
         }
     }
 
-    private void onTriggerAttackArea(Collider2D collision)
+    /// <summary>
+    /// 기본 공격의 범위에서 플레이어가 있으면 데미지를 넣어주는 함수
+    /// </summary>
+    /// <param name="collision"></param>
+    private void bossAttackArea(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
@@ -117,6 +161,7 @@ public class Boss : MonoBehaviour
                 Player playerSc = collision.gameObject.GetComponent<Player>();
                 playerSc.PlayerCurHp(10, true, false);
                 patternAttack = false;
+                moveStop = false;
             }
         }        
     }
@@ -129,6 +174,8 @@ public class Boss : MonoBehaviour
         bossCurHp = bossPhaseHp[0];
 
         changeTimer = 0;
+
+        moveVec.x = 1;
     }
 
     private void Start()
@@ -150,43 +197,57 @@ public class Boss : MonoBehaviour
 
         playerCollCheck();
         timers();
+        bossRightCheck();
         bossGroundCheck();
+        bossMove();
         bossGravity();
         bossDeadCheck();
+        bossAni();
     }
 
+    /// <summary>
+    /// 보스가 플레이어를 체크하여 공격할 수 있게 담당을 하는 함수
+    /// </summary>
     private void playerCollCheck()
     {
-        Collider2D pattern1 = Physics2D.OverlapBox(pattern1AttackCheck.bounds.center,
-            pattern1AttackCheck.bounds.size, 0, LayerMask.GetMask("Player"));
+        Collider2D playerChaseCheck = Physics2D.OverlapBox(playerChase.bounds.center,
+            playerChase.bounds.size, 0, LayerMask.GetMask("Player"));
 
-        Collider2D pattern2 = Physics2D.OverlapBox(pattern2Attack.bounds.center,
-            pattern2Attack.bounds.size, 0, LayerMask.GetMask("Player"));
+        Collider2D patternAttackCheck = Physics2D.OverlapBox(AttackCheck.bounds.center,
+            AttackCheck.bounds.size, 0, LayerMask.GetMask("Player"));
 
-        Collider2D pattern3 = Physics2D.OverlapBox(pattern3Attack.bounds.center,
-            pattern3Attack.bounds.size, 0, LayerMask.GetMask("Player"));
+        Collider2D patternTelpoCheck = Physics2D.OverlapBox(telpoArea.bounds.center,
+            telpoArea.bounds.size, 0, LayerMask.GetMask("Player"));
 
-        Collider2D patternAtt = Physics2D.OverlapBox(pattern1Attack.bounds.center,
-            pattern1Attack.bounds.size, 0, LayerMask.GetMask("Player"));
+        Collider2D patternDarkHandCheck = Physics2D.OverlapBox(darkHandArea.bounds.center,
+            darkHandArea.bounds.size, 0, LayerMask.GetMask("Player"));
 
-        if (pattern1 != null)
+        Collider2D patternBossAttack = Physics2D.OverlapBox(bossAttack.bounds.center,
+            bossAttack.bounds.size, 0, LayerMask.GetMask("Player"));
+
+        if (playerChaseCheck != null)
         {
-            onTriggerArea1Check(pattern1);
+            playerCheck(playerChaseCheck);
         }
 
-        if (pattern2 != null)
+        if (patternAttackCheck != null)
         {
-            onTriggerArea2Check(pattern2);
+            attackCheck(patternAttackCheck);
         }
 
-        if (pattern3 != null)
+        if (patternTelpoCheck != null)
         {
-            onTriggerArea3Check(pattern3);
+            telpoAreaCheck(patternTelpoCheck);
         }
 
-        if (patternAtt != null)
+        if (patternDarkHandCheck != null)
         {
-            onTriggerAttackArea(patternAtt);
+            darkHandCheck(patternDarkHandCheck);
+        }
+
+        if (patternBossAttack != null)
+        {
+            bossAttackArea(patternBossAttack);
         }
     }
 
@@ -212,51 +273,105 @@ public class Boss : MonoBehaviour
             }
         }
 
-        if (isAttack == true)
+        if (isAttack == true) //공격을 하면 바로 공격을 할 수 없게 만드는 코드
         {
-            attack1DelayTimer += Time.deltaTime;
-            if (attack1DelayTimer > 3)
+            attackDelayTimer += Time.deltaTime;
+            if (attackDelayTimer > 3)
             {
-                attack1DelayTimer = 0;
-                if (curPhase == 1)
+                attackDelayTimer = 0;
+                if (curPhase == 1) //2페이즈면 실행되는 코드
                 {
-                    int randomPat = Random.Range(0, 2);
-                    randomPattern = randomPat;
+                    if (useTelpo == false)
+                    {
+                        randomPattern = 1;
+                    }
                 }
-                else if (curPhase == 2)
+                else if (curPhase == 2) //3페이즈면 실행되는 코드
                 {
-                    int randomPat = Random.Range(0, 3);
-                    randomPattern = randomPat;
+                    if (useTelpo == false && useDarkHand == false)
+                    {
+                        int randomPat = Random.Range(1, 3);
+                        randomPattern = randomPat;
+                    }
+                    else if (useTelpo == true && useDarkHand == false)
+                    {
+                        randomPattern = 2;
+                    }
+                    else if (useTelpo == false && useDarkHand == true)
+                    {
+                        randomPattern = 1;
+                    }
                 }
                 isAttack = false;
             }
         }
 
-        if (attack1DelayOn == true)
+        if (attackDelayOn == true) //보스의 기본 공격 딜레이
         {
-            attack1DelayTimer += Time.deltaTime;
-            if (attack1DelayTimer > 0.8f)
+            attackDelayTimer += Time.deltaTime;
+            if (attackDelayTimer > 1f)
             {
-                attack1DelayTimer = 0;
-                attack1DelayOn = false;
+                attackDelayTimer = 0;
+                attackDelayOn = false;
                 patternAttack = true;
+                attackOn = false;
             }
         }
 
-        if (attack2DelayOn == true)
+        if (telpoDelayOn == true) //보스의 텔레포트 딜레이
         {
-
-        }
-
-        if (attack3DelayOn == true)
-        {
-            attack3DelayTimer += Time.deltaTime;
-            if (attack3DelayTimer > 0.8f)
+            telpoDelayTimer += Time.deltaTime;
+            if (telpoDelayTimer > 0.8f)
             {
-                Instantiate(patternAttackPrefab, playerTrs.position + new Vector3(0, 2.5f, 0), Quaternion.identity, transform);
-                attack3DelayTimer = 0;
-                attack3DelayOn = false;
+                transform.position = playerTrs.position + new Vector3(0, 1, 0);
+                anim.SetBool("isPatternB_bool", false);
+                anim.SetTrigger("isPatternB_trigger");
+                telpoDelayTimer = 0;
+                telpoDelayOn = false;
+                attackOn = false;
+                moveStop = false;
             }
+        }
+
+        if (darkHandDelayOn == true) //보스의 다크핸드 공격 딜레이
+        {
+            darkHandDelayTimer += Time.deltaTime;
+            if (darkHandDelayTimer > 0.8f)
+            {
+                Instantiate(darkHandPrefab, playerTrs.position + new Vector3(0, 2.5f, 0), Quaternion.identity, transform);
+                darkHandDelayTimer = 0;
+                darkHandDelayOn = false;
+                attackOn = false;
+                moveStop = false;
+            }
+        }
+
+        if (useTelpo == true) //보스의 텔레포트 쿨타임
+        {
+            bossTelpoCoolTimer += Time.deltaTime;
+            if (bossTelpoCoolTimer >= bossTelpoCoolTime)
+            {
+                bossTelpoCoolTimer = 0;
+                useTelpo = false;
+            }
+        }
+
+        if (useDarkHand == true) //보스의 다크핸드 패턴의 쿨타임
+        {
+            darkHandCoolTimer += Time.deltaTime;
+            if (darkHandCoolTimer >= darkHandCoolTime)
+            {
+                darkHandCoolTimer = 0;
+                useDarkHand = false;
+            }
+        }
+    }
+
+    private void bossRightCheck()
+    {
+        if (isRight == true)
+        {
+
         }
     }
 
@@ -275,6 +390,21 @@ public class Boss : MonoBehaviour
         {
             isGround = true;
         }
+    }
+
+    /// <summary>
+    /// 보스의 기본 움직임
+    /// </summary>
+    private void bossMove()
+    {
+        if (moveStop == true)
+        {
+            moveVec.x = 0;
+            return;
+        }
+
+        moveVec.x = -bossSpeed;
+        rigid.velocity = moveVec;
     }
 
     /// <summary>
@@ -334,5 +464,13 @@ public class Boss : MonoBehaviour
             //curColor.a = 0.5f;
             //bossRen.color = curColor;
         }
+    }
+
+    /// <summary>
+    /// 보스의 기본적인 애니메이션을 담당하는 함수
+    /// </summary>
+    private void bossAni()
+    {
+        anim.SetInteger("isWalk", (int)moveVec.x);
     }
 }
