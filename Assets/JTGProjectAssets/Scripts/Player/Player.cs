@@ -129,7 +129,7 @@ public class Player : MonoBehaviour
     [Header("펫 관련 설정")]
     [SerializeField, Tooltip("펫을 담아둘 공간")] private List<GameObject> petPrefabs = new List<GameObject>();
     private Pet petSc; //펫의 스크립트 가져올 변수
-    private int playerPet;
+    [SerializeField] private int playerPet;
 
     private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
     private bool statusOpen = false; //플레이어가 정보창을 켰는지 안 켰는지 확인하기 위한 변수
@@ -1074,7 +1074,6 @@ public class Player : MonoBehaviour
             && _collision.gameObject.tag == "JumpWall")
         {
             isWall = true;
-            Debug.Log("확인");
         }
         else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground")
             && _collision.gameObject.tag == "JumpWall")

@@ -115,7 +115,7 @@ Transform:
   - {fileID: 8263213586110768830}
   - {fileID: 7427639842136824487}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &6840150255689165548
 Rigidbody2D:
@@ -214,6 +214,7 @@ MonoBehaviour:
   patternAttack: 0
   bossTelpoCoolTime: 5
   darkHandCoolTime: 10
+  bossHpObj: {fileID: 4469702139599983534}
   bossHpSlider: {fileID: 3285162215133969074}
   bossHpColor: {fileID: 7181538591281728947}
   dpsObj: {fileID: 7450560070548849562, guid: dd0f507e2ec5555409e02b260f40aba0, type: 3}
@@ -990,7 +991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6977215, g: 0.4577697, b: 0.764151, a: 1}
+  m_Color: {r: 0.5647059, g: 0, b: 0.04554264, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

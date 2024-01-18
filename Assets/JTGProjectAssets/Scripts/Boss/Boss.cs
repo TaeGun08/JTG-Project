@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Boss : MonoBehaviour
@@ -62,11 +63,14 @@ public class Boss : MonoBehaviour
     private Transform playerTrs; //스킬을 사용하기 위한 플레이어의 Transform
 
     [Header("보스의 체력을 위한 UI")]
+    [SerializeField] private GameObject bossHpObj;
     [SerializeField] private Slider bossHpSlider;
     [SerializeField] private Image bossHpColor;
 
     [Header("DPS를 위한 오브젝트")]
-    [SerializeField] private GameObject dpsObj; 
+    [SerializeField] private GameObject dpsObj;
+
+    private float goingEndingTimer; //엔딩으로 넘어가기 위한 타이머
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -226,6 +230,21 @@ public class Boss : MonoBehaviour
 
     private void Update()
     {
+        if (bossDead == true)
+        {
+            goingEndingTimer += Time.deltaTime;
+            if (goingEndingTimer > 3)
+            {
+                ending();
+                bossDead = false;
+            }
+            else if (goingEndingTimer > 1)
+            {
+                bossRen.enabled = false;
+                bossHpObj.SetActive(false);
+            }
+        }
+
         if (gameManager.GetGamePause() == true || bossDead == true)
         {
             return;
@@ -585,6 +604,9 @@ public class Boss : MonoBehaviour
         Instantiate(dpsObj, enemyPos, Quaternion.identity, trashPreFab.transform);
     }
 
+    /// <summary>
+    /// 보스가 맞았을 때 알파값을 낮추는 함수
+    /// </summary>
     private void BossHit()
     {
         if (bossHit == true)
@@ -593,6 +615,11 @@ public class Boss : MonoBehaviour
             bossColor.a = 0.8f;
             bossRen.color = bossColor;
         }
+    }
+
+    private void ending()
+    {
+        SceneManager.LoadScene("EndingScene");
     }
 
     /// <summary>

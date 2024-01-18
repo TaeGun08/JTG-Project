@@ -137,15 +137,54 @@ public class Pet : MonoBehaviour
             }
             else if (petType.ToString() == "petTypeB")
             {
+                enemySc = _collision.gameObject.GetComponent<Enemy>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
             else if (petType.ToString() == "petTypeC")
             {
+                enemySc = _collision.gameObject.GetComponent<Enemy>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
             else if (petType.ToString() == "petTypeD")
             {
+                enemySc = _collision.gameObject.GetComponent<Enemy>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
         }
         else if (_collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
@@ -169,15 +208,54 @@ public class Pet : MonoBehaviour
             }
             else if (petType.ToString() == "petTypeB")
             {
+                bossSc = _collision.gameObject.GetComponent<Boss>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
             else if (petType.ToString() == "petTypeC")
             {
+                bossSc = _collision.gameObject.GetComponent<Boss>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
             else if (petType.ToString() == "petTypeD")
             {
+                bossSc = _collision.gameObject.GetComponent<Boss>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
             }
         }
     }
@@ -307,6 +385,9 @@ public class Pet : MonoBehaviour
         Collider2D enemyColl = Physics2D.OverlapCircle(enemyCheck.bounds.center,
         enemyCheck.radius, LayerMask.GetMask("Enemy"));
 
+        Collider2D bossColl = Physics2D.OverlapCircle(enemyCheck.bounds.center,
+        enemyCheck.radius, LayerMask.GetMask("Boss"));
+
         if (playerColl != null)
         {
             checkTrigger(playerColl);
@@ -315,6 +396,11 @@ public class Pet : MonoBehaviour
         if (enemyColl != null)
         {
             checkTrigger(enemyColl);
+        }
+
+        if (bossColl != null)
+        {
+            checkTrigger(bossColl);
         }
     }
 
@@ -495,5 +581,10 @@ public class Pet : MonoBehaviour
     public void SetPetPassiveOn(bool _on)
     {
         petPassiveOn = _on;
+    }
+
+    public void keyImageOff()
+    {
+        pickUpKeyImage.SetActive(false);
     }
 }

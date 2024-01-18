@@ -621,9 +621,9 @@ MonoBehaviour:
     m_Bits: 1024
   gravity: 0
   enemyHp: 0
-  enemyMaxHp: 20
+  enemyMaxHp: 50
   enemyDamage: 15
-  enemyArmor: 4
+  enemyArmor: 10
   speed: 1
   enemyJumpPower: 5
   enemyBullet: {fileID: 7365192162868676241, guid: 0be179e0348622f4fbbd5d8efcf8a78e, type: 3}

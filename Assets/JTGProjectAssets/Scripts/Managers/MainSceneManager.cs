@@ -28,7 +28,7 @@ public class MainSceneManager : MonoBehaviour
 
         if (PlayerPrefs.GetString("saveKey") == string.Empty)
         {
-            string getScene = JsonConvert.SerializeObject(0);
+            string getScene = JsonConvert.SerializeObject(1);
             PlayerPrefs.SetString("saveKey", getScene);
         }
 
@@ -42,7 +42,7 @@ public class MainSceneManager : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadSceneAsync("LoadingScene");
+                SceneManager.LoadSceneAsync("TutorialLoadingScene");
             }
         });
 

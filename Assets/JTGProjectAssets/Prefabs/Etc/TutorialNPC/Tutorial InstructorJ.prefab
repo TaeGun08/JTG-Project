@@ -243,7 +243,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.19999999, y: -0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9211746313198484845
 CanvasRenderer:
@@ -273,10 +273,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC544! \uCC38\uACE0\uB85C \uC790\uB124\uAC00 \uD6C8\uB828\uB3D9\uC548
-    \uC5BB\uC740 \uAC83\uB4E4\uC740 \uBAA8\uB450 \uB098\uC911\uC5D0 \uD68C\uC218\uD574
-    \uAC00\uACA0\uB124 \uADF8\uB798\uC57C \uC7AC\uBBF8\uC788\uC9C0 \uC54A\uACA0\uB098?
-    \uADF8\uB7FC \uB09C \uAC00\uACA0\uB124!"
+  m_text: "\uC790\uB124\uAC00 \uD6C8\uB828\uB3D9\uC548 \uC5BB\uC740 \uAC83\uB4E4\uC740
+    \uBAA8\uB450 \uB098\uC911\uC5D0 \uD68C\uC218\uD574 \uAC00\uACA0\uB124 \uADF8\uB798\uC57C
+    \uC2E4\uB825\uC774 \uB298\uC9C0 \n\uADF8\uB7FC \uB09C \uAC00\uACA0\uB124!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8d7d5b85f682e784aa951cf6a55d6403, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 421f8f698c104f04db128d184bee115f, type: 2}
@@ -1251,7 +1250,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.19999999, y: -0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7445893508585613542
 CanvasRenderer:
@@ -1486,7 +1485,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.19999999, y: -0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8870058355382602867
 CanvasRenderer:
@@ -1622,7 +1621,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.19999999, y: -0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5474634061126647241
 CanvasRenderer:
@@ -1653,9 +1652,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "\uADF8\uB7FC \uC774\uC81C \uC5EC\uD589\uC744 \uB5A0\uB0A0 \uC900\uBE44\uAC00
-    \uB418\uC5C8\uACA0\uAD6C\uB9CC!\r\n\uC790\uB124\uB97C \uC774\uB9AC \uBE68\uB9AC
-    \uB5A0\uB098\uBCF4\uB0B4\uC57C \uD55C\uB2E4\uB2C8 \uC501\uC4F8\uD558\uAD70..
-    \uAEC4\uAEC4"
+    \uB418\uC5C8\uACA0\uAD70\n\uC801\uC744 \uC18C\uD0D5\uD574 \uC2E4\uD5D8\uCCB4\uC778
+    \"Death\"\uB97C \uBB3C\uB9AC\uCE58\uBA74 \uC790\uB124\uC758 \uC784\uBB34\uB294
+    \uB05D\uC774\uB77C\uB124"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8d7d5b85f682e784aa951cf6a55d6403, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 421f8f698c104f04db128d184bee115f, type: 2}
@@ -1838,7 +1837,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.19999999, y: -0.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7713410397223216828
 CanvasRenderer:

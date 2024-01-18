@@ -11,16 +11,24 @@ public class SaveItemCreater : MonoBehaviour
 
     [Header("게임씬에 소환할 오브젝트")]
     [SerializeField] private List<GameObject> weapons;
-    [SerializeField] private List<GameObject> pet;
+    [SerializeField] private GameObject pet;
+    private bool create = false;
 
     private void Start()
     {
         gameManager = GameManager.Instance;
 
         playerHand = player.transform.Find("PlayerHand");
+    }
 
-        weaponCreate();
-        petCreate();
+    private void Update()
+    {
+        if (create == false)
+        {
+            weaponCreate();
+            petCreate();
+            create = true;
+        }
     }
 
     /// <summary>
@@ -71,16 +79,11 @@ public class SaveItemCreater : MonoBehaviour
     /// </summary>
     private void petCreate()
     {
-        for (int i = 0; i < pet.Count; i++)
-        {
-            if (player.GetPlayerPet() == i + 1)
-            {
-                GameObject petObj = Instantiate(pet[i], player.transform.position, Quaternion.identity, gameManager.ItemDropTrs());
-                Pet petSc = petObj.GetComponent<Pet>();
-                petSc.GetPetCheck(true);
-                petSc.SetPetPassiveOn(true);
-                player.SetPetList(petObj);
-            }
-        }
+        GameObject petObj = Instantiate(pet, player.transform.position, Quaternion.identity, gameManager.ItemDropTrs());
+        Pet petSc = petObj.GetComponent<Pet>();
+        petSc.GetPetCheck(true);
+        petSc.SetPetPassiveOn(true);
+        petSc.keyImageOff();
+        player.SetPetList(petObj);
     }
 }

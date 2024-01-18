@@ -428,7 +428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d1229460103c0f4c96b89e181369128, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  petType: 1
+  petType: 4
   playerCheck: {fileID: 3582557485103431319}
   enemyCheck: {fileID: 5734221419951892405}
   pickUpKeyImage: {fileID: 2222241704137785115}
@@ -439,7 +439,7 @@ MonoBehaviour:
   petHpEffect: 20
   petCriPcentEffect: 10
   petCriDamageEffect: 0.5
-  petDamage: 10
+  petDamage: 20
   petAttackpreFab: {fileID: 8054764785227492223, guid: 05f7239e63409d64d8a87af779e420e2, type: 3}
   petSkillEffect: {fileID: 1840418798332165952, guid: 7143def795517114e91b07df4bd55657, type: 3}
   petSkillTime: 20
