@@ -134,7 +134,8 @@ public class Player : MonoBehaviour
     private bool optionOn = false; //플레이어가 옵션을 켰는지 안 켰는지 확인하기 위한 변수
     private bool statusOpen = false; //플레이어가 정보창을 켰는지 안 켰는지 확인하기 위한 변수
 
-    private bool knockBack = false;
+    private bool knockBack = false; //플레이어 넉백을 위한 변수
+    private float knockBackTimer; //넉백이 지속되는 타이머
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
@@ -464,6 +465,16 @@ public class Player : MonoBehaviour
                 hitDamageTimer = 0.1f;
                 playerHitDamage = false;
                 playerRen.color = Color.white;
+            }
+        }
+
+        if (knockBack == true)
+        {
+            knockBackTimer += Time.deltaTime;
+            if (knockBackTimer > 0.3f)
+            {
+                knockBackTimer = 0;
+                knockBack = false;
             }
         }
     }
@@ -1063,11 +1074,18 @@ public class Player : MonoBehaviour
             && _collision.gameObject.tag == "JumpWall")
         {
             isWall = true;
+            Debug.Log("확인");
         }
         else if (_wallHit == false && _collision.gameObject.layer == LayerMask.NameToLayer("Ground")
             && _collision.gameObject.tag == "JumpWall")
         {
             isWall = false;
+        }
+
+        if (_wallHit == true && _collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            knockBackTimer = 0;
+            knockBack = false;
         }
     }
 
@@ -1347,10 +1365,21 @@ public class Player : MonoBehaviour
 
     public void PlayerKnockBack(float _xValue, float _yValue)
     {
-        knockBack = true;
-        moveVec.x = _xValue;
-        moveVec.y = _yValue;
-        rigid.velocity = moveVec;
+        if (dashInvincibleOn == false)
+        {
+            knockBack = true;
+            if (knockBack == true)
+            {
+                moveVec.x = _xValue;
+                moveVec.y = _yValue;
+            }
+            else if (knockBack == false)
+            {
+                moveVec.x = 0;
+                moveVec.y = 0;
+            }
+            rigid.velocity = moveVec;
+        }
     }
 
     #region 스테이터스 스크립트에서 사용할 플레이어 능력치를 반환

@@ -30,6 +30,12 @@ public class Bullet : MonoBehaviour
                 enemySc.EnemyHp((int)bulletDamage, true, false, hitCritical);
                 Destroy(gameObject);
             }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+            {
+                Boss bossSc = collision.gameObject.GetComponent<Boss>();
+                bossSc.BossHp((int)bulletDamage, true, false, hitCritical);
+                Destroy(gameObject);
+            }
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 Destroy(gameObject);
@@ -41,6 +47,11 @@ public class Bullet : MonoBehaviour
             {
                 Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
                 enemySc.EnemyHp((int)bulletDamage, true, false, hitCritical);
+            }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+            {
+                Boss bossSc = collision.gameObject.GetComponent<Boss>();
+                bossSc.BossHp((int)bulletDamage, true, false, hitCritical);
             }
         }
         else if (bulletType.ToString() == "enemyBullet")

@@ -466,7 +466,7 @@ public class Enemy : MonoBehaviour
             {
                 enemyHp -= dmgReduction;
                 enemyHitDamage = _hit;
-                enemyDpsCheck(_damage, _trueDam, _critical);
+                enemyDpsCheck(dmgReduction, _trueDam, _critical);
             }
         }
     }

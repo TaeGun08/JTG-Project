@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Bullet;
 
 public class Knife : MonoBehaviour
 {
@@ -18,6 +17,12 @@ public class Knife : MonoBehaviour
         {
             Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
             enemySc.EnemyHp((int)knifeDamage, true, true, false);
+            Destroy(gameObject);
+        }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+        {
+            Boss bossSc = collision.gameObject.GetComponent<Boss>();
+            bossSc.BossHp((int)knifeDamage, true, true, false);
             Destroy(gameObject);
         }
         else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))

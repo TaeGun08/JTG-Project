@@ -29,9 +29,13 @@ public class BossAttackPrefab : MonoBehaviour
     private void Update()
     {
         attackTimer += Time.deltaTime;
-        if (attackTimer > 0.6f)
+        if (attackTimer > 0.6f && attackTimer <= 1f)
         {
             boxCollider2D.enabled = true;
+        }
+        else if (attackTimer > 1f)
+        {
+            boxCollider2D.enabled = false;
         }
     }
 

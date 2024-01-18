@@ -41,6 +41,7 @@ public class Pet : MonoBehaviour
     private float followPosX; //펫이 따라갈 x포지션
     private float followPosY; //펫이 확인할 Y포지션
     private Enemy enemySc;
+    private Boss bossSc;
 
     [SerializeField] private GameObject pickUpKeyImage;
 
@@ -120,6 +121,38 @@ public class Pet : MonoBehaviour
             if (petType.ToString() == "petTypeA")
             {
                 enemySc = _collision.gameObject.GetComponent<Enemy>();
+                if (uesPetSkill == false)
+                {
+                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
+                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
+
+                    Vector3 petPos = transform.position;
+                    petPos.y += 0.8f;
+
+                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
+                    petSkillEfObj.transform.SetParent(gameObject.transform);
+                    uesPetSkill = true;
+                    isAttack = true;
+                }
+            }
+            else if (petType.ToString() == "petTypeB")
+            {
+
+            }
+            else if (petType.ToString() == "petTypeC")
+            {
+
+            }
+            else if (petType.ToString() == "petTypeD")
+            {
+
+            }
+        }
+        else if (_collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+        {
+            if (petType.ToString() == "petTypeA")
+            {
+                bossSc = _collision.gameObject.GetComponent<Boss>();
                 if (uesPetSkill == false)
                 {
                     petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
@@ -239,7 +272,14 @@ public class Pet : MonoBehaviour
             attackDelayTimer -= Time.deltaTime;
             if (attackDelayTimer < 0)
             {
-                enemySc.EnemyHp((int)petDamage, true, true, false);
+                if (enemySc != null)
+                {
+                    enemySc.EnemyHp((int)petDamage, true, true, false);
+                }
+                else if (bossSc != null)
+                {
+                    bossSc.BossHp((int)petDamage, true, true, false);
+                }
                 Destroy(petSkillEfObj);
                 attackDelayTimer = attackDelayTime;
                 isAttack = false;
