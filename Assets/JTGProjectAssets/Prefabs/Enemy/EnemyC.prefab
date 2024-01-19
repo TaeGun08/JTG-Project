@@ -635,4 +635,4 @@ MonoBehaviour:
   groundCheckColl: {fileID: 5198137576670438985}
   attackCheckColl: {fileID: 5480417792402191023}
   dpsObj: {fileID: 7450560070548849562, guid: dd0f507e2ec5555409e02b260f40aba0, type: 3}
-  SetExp: 10
+  SetExp: 20

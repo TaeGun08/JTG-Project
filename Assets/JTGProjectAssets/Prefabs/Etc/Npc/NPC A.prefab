@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8402423381516341759
 Transform:
   m_ObjectHideFlags: 0
@@ -837,8 +837,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uADF8\uB7FC \uBB34\uC6B4\uC744 \uBE4C\uACA0\uC2B5\uB2C8\uB2E4. \n\"Death\"\uB97C
-    \uBB3C\uB9AC\uCCD0 \uC8FC\uC2DC\uAE38.."
+  m_text: "\uADF8\uB7FC \uBB34\uC6B4\uC744 \uBE4C\uACA0\uC2B5\uB2C8\uB2E4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8d7d5b85f682e784aa951cf6a55d6403, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 421f8f698c104f04db128d184bee115f, type: 2}

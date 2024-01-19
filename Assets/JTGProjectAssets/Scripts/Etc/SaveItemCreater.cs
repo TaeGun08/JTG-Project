@@ -11,7 +11,7 @@ public class SaveItemCreater : MonoBehaviour
 
     [Header("게임씬에 소환할 오브젝트")]
     [SerializeField] private List<GameObject> weapons;
-    [SerializeField] private GameObject pet;
+    [SerializeField] private List<GameObject> pet;
     private bool create = false;
 
     private void Start()
@@ -79,11 +79,17 @@ public class SaveItemCreater : MonoBehaviour
     /// </summary>
     private void petCreate()
     {
-        GameObject petObj = Instantiate(pet, player.transform.position, Quaternion.identity, gameManager.ItemDropTrs());
-        Pet petSc = petObj.GetComponent<Pet>();
-        petSc.GetPetCheck(true);
-        petSc.SetPetPassiveOn(true);
-        petSc.keyImageOff();
-        player.SetPetList(petObj);
+        for (int i = 0; i < pet.Count; i++)
+        {
+            if (player.GetPlayerPet() == i + 1)
+            {
+                GameObject petObj = Instantiate(pet[i], player.transform.position, Quaternion.identity, gameManager.ItemDropTrs());
+                Pet petSc = petObj.GetComponent<Pet>();
+                petSc.GetPetCheck(true);
+                petSc.SetPetPassiveOn(true);
+                petSc.keyImageOff();
+                player.SetPetList(petObj);
+            }
+        }
     }
 }

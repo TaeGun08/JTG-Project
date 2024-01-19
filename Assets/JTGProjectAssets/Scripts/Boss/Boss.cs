@@ -184,15 +184,46 @@ public class Boss : MonoBehaviour
             if (patternAttack == true)
             {
                 Player playerSc = collision.gameObject.GetComponent<Player>();
-                playerSc.PlayerCurHp(10, true, false);
-                if (isRight == false)
+                if (curPhase == 0)
                 {
-                    playerSc.PlayerKnockBack(-30, 2);
+                    playerSc.PlayerCurHp(10, true, false);
+
+                    if (isRight == false)
+                    {
+                        playerSc.PlayerKnockBack(-10, 2);
+                    }
+                    else if (isRight == true)
+                    {
+                        playerSc.PlayerKnockBack(10, 2);
+                    }
                 }
-                else if (isRight == true)
+                else if (curPhase == 1)
                 {
-                    playerSc.PlayerKnockBack(30, 2);
+                    playerSc.PlayerCurHp(20, true, false);
+
+                    if (isRight == false)
+                    {
+                        playerSc.PlayerKnockBack(-20, 2);
+                    }
+                    else if (isRight == true)
+                    {
+                        playerSc.PlayerKnockBack(20, 2);
+                    }
                 }
+                else if (curPhase == 2)
+                {
+                    playerSc.PlayerCurHp(20, true, true);
+
+                    if (isRight == false)
+                    {
+                        playerSc.PlayerKnockBack(-30, 2);
+                    }
+                    else if (isRight == true)
+                    {
+                        playerSc.PlayerKnockBack(30, 2);
+                    }
+                }
+
                 patternAttack = false;
             }
         }        
