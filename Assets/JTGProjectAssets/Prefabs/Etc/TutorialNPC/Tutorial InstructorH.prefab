@@ -448,8 +448,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC790 \uADF8\uB7FC \uC900\uBE44\uAC00 \uB418\uBA74 \uC55E\uC73C\uB85C
-    \uAC00\uAC8C\uB098!\n\uC801\uB4E4\uC774 \uC18C\uD658\uC774 \uB420\uAC78\uC138"
+  m_text: "\uC774 \uCE5C\uAD6C\uB4E4\uC740 \uC5C6\uC9C0\uB9CC \uB2E4\uB978 \uC801\uB4E4\uC740
+    \uBC29\uC5B4\uB825\uC774 \uC788\uC73C\uB2C8 \uC720\uC758\uD558\uAC8C\uB098\n\uC900\uBE44\uAC00
+    \uB418\uBA74 \uC55E\uC73C\uB85C \uAC00\uAC8C\uB098!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8d7d5b85f682e784aa951cf6a55d6403, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 421f8f698c104f04db128d184bee115f, type: 2}
@@ -830,7 +831,7 @@ Transform:
   - {fileID: 3134839112368101671}
   - {fileID: 2632488588611816408}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7534402550337905782
 SpriteRenderer:

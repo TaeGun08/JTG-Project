@@ -47,6 +47,7 @@ public class SaveItemCreater : MonoBehaviour
                 getWeaponSc.PickUpImageOff(true);
                 getWeaponSc.WeaponGravityOff(true);
                 getWeaponSc.WeaponUseShooting(false);
+                player.SetWeaponLocalScale(new Vector3(1, 1, 1));
                 SpriteRenderer getWeaponRen = weaponA.GetComponent<SpriteRenderer>();
                 getWeaponRen.sortingOrder = 2;
                 player.SetWeaponList(weaponA);
@@ -67,6 +68,7 @@ public class SaveItemCreater : MonoBehaviour
                 getWeaponSc.PickUpImageOff(true);
                 getWeaponSc.WeaponGravityOff(true);
                 getWeaponSc.WeaponUseShooting(false);
+                player.SetWeaponLocalScale(new Vector3(1, 1, 1));
                 SpriteRenderer getWeaponRen = weaponB.GetComponent<SpriteRenderer>();
                 getWeaponRen.sortingOrder = 2;
                 player.SetWeaponList(weaponB);

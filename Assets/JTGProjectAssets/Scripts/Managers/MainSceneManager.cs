@@ -18,6 +18,12 @@ public class MainSceneManager : MonoBehaviour
     [SerializeField, Tooltip("저장 파일 초기화 취소 버튼")] private Button newCancelButton;
     [SerializeField, Tooltip("저장 파일이 없으면 뜨는 메세지")] private GameObject notSaveFile;
     private float closeObj;
+    [Space]
+    [SerializeField] private FadeOut fadeSc;
+    private bool fadeOut = false;
+    private float fadeTimer;
+    private bool tutoOn = false;
+    private bool saveOn = false;
 
     private void Awake()
     {
@@ -42,7 +48,9 @@ public class MainSceneManager : MonoBehaviour
             }
             else
             {
-                SceneManager.LoadSceneAsync("TutorialLoadingScene");
+                fadeSc.FadeInOut(true);
+                fadeOut = true;
+                tutoOn = true;
             }
         });
 
@@ -51,7 +59,9 @@ public class MainSceneManager : MonoBehaviour
             int nextLevel = JsonConvert.DeserializeObject<int>(PlayerPrefs.GetString("saveKey"));
             if (nextLevel > 1)
             {
-                SceneManager.LoadSceneAsync("SaveLoadScene");
+                fadeSc.FadeInOut(true);
+                fadeOut = true;
+                saveOn = true;
             }
             else
             {
@@ -90,6 +100,25 @@ public class MainSceneManager : MonoBehaviour
             {
                 notSaveFile.SetActive(false);
                 closeObj = 0;
+            }
+        }
+
+        if (fadeOut == true)
+        {
+            fadeTimer += Time.deltaTime;
+            if (fadeTimer > 1 && tutoOn == true)
+            {
+                SceneManager.LoadSceneAsync("TutorialLoadingScene");
+                fadeTimer = 0;
+                fadeOut = false;
+                tutoOn = false;
+            }
+            else if (fadeTimer > 1 && saveOn == true)
+            {
+                SceneManager.LoadSceneAsync("SaveLoadScene");
+                fadeTimer = 0;
+                fadeOut = false;
+                saveOn = false;
             }
         }
     }

@@ -70,6 +70,8 @@ public class Boss : MonoBehaviour
     [Header("DPS를 위한 오브젝트")]
     [SerializeField] private GameObject dpsObj;
 
+    [SerializeField] private FadeOut fadeSc;
+
     private float goingEndingTimer; //엔딩으로 넘어가기 위한 타이머
 
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
@@ -263,7 +265,7 @@ public class Boss : MonoBehaviour
     {
         if (bossDead == true)
         {
-            goingEndingTimer += Time.deltaTime;
+            goingEndingTimer += Time.unscaledDeltaTime;
             if (goingEndingTimer > 3)
             {
                 ending();
@@ -271,6 +273,7 @@ public class Boss : MonoBehaviour
             }
             else if (goingEndingTimer > 1)
             {
+                fadeSc.FadeInOut(true);
                 bossRen.enabled = false;
                 bossHpObj.SetActive(false);
             }
@@ -690,5 +693,14 @@ public class Boss : MonoBehaviour
                 bossDpsCheck(dmgReduction, _trueDam, _critical);
             }
         }
+    }
+
+    /// <summary>
+    /// 보스가 죽을걸 체크하고 페이트 아웃을 하기 위해 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool BossDead()
+    {
+        return bossDead;
     }
 }

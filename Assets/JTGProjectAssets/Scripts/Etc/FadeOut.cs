@@ -7,24 +7,25 @@ using UnityEngine.UI;
 
 public class FadeOut : MonoBehaviour
 {
-    private Image fadeOut;
-    [SerializeField] private bool fadeIn = false;
+    private Image fadeImage;
+    [SerializeField] private bool fadeOut = false;
     [SerializeField] private float fadeTimer = 3.0f;
     private Color fadeColor;
-    private uint rate = 144;
+    private bool stop = false;
+    //private uint rate = 144;
 
     private void Awake()
     {
-        fadeOut = GetComponent<Image>();
+        fadeImage = GetComponent<Image>();
 
-        Screen.SetResolution(1920, 1080, FullScreenMode.Windowed, new RefreshRate() { numerator = rate });
+        //Screen.SetResolution(1920, 1080, FullScreenMode.Windowed, new RefreshRate() { numerator = rate });       
     }
 
     private void Update()
     {
-        fadeColor = fadeOut.color;
+        fadeColor = fadeImage.color;
 
-        if (fadeIn == true && fadeColor.a != 0.0f)
+        if (fadeOut == false && fadeColor.a != 0.0f)
         {
             fadeColor.a -= Time.deltaTime / fadeTimer;
 
@@ -33,9 +34,9 @@ public class FadeOut : MonoBehaviour
                 fadeColor.a = 0.0f;
             }
 
-            fadeOut.color = fadeColor;
+            fadeImage.color = fadeColor;
         }
-        else if (fadeIn == false && fadeColor.a != 1.0f)
+        else if (fadeOut == true && fadeColor.a != 1.0f)
         {
             fadeColor.a += Time.deltaTime / fadeTimer;
 
@@ -44,7 +45,16 @@ public class FadeOut : MonoBehaviour
                 fadeColor.a = 1.0f;
             }
 
-            fadeOut.color = fadeColor;
+            fadeImage.color = fadeColor;
+        }
+    }
+
+    public void FadeInOut(bool _fade)
+    {
+        if (stop == false)
+        {
+            fadeOut = _fade;
+            stop = true;
         }
     }
 }

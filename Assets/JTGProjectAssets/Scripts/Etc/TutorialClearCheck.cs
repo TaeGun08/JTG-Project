@@ -18,6 +18,10 @@ public class TutorialClearCheck : MonoBehaviour
     [SerializeField] private GameObject homeInKeyImage;
     private bool homeIn = false;
 
+    [SerializeField] private FadeOut fadeSc;
+    private bool fadeOut = false;
+    private float fadeTimer;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
@@ -50,6 +54,18 @@ public class TutorialClearCheck : MonoBehaviour
 
     private void Update()
     {
+        if (fadeOut == true)
+        {
+            fadeTimer += Time.unscaledDeltaTime;
+            if (fadeTimer > 1)
+            {
+                saveObject.PlayerDataResetOn(true);
+                SceneManager.LoadSceneAsync("LoadingScene");
+                fadeTimer = 0;
+                fadeOut = false;
+            }
+        }
+
         if (gameManager.GetGamePause() == true)
         {
             return;
@@ -62,8 +78,8 @@ public class TutorialClearCheck : MonoBehaviour
     {
         if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
         {
-            saveObject.PlayerDataResetOn(true);
-            SceneManager.LoadSceneAsync("LoadingScene");
+            fadeSc.FadeInOut(true);
+            fadeOut = true;
         }
     }
 }

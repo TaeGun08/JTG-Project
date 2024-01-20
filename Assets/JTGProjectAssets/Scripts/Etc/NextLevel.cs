@@ -16,6 +16,10 @@ public class NextLevel : MonoBehaviour
     [SerializeField] private GameObject homeInKeyImage;
     private bool homeIn = false;
 
+    [SerializeField] private FadeOut fadeSc;
+    private bool fadeOut = false;
+    private float fadeTimer;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
@@ -46,6 +50,20 @@ public class NextLevel : MonoBehaviour
 
     private void Update()
     {
+        if (fadeOut == true)
+        {
+            fadeTimer += Time.unscaledDeltaTime;
+            if (fadeTimer > 1)
+            {
+                saveObject.PlayerDataResetOn(false);
+                player.PlayerSaveOn(true);
+                status.PlayerStatusSaveOn(true);
+                SceneManager.LoadSceneAsync("LoadingScene");
+                fadeTimer = 0;
+                fadeOut = false;
+            }
+
+        }
         if (gameManager.GetGamePause() == true)
         {
             return;
@@ -57,11 +75,9 @@ public class NextLevel : MonoBehaviour
     private void nextLevelLoading()
     {
         if (Input.GetKeyDown(keyManager.InteractionKey()) && homeIn == true)
-        {
-            saveObject.PlayerDataResetOn(false);
-            player.PlayerSaveOn(true);
-            status.PlayerStatusSaveOn(true);
-            SceneManager.LoadSceneAsync("LoadingScene");
+        {          
+            fadeSc.FadeInOut(true);
+            fadeOut = true;
         }
     }
 }

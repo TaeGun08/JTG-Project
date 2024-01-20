@@ -137,6 +137,10 @@ public class Player : MonoBehaviour
     private bool knockBack = false; //플레이어 넉백을 위한 변수
     private float knockBackTimer; //넉백이 지속되는 타이머
 
+    [SerializeField] private FadeOut fadeSc;
+    private bool playerDaed = false;
+    private float deadSceneTimer;
+
     private void OnDrawGizmos() //박스캐스트를 씬뷰에서 눈으로 확인이 가능하게 보여줌
     {
         if (playerBoxColl2D != null) //콜라이더가 null이 아니라면 박스레이 범위를 씬뷰에서 확인할 수 있게
@@ -293,6 +297,17 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (playerDaed == true)
+        {
+            fadeSc.FadeInOut(true);
+            deadSceneTimer += Time.deltaTime;
+            if (deadSceneTimer > 1.0f)
+            {
+                SceneManager.LoadSceneAsync("DeadScene");
+            }
+            return;
+        }
+
         setPlayerData();
         playerOption();
         playerStatusOpen();
@@ -886,7 +901,7 @@ public class Player : MonoBehaviour
                     weaponRen.sortingOrder = -2;  //스프라이트의 오더 인 레이어를 -2로 변경
                     gameManager.ReloadingObj().SetActive(false);  //리로딩 UI 비활성화
                     weaponPrefabs[i].transform.SetParent(gameManager.ItemDropTrs());   //무기를 지정한 위치의 자식으로 넣어줌
-                    weaponPrefabs[i].transform.position = gameObject.transform.position;  //무기의 포지션은 플레이어의 포지션
+                    weaponPrefabs[i].transform.position = gameObject.transform.position + new Vector3(0.0f, 0.1f, 0.0f);  //무기의 포지션은 플레이어의 포지션
                     weaponPrefabs[i].transform.rotation = gameManager.ItemDropTrs().rotation;  //회전 값은 지정한 위치의 회전 값을 받아옴
                     weaponPrefabs[i].transform.localScale = weaponLocalScale;  //지정한 스케일 수치만큼 변경
                     removeIndex = i;
@@ -989,7 +1004,7 @@ public class Player : MonoBehaviour
         {
             string hpText = $"0 / {playerMaxHp}";
             playerUI.SetPlayerHp(0, playerMaxHp, hpText);
-            SceneManager.LoadSceneAsync("DeadScene");
+            playerDaed = true;
         }
         else if (playerCurHp > 0 && transform.gameObject != null)
         {
@@ -1379,6 +1394,11 @@ public class Player : MonoBehaviour
             }
             rigid.velocity = moveVec;
         }
+    }
+
+    public void SetWeaponLocalScale(Vector3 _scale)
+    {
+        weaponLocalScale = _scale;
     }
 
     #region 스테이터스 스크립트에서 사용할 플레이어 능력치를 반환
