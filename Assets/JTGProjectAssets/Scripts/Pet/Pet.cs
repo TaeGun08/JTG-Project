@@ -120,54 +120,15 @@ public class Pet : MonoBehaviour
         {
             if (petType.ToString() == "petTypeA")
             {
-                enemySc = _collision.gameObject.GetComponent<Enemy>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeB")
             {
-                enemySc = _collision.gameObject.GetComponent<Enemy>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeC")
             {
-                enemySc = _collision.gameObject.GetComponent<Enemy>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeD")
             {
@@ -175,7 +136,8 @@ public class Pet : MonoBehaviour
                 if (uesPetSkill == false)
                 {
                     petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
+                    PetAttack petAttack = petSkilAttacklObj.GetComponent<PetAttack>();
+                    petAttack.PetSkillDamage(petDamage);
 
                     Vector3 petPos = transform.position;
                     petPos.y += 0.8f;
@@ -191,54 +153,15 @@ public class Pet : MonoBehaviour
         {
             if (petType.ToString() == "petTypeA")
             {
-                bossSc = _collision.gameObject.GetComponent<Boss>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeB")
             {
-                bossSc = _collision.gameObject.GetComponent<Boss>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeC")
             {
-                bossSc = _collision.gameObject.GetComponent<Boss>();
-                if (uesPetSkill == false)
-                {
-                    petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
 
-                    Vector3 petPos = transform.position;
-                    petPos.y += 0.8f;
-
-                    petSkillEfObj = Instantiate(petSkillEffect, petPos, Quaternion.identity, trashPreFab.transform);
-                    petSkillEfObj.transform.SetParent(gameObject.transform);
-                    uesPetSkill = true;
-                    isAttack = true;
-                }
             }
             else if (petType.ToString() == "petTypeD")
             {
@@ -246,7 +169,8 @@ public class Pet : MonoBehaviour
                 if (uesPetSkill == false)
                 {
                     petSkilAttacklObj = Instantiate(petAttackpreFab, _collision.gameObject.transform.position, Quaternion.identity, trashPreFab.transform);
-                    petSkilAttacklObj.transform.SetParent(_collision.gameObject.transform);
+                    PetAttack petAttack = petSkilAttacklObj.GetComponent<PetAttack>();
+                    petAttack.PetSkillDamage(petDamage);
 
                     Vector3 petPos = transform.position;
                     petPos.y += 0.8f;
@@ -350,14 +274,6 @@ public class Pet : MonoBehaviour
             attackDelayTimer -= Time.deltaTime;
             if (attackDelayTimer < 0)
             {
-                if (enemySc != null)
-                {
-                    enemySc.EnemyHp((int)petDamage, true, true, false);
-                }
-                else if (bossSc != null)
-                {
-                    bossSc.BossHp((int)petDamage, true, true, false);
-                }
                 Destroy(petSkillEfObj);
                 attackDelayTimer = attackDelayTime;
                 isAttack = false;
