@@ -131,7 +131,7 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[1].onClick.AddListener(() =>
         {
-            player.PlayerStatusDamage(5);
+            player.PlayerStatusDamage(8);
             damage = true;
             lv4click = false;
             lv6click = true;
@@ -206,22 +206,26 @@ public class Status : MonoBehaviour
 
         lvpassiveSkills[10].onClick.AddListener(() =>
         {
-            player.PlayerStatusDamage(5);
-            player.PlayerStatusCritical(20, 0.3f);
+            player.PlayerStatusDamage(10);
+            player.PlayerStatusCritical(30, 0.8f);
             lv10click = false;
             lvpassiveSkills[10].interactable = false;
         });
 
         lvpassiveSkills[11].onClick.AddListener(() =>
         {
-            player.PlayerStatusArmor(2);
+            player.PlayerStatusArmor(3);
+            player.PlayerStatusDamage(10);
+            player.PlayerStatusCritical(30, 0.5f);
             lv10click = false;
             lvpassiveSkills[11].interactable = false;
         });
 
         lvpassiveSkills[12].onClick.AddListener(() =>
         {
-            player.PlayerStatusHp(30);
+            player.PlayerStatusHp(50);
+            player.PlayerStatusDamage(10);
+            player.PlayerStatusCritical(70, 0f);
             lv10click = false;
             lvpassiveSkills[12].interactable = false;
         });
