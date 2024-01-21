@@ -16,6 +16,11 @@ public class PetAttack : MonoBehaviour
             Enemy enemySc = collision.gameObject.GetComponent<Enemy>();
             enemySc.EnemyHp((int)skillDamage, true, true, false);
         }
+        else if (collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+        {
+            Boss bossSc = collision.gameObject.GetComponent<Boss>();
+            bossSc.BossHp((int)skillDamage, true, true, false);
+        }
     }
 
     private void Awake()
