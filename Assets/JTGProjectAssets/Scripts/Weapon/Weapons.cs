@@ -9,12 +9,13 @@ public class Weapons : MonoBehaviour
 {
     public enum WeaponType
     {
-        weaponTypeA = 1,
+        weaponTypeA,
         weaponTypeB,
         weaponTypeC,
         weaponTypeD,
     }
 
+    [Header("무기타입")]
     [SerializeField] private WeaponType weaponType;
 
     private BoxCollider2D weaponBoxColl2D;
@@ -315,8 +316,8 @@ public class Weapons : MonoBehaviour
         else if (weaponType.ToString() == "weaponTypeB")
         {
             GameObject bulletObjA = Instantiate(bullet, bulletPos.position, bulletPos.rotation, trashPreFab.transform);
-            GameObject bulletObjB = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, 15)), trashPreFab.transform);
-            GameObject bulletObjC = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(new Vector3(0, 0, -15)), trashPreFab.transform);
+            GameObject bulletObjB = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(0, 0, 15f), trashPreFab.transform);
+            GameObject bulletObjC = Instantiate(bullet, bulletPos.position, bulletPos.rotation * Quaternion.Euler(0, 0, -15f), trashPreFab.transform);
             Bullet bulletScA = bulletObjA.GetComponent<Bullet>();
             Bullet bulletScB = bulletObjB.GetComponent<Bullet>();
             Bullet bulletScC = bulletObjC.GetComponent<Bullet>();

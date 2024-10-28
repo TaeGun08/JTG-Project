@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
         enemyC,
     }
 
-    [Header("적의 형태")]
+    [Header("적 타입")]
     [SerializeField] private EnemyType enemyType;
 
     [Header("체크할 레이어")]
